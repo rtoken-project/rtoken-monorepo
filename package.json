@@ -1,0 +1,24 @@
+{
+    "name": "@decentral.ee/rdai-contracts",
+    "version": "0.0.1",
+    "description": "rDai Ethereum contracts",
+    "license": "MIT",
+    "dependencies": {
+        "openzeppelin-solidity": "2.3.0",
+        "truffle-contract": "^4.0.26"
+    },
+    "devDependencies": {
+        "openzeppelin-test-helpers": "^0.4.1",
+        "@decentral.ee/web3-test-helpers": "^0.1.0",
+        "truffle": "^5.0.29",
+        "truffle-flattener": "^1.4.0"
+    },
+    "scripts": {
+        "test": "npm run build:truffle:compile && truffle test --network local test/all.js",
+        "build": "npm run build:truffle:compile",
+        "build:truffle:compile": "rm -f build/contracts/*;truffle compile",
+        "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run build && npm run test 2>&1'",
+        "lint": "run-s lint:*",
+        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"
+    }
+}
