@@ -1,1 +1,2 @@
-require("./rToken.test.js");
+require("./RToken.test.js");
+require("./package.test.js");
