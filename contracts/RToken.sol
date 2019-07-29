@@ -8,13 +8,51 @@ contract RToken is IERC20, ReentrancyGuard {
 
     using SafeMath for uint256;
 
+    /**
+     * @dev Compound token associated with the rToken
+     */
     CErc20Interface cToken;
+
+    /**
+     * @dev Approved token transfer amounts on behalf of others
+     */
+    mapping(address => mapping(address => uint256)) transferAllowances;
+
+    /**
+     * @dev Hat structure describes who are the recipients of the interest
+     */
+    struct Hat {
+        address[] recipients;
+        uint256[] proportions;
+    }
+
+    /**
+     * @dev Hat list
+     */
+    Hat[] hats;
+
+    /**
+     * @dev Account structure
+     */
+    struct Account {
+        uint256 hatID;
+        uint256 rAmount;
+        mapping (address => uint256) cRecipients;
+        uint256 cAmount;
+    }
+
+    /**
+     * @dev Account mapping
+     */
+    mapping (address => Account) accounts;
 
     /**
      * @dev Create rToken linked with cToken at `cToken_`
      */
     constructor (CErc20Interface cToken_) public {
         cToken = cToken_;
+        // special hat: hatID = 0
+        hats.push(Hat(new address[](0), new uint256[](0)));
     }
 
     //
@@ -41,25 +79,15 @@ contract RToken is IERC20, ReentrancyGuard {
       */
      uint256 public totalSupply;
 
-     /**
-      * @notice Official record of token balances for each account
-      */
-     mapping(address => uint256) accountTokens;
-
-     /**
-      * @notice Approved token transfer amounts on behalf of others
-      */
-     mapping(address => mapping(address => uint256)) transferAllowances;
-
     /**
      * @dev Returns the amount of tokens owned by `account`.
      */
     function balanceOf(address owner) external view returns (uint256) {
-        return accountTokens[owner];
+        return accounts[owner].rAmount;
     }
 
     /**
-     * @dev Moves `amount` tokens from the caller's account to `recipient`.
+     * @notice Moves `amount` tokens from the caller's account to `recipient`.
      *
      * Returns a boolean value indicating whether the operation succeeded.
      *
@@ -70,7 +98,7 @@ contract RToken is IERC20, ReentrancyGuard {
     }
 
     /**
-     * @dev Returns the remaining number of tokens that `spender` will be
+     * @notice Returns the remaining number of tokens that `spender` will be
      * allowed to spend on behalf of `owner` through `transferFrom`. This is
      * zero by default.
      *
@@ -81,7 +109,7 @@ contract RToken is IERC20, ReentrancyGuard {
     }
 
     /**
-     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+     * @notice Sets `amount` as the allowance of `spender` over the caller's tokens.
      *
      * Returns a boolean value indicating whether the operation succeeded.
      *
@@ -102,7 +130,7 @@ contract RToken is IERC20, ReentrancyGuard {
     }
 
     /**
-     * @dev Moves `amount` tokens from `sender` to `recipient` using the
+     * @notice Moves `amount` tokens from `sender` to `recipient` using the
      * allowance mechanism. `amount` is then deducted from the caller's
      * allowance.
      *
@@ -136,15 +164,15 @@ contract RToken is IERC20, ReentrancyGuard {
 
         /* Do the calculations, checking for {under,over}flow */
         uint256 allowanceNew = startingAllowance.sub(tokens);
-        uint256 srcTokensNew = accountTokens[src].sub(tokens);
-        uint256 dstTokensNew = accountTokens[dst].add(tokens);
+        uint256 srcTokensNew = accounts[src].rAmount.sub(tokens);
+        uint256 dstTokensNew = accounts[dst].rAmount.add(tokens);
 
         /////////////////////////
         // EFFECTS & INTERACTIONS
         // (No safe failures beyond this point)
 
-        accountTokens[src] = srcTokensNew;
-        accountTokens[dst] = dstTokensNew;
+        accounts[src].rAmount = srcTokensNew;
+        accounts[dst].rAmount = dstTokensNew;
 
         /* Eat some of the allowance (if necessary) */
         if (startingAllowance != uint256(-1)) {
@@ -162,28 +190,29 @@ contract RToken is IERC20, ReentrancyGuard {
     // rToken interface
     //
 
-    struct Hat {
-        address[] recipients;
-        uint256[] proportions;
-    }
-
-    mapping (uint256 => Hat) hats;
-
-    struct Wallet {
-        uint256 rAmount;
-        mapping (address => uint256) cRecipients;
-        uint256 cInterest;
-    }
-
-    mapping (address => Wallet) wallets;
-
     /**
-     * @notice Sender supplies assets into the market and receives cTokens in exchange
+     * @notice Sender supplies assets into the market and receives rTokens in exchange
      * @dev Invest underlying assets immediately
      * @param mintAmount The amount of the underlying asset to supply
      * @return uint 0=success, otherwise a failure
      */
     function mint(uint256 mintAmount) external nonReentrant returns (bool) {
+        IERC20 token = IERC20(cToken.underlying());
+        require(token.allowance(msg.sender, address(this)) >= mintAmount, "Not enough allowance");
+
+        // mint c tokens
+        token.transferFrom(msg.sender, address(this), mintAmount);
+        token.approve(address(cToken), mintAmount);
+        uint256 cNewAmount = cToken.mint(mintAmount);
+
+        // update Account r balances
+        accounts[msg.sender].rAmount = accounts[msg.sender].rAmount.add(mintAmount);
+        totalSupply = totalSupply.add(mintAmount);
+
+        // update Account c balances
+        Hat storage hat = hats[accounts[msg.sender].hatID];
+
+        emit Mint(msg.sender, mintAmount);
     }
 
     /**
@@ -196,7 +225,7 @@ contract RToken is IERC20, ReentrancyGuard {
 
     }
 
-    function createhat(
+    function createHat(
         address[] calldata recipients,
         uint256[] calldata proportions,
         bool doChangeHat) external returns (uint256 hatID) {
@@ -236,5 +265,13 @@ contract RToken is IERC20, ReentrancyGuard {
      */
     event Redeem(address redeemer, uint256 redeemAmount);
 
-    event HatChanged(uint256 indexed hatID);
+    /**
+     * @notice A new hat is created
+     */
+    event HatCreated(uint256 indexed hatID);
+
+    /**
+     * @notice Hat is changed for the account
+     */
+    event HatChanged(address account, uint256 indexed hatID);
 }

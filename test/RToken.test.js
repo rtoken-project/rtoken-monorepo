@@ -27,7 +27,7 @@ contract("rDAI contract", accounts => {
 
     beforeEach(async () => {
         token = await web3tx(ERC20Mintable.new, "ERC20Mintable.new")({ from: admin });
-        await web3tx(token.mint, "token mint 1000 -> customer1")(customer1, toDecimals(1000, 18), { from: admin });
+        await web3tx(token.mint, "token.mint 1000 -> customer1")(customer1, toDecimals(1000, 18), { from: admin });
         const comptroller = await web3tx(ComptrollerMock.new, "ComptrollerMock.new")({ from: admin });
         const interestRateModel = await web3tx(InterestRateModelMock.new, "InterestRateModelMock.new")({ from: admin });
         cToken = await web3tx(CErc20.new, "CErc20.new")(
@@ -50,7 +50,7 @@ contract("rDAI contract", accounts => {
         const supplyAmount = toDecimals(10, 18);
         assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "0");
 
-        await web3tx(token.approve, "testeToken.approve 10 by customer1")(cToken.address, supplyAmount, {
+        await web3tx(token.approve, "token.approve 10 by customer1")(cToken.address, supplyAmount, {
             from: customer1
         });
         await web3tx(cToken.mint, "cToken.mint 10", {
@@ -73,6 +73,19 @@ contract("rDAI contract", accounts => {
     });
 
     it("rToken mint/redeem", async () => {
+        const supplyAmount = toDecimals(10, 18);
         assert.equal(wad4human(await rToken.totalSupply.call()), "0");
+        await web3tx(token.approve, "token.approve 10 by customer1")(rToken.address, supplyAmount, {
+            from: customer1
+        });
+        await web3tx(rToken.mint, "rToken.mint 10", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(supplyAmount, {
+            from: customer1
+        });
+        assert.equal(wad4human(await rToken.totalSupply.call()), "10");
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "10");
     });
 });
