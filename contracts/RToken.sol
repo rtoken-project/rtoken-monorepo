@@ -37,6 +37,7 @@ contract RToken is IERC20, ReentrancyGuard {
     struct Account {
         uint256 hatID;
         uint256 rAmount;
+        uint256 rDebt;
         mapping (address => uint256) cRecipients;
         uint256 cAmount;
     }
@@ -203,7 +204,9 @@ contract RToken is IERC20, ReentrancyGuard {
         // mint c tokens
         token.transferFrom(msg.sender, address(this), mintAmount);
         token.approve(address(cToken), mintAmount);
-        uint256 cNewAmount = cToken.mint(mintAmount);
+        uint256 cTotalBefore = cToken.totalSupply();
+        cToken.mint(mintAmount);
+        uint256 cNewAmount = cToken.totalSupply().sub(cTotalBefore);
 
         // update Account r balances
         accounts[msg.sender].rAmount = accounts[msg.sender].rAmount.add(mintAmount);
@@ -211,6 +214,7 @@ contract RToken is IERC20, ReentrancyGuard {
 
         // update Account c balances
         Hat storage hat = hats[accounts[msg.sender].hatID];
+        distributeCTokens(accounts[msg.sender], hat, mintAmount, cNewAmount);
 
         emit Mint(msg.sender, mintAmount);
     }
@@ -247,11 +251,46 @@ contract RToken is IERC20, ReentrancyGuard {
     }
 
     function interestBalanceOf(address owner) external view returns (uint256 amount){
-        //Wallet storage wallet = wallets[owner];
+        Account storage account = accounts[owner];
+        uint256 rGross = account.cAmount
+            .mul(cToken.exchangeRateStored())
+            .div(10 ** 18);
+        if (rGross > account.rDebt) {
+            return rGross - account.rDebt;
+        } else {
+            // no interest yet or even negative interest rate??
+            return 0;
+        }
     }
 
     function withdrawInterest() external nonReentrant returns (bool) {
 
+    }
+
+    function distributeCTokens(
+            Account storage account,
+            Hat storage hat,
+            uint256 rAmount,
+            uint256 cAmount) internal {
+        uint i;
+        uint256 totalProportions = 0;
+        for (i = 0; i < hat.proportions.length; ++i) {
+            totalProportions += hat.proportions[i];
+        }
+        if (totalProportions > 0) {
+            // TODO
+        } else {
+            // giving all interest back to the owner
+            account.rDebt = rAmount;
+            account.cAmount = account.cAmount.add(cAmount);
+        }
+
+    }
+
+    function recollectCTokens(
+        Account storage account,
+        Hat storage hat,
+        uint256 cAmount) internal {
     }
 
 

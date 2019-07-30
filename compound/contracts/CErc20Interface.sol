@@ -1,9 +1,9 @@
 pragma solidity >=0.4.21 <0.6.0;
 
-// converted from compound/abi/CErc20.json
+// converted from ethereum/contracts/compound/abi/CErc20.json
 interface CErc20Interface {
 
-    function name() external returns (
+    function name() external view returns (
         string memory
     );
 
@@ -20,7 +20,7 @@ interface CErc20Interface {
         uint256
     );
 
-    function reserveFactorMantissa() external returns (
+    function reserveFactorMantissa() external view returns (
         uint256
     );
 
@@ -30,11 +30,11 @@ interface CErc20Interface {
         uint256
     );
 
-    function totalSupply() external returns (
+    function totalSupply() external view returns (
         uint256
     );
 
-    function exchangeRateStored() external returns (
+    function exchangeRateStored() external view returns (
         uint256
     );
 
@@ -53,11 +53,11 @@ interface CErc20Interface {
         uint256
     );
 
-    function pendingAdmin() external returns (
+    function pendingAdmin() external view returns (
         address
     );
 
-    function decimals() external returns (
+    function decimals() external view returns (
         uint256
     );
 
@@ -67,7 +67,7 @@ interface CErc20Interface {
         uint256
     );
 
-    function getCash() external returns (
+    function getCash() external view returns (
         uint256
     );
 
@@ -77,11 +77,11 @@ interface CErc20Interface {
         uint256
     );
 
-    function totalBorrows() external returns (
+    function totalBorrows() external view returns (
         uint256
     );
 
-    function comptroller() external returns (
+    function comptroller() external view returns (
         address
     );
 
@@ -91,21 +91,21 @@ interface CErc20Interface {
         uint256
     );
 
-    function initialExchangeRateMantissa() external returns (
+    function initialExchangeRateMantissa() external view returns (
         uint256
     );
 
-    function accrualBlockNumber() external returns (
+    function accrualBlockNumber() external view returns (
         uint256
     );
 
-    function underlying() external returns (
+    function underlying() external view returns (
         address
     );
 
     function balanceOf(
         address owner
-    ) external returns (
+    ) external view returns (
         uint256
     );
 
@@ -119,17 +119,17 @@ interface CErc20Interface {
         uint256
     );
 
-    function totalReserves() external returns (
+    function totalReserves() external view returns (
         uint256
     );
 
-    function symbol() external returns (
+    function symbol() external view returns (
         string memory
     );
 
     function borrowBalanceStored(
         address account
-    ) external returns (
+    ) external view returns (
         uint256
     );
 
@@ -150,11 +150,11 @@ interface CErc20Interface {
         bool
     );
 
-    function borrowIndex() external returns (
+    function borrowIndex() external view returns (
         uint256
     );
 
-    function supplyRatePerBlock() external returns (
+    function supplyRatePerBlock() external view returns (
         uint256
     );
 
@@ -178,7 +178,7 @@ interface CErc20Interface {
 
     function getAccountSnapshot(
         address account
-    ) external returns (
+    ) external view returns (
         uint256,
         uint256,
         uint256,
@@ -200,7 +200,7 @@ interface CErc20Interface {
     function allowance(
         address owner,
         address spender
-    ) external returns (
+    ) external view returns (
         uint256
     );
 
@@ -214,7 +214,7 @@ interface CErc20Interface {
         uint256
     );
 
-    function interestRateModel() external returns (
+    function interestRateModel() external view returns (
         address
     );
 
@@ -226,11 +226,11 @@ interface CErc20Interface {
         uint256
     );
 
-    function admin() external returns (
+    function admin() external view returns (
         address
     );
 
-    function borrowRatePerBlock() external returns (
+    function borrowRatePerBlock() external view returns (
         uint256
     );
 
@@ -240,7 +240,7 @@ interface CErc20Interface {
         uint256
     );
 
-    function isCToken() external returns (
+    function isCToken() external view returns (
         bool
     );
 
