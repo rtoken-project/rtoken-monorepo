@@ -181,7 +181,7 @@ contract("rDAI contract", accounts => {
             .sub(tinyCustomer1Interest).eq(toWad(0)));
     });
 
-    it("rToken mint/redeem with hat", async () => {
+    it("rToken mint/redeem/transfer/payInterest with hat", async () => {
         const supplyAmount = toWad(100);
         assert.equal(wad4human(await rToken.totalSupply.call()), "0");
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, supplyAmount, {
@@ -273,7 +273,11 @@ contract("rDAI contract", accounts => {
         });
 
         assert.equal(wad4human(await rToken.balanceOf(admin)), "0");
-        web3tx(rToken.payInterest, "rToken.payInterest to admin")(admin, { from : admin });
+        web3tx(rToken.payInterest, "rToken.payInterest to admin", {
+            inLogs: [{
+                name: "InterestPaid"
+            }]
+        })(admin, { from : admin });
         const adminInterestPaid = await rToken.balanceOf(admin);
         console.log("admin interested paid", wad4human(adminInterestPaid),
             "expected", wad4human(adminInterest.add(tinyAdminInterest)));
