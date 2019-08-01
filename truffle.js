@@ -18,7 +18,8 @@
  *
  */
 
-// const HDWalletProvider = require('truffle-hdwallet-provider');
+const HDWalletProvider = require("truffle-hdwallet-provider");
+require("dotenv").config();
 // const infuraKey = "fj4jll3k.....";
 //
 // const fs = require('fs');
@@ -46,6 +47,21 @@ module.exports = {
             host: "127.0.0.1",     // Localhost (default: none)
             port: 8545,            // Standard Ethereum port (default: none)
             network_id: "*",       // Any network (default: none)
+        },
+
+        rinkeby: {
+            provider: () => new HDWalletProvider(
+                process.env.RINKEBY_MNEMONIC,
+                process.env.RINKEBY_PROVIDER_URL,
+                0, //address_index
+                10, // num_addresses
+                false // shareNonce
+            ),
+            network_id: 4, // Rinkeby's id
+            //gas: 7017622, //
+            confirmations: 2, // # of confs to wait between deployments. (default: 0)
+            timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
+            skipDryRun: false // Skip dry run before migrations? (default: false for public nets )
         },
 
         // Another network with more advanced options...
