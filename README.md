@@ -121,5 +121,7 @@ _admin_ is not allowed to change that for them.
 - Change hat for any contract address
 
 It is up to  the `rToken` instantiator to decide the degree of the
-decentralization. For maximum decentralization, the admin could be a DAO that is implemented by [Aragon](https://aragon.org/) and the change hat could be
-controlled by a arbitration DAO such as (Kleros)(https://kleros.io/).
+decentralization. For maximum decentralization, the admin could be a DAO that is
+implemented by a DAO framework such as [Aragon](https://aragon.org/), and the
+hat change could be controlled by a arbitration DAO such as
+(Kleros)(https://kleros.io/).
