@@ -1,7 +1,7 @@
 RToken Ethereum Contracts
 =========================
 
-`RToken`, or Reedemable Token, is an _ERC20_ token that is 1:1 redeemable to its underlying _ERC20_ token. The underlying tokens are invested into interest earning assets specified by the saving strategy, for example into [_compound finance_](http://compound.finance). Owners of the _rTokens_ can use a definition called _hat_ to configure who is the beneficiary of the accumulated interest. _RToken_ can be used for community funds, charities, crowdfunding, etc. It is also a building block for _DApps_ that need to lock underlying tokens while not losing their earning potentials.
+`RToken`, or Reedemable Token, is an _ERC20_ token that is 1:1 redeemable to its underlying _ERC20_ token. The underlying tokens are invested into interest earning assets specified by the saving strategy, for example into [_Compound_](http://compound.finance). Owners of the _rTokens_ can use a definition called _hat_ to configure who is the beneficiary of the accumulated interest. _RToken_ can be used for community funds, charities, crowdfunding, etc. It is also a building block for _DApps_ that need to lock underlying tokens while not losing their earning potentials.
 
 ## How it works
 
@@ -71,7 +71,7 @@ In order to maximize the cause the hat owners choose, the following rules are st
 
 * All addresses have the _Zero Hat_ by default.
 
-* During mint processes, _DAI_ tokens are loaned to the recipients. If the recipient has the _Zero Hat_, the recipient will inherit the minter's hat.
+* During the mint process, a user's deposited _DAI_ tokens are loaned to the recipients as indicated in the user's hat. If the recipient has the _Zero Hat_, the recipient will inherit the minter's hat.
 
 * During the transfer process, _DAI_ tokens are recollected and loaned to the new recipients. If the recipient has the _Zero Hat_, the recipient will inherit the source's hat.
 
