@@ -245,7 +245,7 @@ contract RToken is IERC20, ReentrancyGuard {
         uint256 rGross = account.cAmount
             .mul(cToken.exchangeRateStored())
             .div(10 ** 18);
-        if (rGross > account.rDebt) {
+        if (rGross > (account.rDebt + account.rInterestPaid)) {
             return rGross - account.rDebt - account.rInterestPaid;
         } else {
             // no interest accumulated yet or even negative interest rate!?
