@@ -501,7 +501,7 @@ contract RToken is IRToken, ReentrancyGuard {
             }
         } else {
             // Account uses the zero hat, give all interest to the owner
-            account.rDebt = rAmount;
+            account.rDebt = account.rDebt.add(rAmount);
             account.cAmount = account.cAmount.add(cAmount);
         }
 

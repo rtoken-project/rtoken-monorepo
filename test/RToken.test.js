@@ -289,4 +289,34 @@ contract("rDAI contract", accounts => {
         assert.isTrue((await rToken.totalSupply.call()).sub(toWad(90)).eq(adminInterestPaid));
         assert.equal(wad4human(await rToken.interestPayableOf.call(admin)), "0");
     });
+
+    it("rToken mint multiple times", async () => {
+        assert.equal(wad4human(await rToken.totalSupply.call()), "0");
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+
+        await web3tx(rToken.mint, "rToken.mint 10 to customer1", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(10), {
+            from: customer1
+        });
+        assert.equal(wad4human(await rToken.interestPayableOf.call(customer1)), "0");
+
+        await web3tx(rToken.mint, "rToken.mint 5 to customer1", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(5), {
+            from: customer1
+        });
+
+        await doBingeBorrowing();
+
+        assert.equal(wad4human(await rToken.totalSupply.call()), "15");
+
+        assert.equal(wad4human(await rToken.interestPayableOf.call(customer1)).slice(0, 6), "0.0099");
+    });
 });
