@@ -18,7 +18,7 @@
     "scripts": {
         "build": "npm run build:truffle:compile",
         "build:truffle:compile": "rm -f build/contracts/*;truffle compile",
-        "test": "npm run build:truffle:compile && truffle test --network development test/all.js",
+        "test": "truffle test --network development test/all.js",
         "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run test 2>&1'",
         "lint": "run-s lint:*",
         "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"

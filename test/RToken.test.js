@@ -122,6 +122,7 @@ contract("rDAI contract", accounts => {
         });
         assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "800");
         const tokenAmount1 = await token.balanceOf.call(customer1);
+        console.log("token redeemed", wad4human(tokenAmount1));
         assert.isTrue(tokenAmount1.gt(toWad(920)));
 
         // redeem underlying
@@ -152,7 +153,9 @@ contract("rDAI contract", accounts => {
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "900");
         assert.equal(wad4human(await rToken.totalSupply.call()), "100");
         assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100");
-        assert.equal(wad4human(await rToken.receivedBalanceOf.call(customer1)), "100");
+        assert.equal(wad4human(await rToken.freeBalanceOf.call(customer1)), "0");
+        assert.equal(wad4human(await rToken.receivedLoanOf.call(customer1)), "100");
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100");
         assert.equal(wad4human(await rToken.interestPayableOf.call(customer1)), "0");
 
         await doBingeBorrowing();
@@ -168,17 +171,48 @@ contract("rDAI contract", accounts => {
         })(toWad(10), {
             from: customer1
         });
-        assert.equal(wad4human(await rToken.totalSupply.call()), "90");
-        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "90");
+        const customer1RBalance1 = await rToken.balanceOf.call(customer1);
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "90");
+        assert.equal(wad4human(customer1RBalance1), "90");
+        assert.equal(wad4human(await rToken.freeBalanceOf.call(customer1)), "0");
+        assert.equal(wad4human(await rToken.receivedLoanOf.call(customer1)), "90");
         const tinyCustomer1Interest = (await rToken.interestPayableOf.call(customer1)).sub(customer1Interest);
-        const customer1ReceivedBalance = await rToken.receivedBalanceOf.call(customer1);
+        const customer1ReceivedSavings = await rToken.receivedSavingsOf.call(customer1);
+        const expectedPayableInterest = customer1Interest.add(tinyCustomer1Interest);
         console.log("Tiny customer1 interest accumuldated since the redeem", wad4human(tinyCustomer1Interest));
-        console.log("Received balance of customer 1", wad4human(customer1ReceivedBalance));
-        assert.isTrue(customer1ReceivedBalance
+        console.log("Received savings of customer 1", wad4human(customer1ReceivedSavings));
+        console.log("Expected payable interest of customer 1", wad4human(expectedPayableInterest));
+        assert.isTrue(customer1ReceivedSavings
             .sub(toWad(90))
-            .sub(customer1Interest)
-            .sub(tinyCustomer1Interest).eq(toWad(0)));
+            .sub(expectedPayableInterest).eq(toWad(0)));
+
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1", {
+            inLogs: [{
+                name: "InterestPaid"
+            }]
+        })(customer1, { from : admin });
+        const customer1RBalance2 = await rToken.balanceOf.call(customer1);
+        const customer1ActualInterest = customer1RBalance2.sub(customer1RBalance1);
+        console.log("customer1 interested received", wad4human(customer1ActualInterest));
+        assert.equal(wad4human(customer1ActualInterest
+            .sub(expectedPayableInterest)
+            .abs())
+            .slice(0, 6), "0.0000");
+        assert.isTrue((await rToken.totalSupply.call()).sub(toWad(90)).eq(customer1ActualInterest));
+        assert.equal(wad4human(await rToken.interestPayableOf.call(customer1)), "0");
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1 again", {
+            inLogs: [{
+                name: "InterestPaid"
+            }]
+        })(customer1, { from : admin });
+        const customer1RBalance3 = await rToken.balanceOf.call(customer1);
+        // should be really tiny interest
+        assert.isTrue(customer1RBalance3.gt(customer1RBalance2));
+        assert.equal(wad4human(
+            customer1RBalance3
+                .sub(customer1RBalance2))
+            .toString().slice(0, 6), "0.0000");
     });
 
     it("rToken mint/redeem/transfer/payInterest with hat", async () => {
@@ -199,9 +233,9 @@ contract("rDAI contract", accounts => {
         assert.equal(wad4human(await rToken.interestPayableOf.call(customer1)), "0");
         assert.equal(wad4human(await rToken.interestPayableOf.call(admin)), "0");
         assert.equal(wad4human(await rToken.interestPayableOf.call(customer2)), "0");
-        assert.equal(wad4human(await rToken.receivedBalanceOf.call(customer1)), "0");
-        const adminReceivedBalance1 = await rToken.receivedBalanceOf.call(admin);
-        const customer2ReceivedBalance1 = await rToken.receivedBalanceOf.call(customer2);
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "0");
+        const adminReceivedBalance1 = await rToken.receivedSavingsOf.call(admin);
+        const customer2ReceivedBalance1 = await rToken.receivedSavingsOf.call(customer2);
         console.log("admin received balance", wad4human(adminReceivedBalance1));
         console.log("customer 1 received balance", wad4human(customer2ReceivedBalance1));
         assert.equal(wad4human(adminReceivedBalance1).slice(0, 5), "89.99");
@@ -238,9 +272,9 @@ contract("rDAI contract", accounts => {
         console.log("Tiny customer2 interest accumuldated since the redeem", wad4human(tinyCustomer2Interest));
         assert.isTrue(tinyAdminInterest.lt(toWad("0.0001")));
         assert.isTrue(tinyCustomer2Interest.lt(toWad("0.0001")));
-        assert.equal(wad4human(await rToken.receivedBalanceOf.call(customer1)), "0");
-        const adminReceivedBalance2 = await rToken.receivedBalanceOf.call(admin);
-        const customer2ReceivedBalance2 = await rToken.receivedBalanceOf.call(customer2);
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "0");
+        const adminReceivedBalance2 = await rToken.receivedSavingsOf.call(admin);
+        const customer2ReceivedBalance2 = await rToken.receivedSavingsOf.call(customer2);
         console.log("Received balance of admin", wad4human(adminReceivedBalance2));
         console.log("Received balance of customer 2", wad4human(customer2ReceivedBalance2));
         assert.equal(wad4human(adminReceivedBalance1
@@ -273,7 +307,7 @@ contract("rDAI contract", accounts => {
         });
 
         assert.equal(wad4human(await rToken.balanceOf(admin)), "0");
-        web3tx(rToken.payInterest, "rToken.payInterest to admin", {
+        await web3tx(rToken.payInterest, "rToken.payInterest to admin", {
             inLogs: [{
                 name: "InterestPaid"
             }]
