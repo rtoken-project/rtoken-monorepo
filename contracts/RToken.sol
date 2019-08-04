@@ -10,6 +10,8 @@ contract RToken is IRToken, ReentrancyGuard {
 
     using SafeMath for uint256;
 
+    uint256 public constant SELF_HAT_ID = uint256(int256(-1));
+
     uint32 constant PROPORTION_BASE = 0xFFFFFFFF;
 
     //
@@ -138,14 +140,21 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
+     * @dev mintWithSelectedHat implementation
+     */
+    function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool) {
+        require(hatID == SELF_HAT_ID || hatID < hats.length, "Invalid hat ID");
+        changeHatInternal(msg.sender, hatID);
+        mintInternal(mintAmount);
+        return true;
+    }
+
+    /**
      * @dev mintWithNewHat implementation
      */
     function mintWithNewHat(uint256 mintAmount,
         address[] calldata recipients,
         uint32[] calldata proportions) external nonReentrant returns (bool) {
-        Account storage account = accounts[msg.sender];
-        require(account.hatID == 0, "You already have a hat");
-
         uint256 hatID = createHatInternal(recipients, proportions);
         changeHatInternal(msg.sender, hatID);
 
@@ -185,6 +194,13 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
+     * @dev getMaximumHatID implementation
+     */
+    function getMaximumHatID() external view returns (uint256 hatID) {
+        return hats.length - 1;
+    }
+
+    /**
      * @dev getHatByAddress implementation
      */
     function getHatByAddress(address owner) external view returns (
@@ -192,9 +208,14 @@ contract RToken is IRToken, ReentrancyGuard {
         address[] memory recipients,
         uint32[] memory proportions) {
         hatID = accounts[owner].hatID;
-        Hat memory hat = hats[hatID];
-        recipients = hat.recipients;
-        proportions = hat.proportions;
+        if (hatID != 0 && hatID != SELF_HAT_ID) {
+            Hat memory hat = hats[hatID];
+            recipients = hat.recipients;
+            proportions = hat.proportions;
+        } else {
+            recipients = new address[](0);
+            proportions = new uint32[](0);
+        }
     }
 
     /**
@@ -203,9 +224,14 @@ contract RToken is IRToken, ReentrancyGuard {
     function getHatByID(uint256 hatID) external view returns (
         address[] memory recipients,
         uint32[] memory proportions) {
-        Hat memory hat = hats[hatID];
-        recipients = hat.recipients;
-        proportions = hat.proportions;
+        if (hatID != 0 && hatID != SELF_HAT_ID) {
+            Hat memory hat = hats[hatID];
+            recipients = hat.recipients;
+            proportions = hat.proportions;
+        } else {
+            recipients = new address[](0);
+            proportions = new uint32[](0);
+        }
     }
 
     /**
@@ -320,6 +346,7 @@ contract RToken is IRToken, ReentrancyGuard {
      */
     function transferInternal(address spender, address src, address dst, uint256 tokens) internal returns (bool) {
         require(src != dst, "src should not equal dst");
+        require(accounts[src].rAmount >= tokens, "Not enough balance to transfer");
 
         /* Get the allowance, infinite for the account owner */
         uint256 startingAllowance = 0;
@@ -328,6 +355,7 @@ contract RToken is IRToken, ReentrancyGuard {
         } else {
             startingAllowance = transferAllowances[src][spender];
         }
+        require(startingAllowance >= tokens, "Not enough allowance for transfer");
 
         /* Do the calculations, checking for {under,over}flow */
         uint256 allowanceNew = startingAllowance.sub(tokens);
@@ -504,7 +532,7 @@ contract RToken is IRToken, ReentrancyGuard {
             uint256 rAmount,
             uint256 cAmount) internal {
         Account storage account = accounts[owner];
-        Hat storage hat = hats[account.hatID];
+        Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         bool[] memory recipientsNeedsNewHat = new bool[](hat.recipients.length);
         uint i;
         if (hat.recipients.length > 0) {
@@ -570,7 +598,7 @@ contract RToken is IRToken, ReentrancyGuard {
         address owner,
         uint256 rAmount) internal returns (uint256 cEstimatedAmount) {
         Account storage account = accounts[owner];
-        Hat storage hat = hats[account.hatID];
+        Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         // accrue interest so estimate is up to date
         cToken.accrueInterest();
         cEstimatedAmount = rAmount
@@ -591,7 +619,7 @@ contract RToken is IRToken, ReentrancyGuard {
         address owner,
         uint256 rAmount) internal returns (uint256 cBurnedAmount) {
         Account storage account = accounts[owner];
-        Hat storage hat = hats[account.hatID];
+        Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         uint256 cTotalBefore = cToken.totalSupply();
         require(cToken.redeemUnderlying(rAmount) == 0, "redeemUnderlying failed");
         uint256 cTotalAfter = cToken.totalSupply();

@@ -31,7 +31,15 @@ contract IRToken is IERC20 {
 
     /**
      * @notice Sender supplies assets into the market and receives rTokens in exchange
-     *         Also setting the a new hat for the fresh account.
+     *         Also setting the a selected hat for the account.
+     * @param hatID The id of the selected Hat
+     * @return uint 0=success, otherwise a failure
+     */
+    function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool);
+
+    /**
+     * @notice Sender supplies assets into the market and receives rTokens in exchange
+     *         Also setting the a new hat for the account.
      * @param mintAmount The amount of the underlying asset to supply
      * @param proportions Relative proportions of benefits received by the recipients
      * @return uint 0=success, otherwise a failure
@@ -80,6 +88,11 @@ contract IRToken is IERC20 {
     ////////////////////////////////////////////////////////////////////////////
     // Essential info views
     ////////////////////////////////////////////////////////////////////////////
+    /**
+     * @notice Get the maximum hatID in the system
+     */
+    function getMaximumHatID() external view returns (uint256 hatID);
+
     /**
      * @notice Get the hatID of the owner and the hat structure
      * @param owner Account owner address

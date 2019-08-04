@@ -27,6 +27,7 @@ contract("RToken contract", accounts => {
     let token;
     let cToken;
     let rToken;
+    let SELF_HAT_ID;
 
     before(async () => {
         console.log("admin is", admin);
@@ -55,14 +56,18 @@ contract("RToken contract", accounts => {
             cToken.address, {
                 from: admin
             });
+        SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
     function parseHat(hat) {
-        return {
-            hatID: hat.hatID.toNumber(),
+        const hatObj = {
             recipients: hat.recipients,
             proportions: hat.proportions.map(i=>i.toNumber())
         };
+        if (typeof(hat.hatID) !== "undefined") {
+            hatObj.hatID = hat.hatID.toNumber();
+        }
+        return hatObj;
     }
 
     async function doBingeBorrowing(nBlocks = 100) {
@@ -179,7 +184,7 @@ contract("RToken contract", accounts => {
         assert.isTrue((await token.balanceOf.call(customer1)).eq(tokenAmount1.add(toWad(10))));
     });
 
-    it("#2 rToken normal operations without hat", async () => {
+    it("#2 rToken normal operations with zero hatter", async () => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
@@ -199,6 +204,9 @@ contract("RToken contract", accounts => {
             receivedSavings: "100.00000",
             interestPayable: "0.00000",
         });
+
+        await expectRevert(rToken.transfer(customer2, toWad(100.1), { from: customer1 }), "Not enough balance to transfer");
+        await expectRevert(rToken.transferFrom(customer1, customer2, toWad(1), { from: admin }), "Not enough allowance for transfer");
 
         await doBingeBorrowing();
         await expectAccount(customer1, {
@@ -837,5 +845,58 @@ contract("RToken contract", accounts => {
             interestPayable: "0.0000",
             cumulativeInterest: "0.0014",
         }, 4);
+    });
+
+    it("#8 special hats", async () => {
+        assert.deepEqual(parseHat(await rToken.getHatByID.call(0)), {
+            recipients: [],
+            proportions: []
+        });
+        assert.deepEqual(parseHat(await rToken.getHatByID.call(SELF_HAT_ID)), {
+            recipients: [],
+            proportions: []
+        });
+    });
+
+    it("#9 rToken operations with self hatter", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await expectRevert(rToken.mintWithSelectedHat(toWad(1), 1), "Invalid hat ID");
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
+        await expectAccount(customer1, {
+            tokenBalance: "100.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00000",
+            interestPayable: "0.00000",
+        });
+
+        await web3tx(rToken.transfer, "rToken.transfer all from customer1 to customer2")(
+            customer2, toWad(20), {
+                from: customer1
+            });
+        await expectAccount(customer1, {
+            tokenBalance: "80.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "80.00000",
+            receivedSavings: "80.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "20.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "20.00000",
+            receivedSavings: "20.00000",
+            interestPayable: "0.00000",
+        });
     });
 });
