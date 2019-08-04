@@ -20,20 +20,21 @@ contract("RToken contract", accounts => {
     //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     const admin = accounts[0];
-    const customer1 = accounts[1];
-    const customer2 = accounts[2];
-    const customer3 = accounts[3];
-    const bingeBorrower = accounts[4];
+    const bingeBorrower = accounts[1];
+    const customer1 = accounts[2];
+    const customer2 = accounts[3];
+    const customer3 = accounts[4];
+    const customer4 = accounts[5];
     let token;
     let cToken;
     let rToken;
 
     before(async () => {
         console.log("admin is", admin);
+        console.log("bingeBorrower is", bingeBorrower);
         console.log("customer1 is", customer1);
         console.log("customer2 is", customer2);
         console.log("customer3 is", customer3);
-        console.log("bingeBorrower is", bingeBorrower);
     });
 
     beforeEach(async () => {
@@ -96,6 +97,7 @@ contract("RToken contract", accounts => {
         else if (account === customer1) accountName = "customer1";
         else if (account === customer2) accountName = "customer2";
         else if (account === customer3) accountName = "customer3";
+        else if (account === customer4) accountName = "customer4";
 
         const tokenBalance = wad4human(await rToken.balanceOf.call(account), decimals);
         console.log(`${accountName} tokenBalance ${tokenBalance} expected ${balances.tokenBalance}`);
@@ -118,18 +120,21 @@ contract("RToken contract", accounts => {
         assert.equal(interestPayable, balances.interestPayable);
     }
 
-    it("#1 cToken basic operations", async () => {
-        const supplyAmount = toWad(100);
+    it("#0 initial test condition", async () => {
+        assert.equal(wad4human(await rToken.totalSupply.call()), "0.00000");
         assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "0.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "1000.00000");
+    });
 
-        await web3tx(token.approve, "token.approve 100 by customer1")(cToken.address, supplyAmount, {
+    it("#1 cToken basic operations", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(cToken.address, toWad(100), {
             from: customer1
         });
         await web3tx(cToken.mint, "cToken.mint 100 to customer1", {
             inLogs: [{
                 name: "Mint"
             }]
-        })(supplyAmount, {
+        })(toWad(100), {
             from: customer1
         });
         assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "1000.00000");
@@ -174,9 +179,6 @@ contract("RToken contract", accounts => {
     });
 
     it("#2 rToken normal operations without hat", async () => {
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "1000.00000");
-        assert.equal(wad4human(await rToken.totalSupply.call()), "0.00000");
-
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
@@ -252,9 +254,6 @@ contract("RToken contract", accounts => {
     });
 
     it("#3 rToken normal operations with hat", async () => {
-        assert.equal(wad4human(await rToken.totalSupply.call()), "0.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "1000.00000");
-
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
@@ -517,7 +516,7 @@ contract("RToken contract", accounts => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(200), {
             from: customer1
         });
-        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting customer1(10%) and customer2(90%)", {
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 200 to customer1 with a hat benefiting customer1(10%) and customer2(90%)", {
             inLogs: [{
                 name: "Mint"
             }]
@@ -597,5 +596,148 @@ contract("RToken contract", accounts => {
         });
         assert.isTrue((await token.balanceOf.call(customer2)).eq(customer2RBalance));
         assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
+    });
+
+    it("#6 transfer and switch hats", async () => {
+        await web3tx(rToken.createHat, "rToken.createHat for customer1 benefiting admin and customer3 10/90")(
+            [admin, customer3], [10, 90], true, {
+                from: customer1
+            }
+        );
+        assert.deepEqual(parseHat(await rToken.getHatByAddress.call(customer1)), {
+            hatID: 1,
+            recipients: [admin, customer3],
+            proportions: [429496729, 3865470565]
+        });
+        await web3tx(rToken.createHat, "rToken.createHat for customer2 benefiting admin and customer4 20/80")(
+            [admin, customer4], [20, 80], true, {
+                from: customer2
+            }
+        );
+        assert.deepEqual(parseHat(await rToken.getHatByAddress.call(customer2)), {
+            hatID: 2,
+            recipients: [admin, customer4],
+            proportions: [858993459, 3435973836]
+        });
+
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(200), {
+            from: customer1
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1")(
+            toWad(200), {
+                from: customer1
+            });
+        await expectAccountBalances(admin, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "20.00000",
+            receivedSavings: "20.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer1, {
+            tokenBalance: "200.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer2, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer3, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "180.00000",
+            receivedSavings: "180.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer4, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+
+        await web3tx(rToken.transfer, "rToken.transfer 100 from customer1 to customer 2")(
+            customer2, toWad(100), {
+                from: customer1
+            });
+        await expectAccountBalances(admin, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "30.00000",
+            receivedSavings: "30.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer1, {
+            tokenBalance: "100.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer2, {
+            tokenBalance: "100.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer3, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer4, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "80.00000",
+            receivedSavings: "80.00000",
+            interestPayable: "0.00000",
+        });
+
+        await doBingeBorrowing();
+        await expectAccountBalances(admin, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "30.00000",
+            receivedSavings: "30.00015",
+            interestPayable: "0.00015",
+        });
+        await expectAccountBalances(customer1, {
+            tokenBalance: "100.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer2, {
+            tokenBalance: "100.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccountBalances(customer3, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00045",
+            interestPayable: "0.00045",
+        });
+        await expectAccountBalances(customer4, {
+            tokenBalance: "0.00000",
+            freeTokenBalance: "0.00000",
+            receivedLoan: "80.00000",
+            receivedSavings: "80.00040",
+            interestPayable: "0.00040",
+        });
     });
 });
