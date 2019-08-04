@@ -58,9 +58,8 @@ the generated interest.
 ### 3. Mint
 
 The user first needs to approve the _rDAI_ contract to use its _DAI_ tokens,
-then
-the user can mint as much _rDAI_ as they have _DAI_. One _rDAI_ is always equal
-to one _DAI_.
+then the user can mint as much _rDAI_ as they have _DAI_. One _rDAI_ is always
+equal to one _DAI_.
 
 As a result, the _DAI_ tokens transferred in order to mint new _rDAI_ tokens are
 invested automatically into the _Saving Strategy_, and the recipients indicated
@@ -93,10 +92,9 @@ to new _rDAI_ tokens for the recipient. This mechanism allows contract addresses
 to also be recipients, despite not having implemented functions to call the
 _payInterest_ function externally.
 
-Unlike the mint processes, _rDAI_ generated in this process does not loan equal
-amount of _DAI_ tokens to any recipient. The owner may choose to loan them by
-using _loanInterest_, or transfer the _rDAI_ to another address and trigger the
-hat switching process.
+Like minting process, equivalent amount of saving assets in value as the newly
+created _rDAI_ are also loaned to the recipients indicated in the user's chosen
+hat.
 
 Interest payment rules may apply as per configuration (see _Governance
 section_).
@@ -135,10 +133,10 @@ the ownership by indisputable ownership of the private key, so even _admin_ is
 not allowed to change that for them.
 
 In order to avoid needing to use the admin, we advise buidlers who are looking
-to accept rDAI to set up their contracts correctly by:
-1. getting some rDAI for themselves
+to accept _rDAI_ to set up their contracts correctly by:
+1. getting some _rDAI_ for themselves
 2. selecting or creating a hat of their choosing
-3. transferring any amount of rDAI to their contracts
+3. transferring any amount of _rDAI_ to their contracts
 
 ### 8. Governance
 

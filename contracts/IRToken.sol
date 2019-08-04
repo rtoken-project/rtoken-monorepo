@@ -9,13 +9,15 @@ import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  */
 contract IRToken is IERC20 {
 
+    ////////////////////////////////////////////////////////////////////////////
+    // For external transactions
+    ////////////////////////////////////////////////////////////////////////////
     /**
      * @notice Sender supplies assets into the market and receives rTokens in exchange
      * @param mintAmount The amount of the underlying asset to supply
      * @return uint 0=success, otherwise a failure
      */
     function mint(uint256 mintAmount) external returns (bool);
-
 
     /**
      * @notice Sender supplies assets into the market and receives rTokens in exchange
@@ -28,14 +30,12 @@ contract IRToken is IERC20 {
         address[] calldata recipients,
         uint32[] calldata proportions) external returns (bool);
 
-
     /**
      * @notice Sender redeems rTokens in exchange for the underlying asset
      * @param redeemTokens The number of rTokens to redeem into underlying
      * @return uint 0=success, otherwise a failure
      */
     function redeem(uint256 redeemTokens) external returns (bool);
-
 
     /**
      * @notice Create a new Hat
@@ -55,6 +55,22 @@ contract IRToken is IERC20 {
     function changeHat(uint256 hatID) external;
 
     /**
+     * @notice pay interest to the owner
+     * @param owner Account owner address
+     *
+     * Anyone can trigger the interest distribution on behalf of the recipient,
+     * due to the fact that the recipient can be a contract code that has not
+     * implemented the interaction with the rToken contract internally`.
+     *
+     * A interest lock-up period may apply, in order to mitigate the "hat
+     * inheritance scam".
+     */
+    function payInterest(address owner) external returns (bool);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Essential info views
+    ////////////////////////////////////////////////////////////////////////////
+    /**
      * @notice Get the hatID of the owner and the hat structure
      * @param owner Account owner address
      * @return hatID Hat ID
@@ -67,7 +83,6 @@ contract IRToken is IERC20 {
             address[] memory recipients,
             uint32[] memory proportions);
 
-
     /**
      * @notice Get the hat structure
      * @param hatID Hat ID
@@ -78,12 +93,6 @@ contract IRToken is IERC20 {
         returns (
             address[] memory recipients,
             uint32[] memory proportions);
-
-    /**
-     * @notice Amount of free balance of the owner
-     * @param owner Account owner address
-     */
-    function freeBalanceOf(address owner) external view returns (uint256 amount);
 
     /**
      * @notice Amount of saving assets given to the recipient along with the
@@ -106,20 +115,18 @@ contract IRToken is IERC20 {
      */
     function interestPayableOf(address owner) external view returns (uint256 amount);
 
-
+    ////////////////////////////////////////////////////////////////////////////
+    // statistics views
+    ////////////////////////////////////////////////////////////////////////////
     /**
-     * @notice pay interest to the owner
-     * @param owner Account owner address
-     *
-     * Anyone can trigger the interest distribution on behalf of the recipient,
-     * due to the fact that the recipient can be a contract code that has not
-     * implemented the interaction with the rToken contract internally`.
-     *
-     * A interest lock-up period may apply, in order to mitigate the "hat
-     * inheritance scam".
-     */
-    function payInterest(address owner) external returns (bool);
+    * @notice Amount of interest paid cumulatively for the owner.
+    * @param owner Account owner address
+    */
+    function cumulativeInterestOf(address owner) external view returns (uint256 amount);
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Events
+    ////////////////////////////////////////////////////////////////////////////
     /**
      * @notice Event emitted when tokens are minted
      */

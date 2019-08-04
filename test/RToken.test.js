@@ -91,7 +91,7 @@ contract("RToken contract", accounts => {
         await web3tx(cToken.accrueInterest, "cToken.accrueInterest")({ from: admin });
     }
 
-    async function expectAccountBalances(account, balances, decimals) {
+    async function expectAccount(account, balances, decimals) {
         let accountName;
         if (account === admin) accountName = "admin";
         else if (account === customer1) accountName = "customer1";
@@ -102,10 +102,6 @@ contract("RToken contract", accounts => {
         const tokenBalance = wad4human(await rToken.balanceOf.call(account), decimals);
         console.log(`${accountName} tokenBalance ${tokenBalance} expected ${balances.tokenBalance}`);
         assert.equal(tokenBalance, balances.tokenBalance);
-
-        const freeTokenBalance = wad4human(await rToken.freeBalanceOf.call(account), decimals);
-        console.log(`${accountName} freeTokenBalance ${freeTokenBalance} expected ${balances.freeTokenBalance}`);
-        assert.equal(freeTokenBalance, balances.freeTokenBalance);
 
         const receivedLoan = wad4human(await rToken.receivedLoanOf.call(account), decimals);
         console.log(`${accountName} receivedLoan ${receivedLoan} expected ${balances.receivedLoan}`);
@@ -118,6 +114,10 @@ contract("RToken contract", accounts => {
         const interestPayable = wad4human(await rToken.interestPayableOf.call(account), decimals);
         console.log(`${accountName} interestPayable ${interestPayable} expected ${balances.interestPayable}`);
         assert.equal(interestPayable, balances.interestPayable);
+
+        const cumulativeInterest = wad4human(await rToken.cumulativeInterestOf.call(account), decimals);
+        console.log(`${accountName} cumulativeInterest ${cumulativeInterest} expected ${balances.cumulativeInterest}`);
+        assert.equal(cumulativeInterest, balances.cumulativeInterest);
     }
 
     it("#0 initial test condition", async () => {
@@ -191,18 +191,18 @@ contract("RToken contract", accounts => {
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
         assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "100.00000",
             receivedSavings: "100.00000",
             interestPayable: "0.00000",
         });
 
         await doBingeBorrowing();
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "100.00000",
             receivedSavings: "100.00100",
             interestPayable: "0.00100",
@@ -217,9 +217,9 @@ contract("RToken contract", accounts => {
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
         assert.equal(wad4human(await rToken.totalSupply.call()), "90.00000");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "90.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "90.00000",
             receivedSavings: "90.00101",
             interestPayable: "0.00101",
@@ -232,9 +232,9 @@ contract("RToken contract", accounts => {
         })(customer1, { from : admin });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
         assert.equal(wad4human(await rToken.totalSupply.call()), "90.00102");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "90.00102",
-            freeTokenBalance: "0.00102",
+            cumulativeInterest: "0.00102",
             receivedLoan: "90.00000",
             receivedSavings: "90.00102",
             interestPayable: "0.00000",
@@ -244,9 +244,9 @@ contract("RToken contract", accounts => {
                 name: "InterestPaid"
             }]
         })(customer1, { from : admin });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "90.00103",
-            freeTokenBalance: "0.00103",
+            cumulativeInterest: "0.00103",
             receivedLoan: "90.00000",
             receivedSavings: "90.00103",
             interestPayable: "0.00000",
@@ -281,23 +281,23 @@ contract("RToken contract", accounts => {
             recipients: [admin, customer2],
             proportions: [3865470565, 429496729]
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "90.00000",
             receivedSavings: "90.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "10.00000",
             receivedSavings: "10.00000",
             interestPayable: "0.00000",
@@ -305,23 +305,23 @@ contract("RToken contract", accounts => {
 
         await doBingeBorrowing();
         assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "90.00000",
             receivedSavings: "90.00090",
             interestPayable: "0.00090",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "10.00000",
             receivedSavings: "10.00010",
             interestPayable: "0.00010",
@@ -336,23 +336,23 @@ contract("RToken contract", accounts => {
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
         assert.equal(wad4human(await rToken.totalSupply.call()), "90.00000");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "90.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "81.00000",
             receivedSavings: "81.00091",
             interestPayable: "0.00091",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "9.00000",
             receivedSavings: "9.00010",
             interestPayable: "0.00010",
@@ -371,30 +371,30 @@ contract("RToken contract", accounts => {
             recipients: [admin, customer2],
             proportions: [3865470565, 429496729]
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "80.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "81.00000",
             receivedSavings: "81.00092",
             interestPayable: "0.00092",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "9.00000",
             receivedSavings: "9.00010",
             interestPayable: "0.00010",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "10.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
@@ -407,30 +407,30 @@ contract("RToken contract", accounts => {
             }]
         })(admin, { from : admin });
         assert.equal(wad4human(await rToken.totalSupply.call()), "90.00093");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "80.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00093",
-            freeTokenBalance: "0.00093",
+            cumulativeInterest: "0.00093",
             receivedLoan: "81.00000",
             receivedSavings: "81.00093",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "9.00000",
             receivedSavings: "9.00010",
             interestPayable: "0.00010",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "10.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
@@ -438,30 +438,30 @@ contract("RToken contract", accounts => {
 
         await waitForInterest();
         assert.equal(wad4human(await rToken.totalSupply.call()), "90.00093");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "80.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00093",
-            freeTokenBalance: "0.00093",
+            cumulativeInterest: "0.00093",
             receivedLoan: "81.00000",
             receivedSavings: "81.00183",
             interestPayable: "0.00090",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "9.00000",
             receivedSavings: "9.00020",
             interestPayable: "0.00020",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "10.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
@@ -479,9 +479,9 @@ contract("RToken contract", accounts => {
         })(toWad(10), {
             from: customer1
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "10.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "10.00000",
             receivedSavings: "10.00000",
             interestPayable: "0.00000",
@@ -494,18 +494,18 @@ contract("RToken contract", accounts => {
         })(toWad(5), {
             from: customer1
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "15.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "15.00000",
             receivedSavings: "15.00000",
             interestPayable: "0.00000",
         });
 
         await doBingeBorrowing();
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "15.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "15.00000",
             receivedSavings: "15.01000",
             interestPayable: "0.01000",
@@ -532,32 +532,32 @@ contract("RToken contract", accounts => {
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
         assert.equal(wad4human(await rToken.totalSupply.call()), "200.00000");
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "20.00000",
             receivedSavings: "20.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "180.00000",
             receivedSavings: "180.00000",
             interestPayable: "0.00000",
         });
 
         await doBingeBorrowing();
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "20.00000",
             receivedSavings: "20.00010",
             interestPayable: "0.00010",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "180.00000",
             receivedSavings: "180.00090",
             interestPayable: "0.00090",
@@ -568,16 +568,16 @@ contract("RToken contract", accounts => {
                 name: "InterestPaid"
             }]
         })(customer2, { from : admin });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "20.00000",
             receivedSavings: "20.00010",
             interestPayable: "0.00010",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "100.00091",
-            freeTokenBalance: "0.00091",
+            cumulativeInterest: "0.00091",
             receivedLoan: "180.00000",
             receivedSavings: "180.00091",
             interestPayable: "0.00000",
@@ -627,37 +627,37 @@ contract("RToken contract", accounts => {
             toWad(200), {
                 from: customer1
             });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "20.00000",
             receivedSavings: "20.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "200.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "180.00000",
             receivedSavings: "180.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer4, {
+        await expectAccount(customer4, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
@@ -667,77 +667,174 @@ contract("RToken contract", accounts => {
             customer2, toWad(100), {
                 from: customer1
             });
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "30.00000",
             receivedSavings: "30.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "90.00000",
             receivedSavings: "90.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer4, {
+        await expectAccount(customer4, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "80.00000",
             receivedSavings: "80.00000",
             interestPayable: "0.00000",
         });
 
         await doBingeBorrowing();
-        await expectAccountBalances(admin, {
+        await expectAccount(admin, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "30.00000",
             receivedSavings: "30.00015",
             interestPayable: "0.00015",
         });
-        await expectAccountBalances(customer1, {
+        await expectAccount(customer1, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer2, {
+        await expectAccount(customer2, {
             tokenBalance: "100.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
         });
-        await expectAccountBalances(customer3, {
+        await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "90.00000",
             receivedSavings: "90.00045",
             interestPayable: "0.00045",
         });
-        await expectAccountBalances(customer4, {
+        await expectAccount(customer4, {
             tokenBalance: "0.00000",
-            freeTokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
             receivedLoan: "80.00000",
             receivedSavings: "80.00040",
             interestPayable: "0.00040",
         });
+    });
+
+    it("#7 rToken redeem all including paid interest for zero hatter", async () => {
+        // let customer2 provide some reserve
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer2, toWad(100), {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer2")(rToken.address, toWad(100), {
+            from: customer2
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer2")(toWad(100), {
+            from: customer2
+        });
+
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1")(toWad(100), {
+            from: customer1
+        });
+
+        await doBingeBorrowing();
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1")(
+            customer1, { from : admin });
+        await expectAccount(customer1, {
+            tokenBalance: "100.00051",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00051",
+            interestPayable: "0.00000",
+            cumulativeInterest: "0.00051",
+        });
+
+        const customer1RBalance1 = await rToken.balanceOf.call(customer1);
+        await web3tx(rToken.redeem, "rToken.redeem all to customer1")(customer1RBalance1, {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00051");
+        await expectAccount(customer1, {
+            tokenBalance: "0.0000",
+            receivedLoan: "0.0000",
+            receivedSavings: "0.0000",
+            interestPayable: "0.0000",
+            cumulativeInterest: "0.0005",
+        }, 4);
+
+        // mint again
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1")(toWad(100), {
+            from: customer1
+        });
+
+        await waitForInterest();
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1")(
+            customer1, { from : admin });
+        await expectAccount(customer1, {
+            tokenBalance: "100.00051",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00051",
+            interestPayable: "0.00000",
+            cumulativeInterest: "0.00102",
+        });
+
+        const customer1RBalance2 = await rToken.balanceOf.call(customer1);
+        await web3tx(rToken.transfer, "rToken.transfer all from customer1 to customer2")(
+            customer2, customer1RBalance2, {
+                from: customer1
+            });
+        await expectAccount(customer1, {
+            tokenBalance: "0.0000",
+            receivedLoan: "0.0000",
+            receivedSavings: "0.0000",
+            interestPayable: "0.0000",
+            cumulativeInterest: "0.0010",
+        }, 4);
+
+        // mint yet again
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1")(toWad(100), {
+            from: customer1
+        });
+
+        await waitForInterest();
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1")(
+            customer1, { from : admin });
+        await expectAccount(customer1, {
+            tokenBalance: "100.0003",
+            receivedLoan: "100.0000",
+            receivedSavings: "100.0003",
+            interestPayable: "0.0000",
+            cumulativeInterest: "0.0014",
+        }, 4);
     });
 });

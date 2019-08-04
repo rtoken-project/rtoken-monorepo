@@ -208,14 +208,6 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
-     * @dev freeBalanceOf implementation
-     */
-    function freeBalanceOf(address owner) external view returns (uint256 amount) {
-        Account storage account = accounts[owner];
-        return account.rFree;
-    }
-
-    /**
      * @dev receivedSavingsOf implementation
      */
     function receivedSavingsOf(address owner) external view returns (uint256 amount) {
@@ -252,11 +244,20 @@ contract RToken is IRToken, ReentrancyGuard {
         uint256 interestAmount = getInterestPayableOf(account);
 
         if (interestAmount > 0) {
-            account.rFree = account.rFree.add(interestAmount);
+            account.cumulativeInterest = account.cumulativeInterest.add(interestAmount);
+            account.rInterest = account.rInterest.add(interestAmount);
             account.rAmount = account.rAmount.add(interestAmount);
             totalSupply = totalSupply.add(interestAmount);
             emit InterestPaid(owner, interestAmount);
         }
+    }
+
+    /**
+     * @dev freeBalanceOf implementation
+     */
+    function cumulativeInterestOf(address owner) external view returns (uint256 amount) {
+        Account storage account = accounts[owner];
+        return account.cumulativeInterest;
     }
 
     //
@@ -282,18 +283,27 @@ contract RToken is IRToken, ReentrancyGuard {
      * @dev Account structure
      */
     struct Account {
+        //
+        // Essential info
+        //
         /// @dev ID of the hat selected for the account
         uint256 hatID;
         /// @dev Redeemable token balance for the account
         uint256 rAmount;
-        /// @dev Redeemable token balance that is not loaned (free) to any recipient
-        uint256 rFree;
+        /// @dev Redeemable token balance portion that is from interest payment
+        uint256 rInterest;
         /// @dev Loan recipients and their amount of debt
         mapping (address => uint256) lRecipients;
         /// @dev Loan debt amount for the account
         uint256 lDebt;
         /// @dev Saving asset amount
         uint256 cAmount;
+
+        //
+        // statistics
+        //
+        /// @dev Cumulative interests paid
+        uint256 cumulativeInterest;
     }
 
     /**
@@ -346,6 +356,11 @@ contract RToken is IRToken, ReentrancyGuard {
         // lRecipients adjustments
         uint256 cAmountCollected = estimateAndRecollectLoans(src, tokens);
         distributeLoans(dst, tokens, cAmountCollected);
+
+        // rInterest adjustment for src
+        if (accounts[src].rInterest > accounts[src].rAmount) {
+            accounts[src].rInterest = accounts[src].rAmount;
+        }
 
         /* We emit a Transfer event */
         emit Transfer(src, dst, tokens);
@@ -401,6 +416,9 @@ contract RToken is IRToken, ReentrancyGuard {
 
         // update Account r balances and global statistics
         account.rAmount = account.rAmount.sub(redeemTokens);
+        if (account.rInterest > account.rAmount) {
+            account.rInterest = account.rAmount;
+        }
         totalSupply = totalSupply.sub(redeemTokens);
 
         // transfer the token back
@@ -466,8 +484,8 @@ contract RToken is IRToken, ReentrancyGuard {
         uint256 rGross = account.cAmount
             .mul(cToken.exchangeRateStored())
             .div(10 ** 18);
-        if (rGross > (account.lDebt + account.rFree)) {
-            return rGross - account.lDebt - account.rFree;
+        if (rGross > (account.lDebt + account.rInterest)) {
+            return rGross - account.lDebt - account.rInterest;
         } else {
             // no interest accumulated yet or even negative interest rate!?
             return 0;
@@ -643,9 +661,13 @@ contract RToken is IRToken, ReentrancyGuard {
             }
         } else {
             // Account uses the zero hat, recollect interests from the owner
-            account.lDebt = account.lDebt.sub(rAmount);
-            if (account.cAmount >= cAmount) {
-                account.cAmount = account.cAmount - cAmount;
+            if (account.lDebt > rAmount) {
+                account.lDebt -= rAmount;
+            } else {
+                account.lDebt = 0;
+            }
+            if (account.cAmount > cAmount) {
+                account.cAmount -= cAmount;
             } else {
                 account.cAmount = 0;
             }
