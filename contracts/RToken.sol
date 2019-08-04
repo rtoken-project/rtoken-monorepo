@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.6.0;
+pragma experimental ABIEncoderV2;
 
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
@@ -244,7 +245,7 @@ contract RToken is IRToken, ReentrancyGuard {
         uint256 interestAmount = getInterestPayableOf(account);
 
         if (interestAmount > 0) {
-            account.cumulativeInterest = account.cumulativeInterest.add(interestAmount);
+            account.stats.cumulativeInterest = account.stats.cumulativeInterest.add(interestAmount);
             account.rInterest = account.rInterest.add(interestAmount);
             account.rAmount = account.rAmount.add(interestAmount);
             totalSupply = totalSupply.add(interestAmount);
@@ -253,11 +254,11 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
-     * @dev freeBalanceOf implementation
+     * @dev getAccountStats implementation
      */
-    function cumulativeInterestOf(address owner) external view returns (uint256 amount) {
+    function getAccountStats(address owner) external view returns (AccountStats memory) {
         Account storage account = accounts[owner];
-        return account.cumulativeInterest;
+        return account.stats;
     }
 
     //
@@ -299,11 +300,8 @@ contract RToken is IRToken, ReentrancyGuard {
         /// @dev Saving asset amount
         uint256 cAmount;
 
-        //
-        // statistics
-        //
-        /// @dev Cumulative interests paid
-        uint256 cumulativeInterest;
+        /// @dev Stats
+        AccountStats stats;
     }
 
     /**

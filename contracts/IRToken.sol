@@ -1,4 +1,5 @@
 pragma solidity >=0.4.21 <0.6.0;
+pragma experimental ABIEncoderV2;
 
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 
@@ -8,6 +9,15 @@ import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  *      addresses and pay earned interest in new _rTokens_.
  */
 contract IRToken is IERC20 {
+
+    /**
+     * @notice Stats for accounts
+     */
+    struct AccountStats {
+        /// @notice Cumulative interests paid
+        uint256 cumulativeInterest;
+    }
+
 
     ////////////////////////////////////////////////////////////////////////////
     // For external transactions
@@ -119,10 +129,10 @@ contract IRToken is IERC20 {
     // statistics views
     ////////////////////////////////////////////////////////////////////////////
     /**
-    * @notice Amount of interest paid cumulatively for the owner.
+    * @notice Get account stats
     * @param owner Account owner address
     */
-    function cumulativeInterestOf(address owner) external view returns (uint256 amount);
+    function getAccountStats(address owner) external view returns (AccountStats memory);
 
     ////////////////////////////////////////////////////////////////////////////
     // Events

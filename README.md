@@ -92,9 +92,10 @@ to new _rDAI_ tokens for the recipient. This mechanism allows contract addresses
 to also be recipients, despite not having implemented functions to call the
 _payInterest_ function externally.
 
-Like minting process, equivalent amount of saving assets in value as the newly
-created _rDAI_ are also loaned to the recipients indicated in the user's chosen
-hat.
+Unlike the mint processes, _rDAI_ generated in this process does not loan equal
+amount of _DAI_ tokens to any recipient. The owner may choose to loan them by
+using _loanInterest_, or transfer the _rDAI_ to another address and trigger the
+hat switching process.
 
 Interest payment rules may apply as per configuration (see _Governance
 section_).

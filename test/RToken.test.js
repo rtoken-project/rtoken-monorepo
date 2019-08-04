@@ -7,7 +7,6 @@ const RToken = artifacts.require("RToken");
 const { web3tx } = require("@decentral.ee/web3-test-helpers");
 const { toDecimals, fromDecimals } = require("../lib/math-utils");
 
-
 function wad4human(wad, decimals = 5) {
     return Number(fromDecimals(wad.toString(), 18)).toFixed(decimals);
 }
@@ -115,7 +114,9 @@ contract("RToken contract", accounts => {
         console.log(`${accountName} interestPayable ${interestPayable} expected ${balances.interestPayable}`);
         assert.equal(interestPayable, balances.interestPayable);
 
-        const cumulativeInterest = wad4human(await rToken.cumulativeInterestOf.call(account), decimals);
+        const accountStats = await rToken.getAccountStats.call(account);
+
+        const cumulativeInterest = wad4human(accountStats.cumulativeInterest, decimals);
         console.log(`${accountName} cumulativeInterest ${cumulativeInterest} expected ${balances.cumulativeInterest}`);
         assert.equal(cumulativeInterest, balances.cumulativeInterest);
     }
