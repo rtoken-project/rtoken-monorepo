@@ -1,7 +1,7 @@
 {
-    "name": "@decentral.ee/rdai-contracts",
+    "name": "@decentral.ee/rtoken-contracts",
     "version": "0.0.1",
-    "description": "rDai Ethereum contracts",
+    "description": "RToken Ethereum contracts",
     "license": "MIT",
     "dependencies": {
         "openzeppelin-solidity": "2.3.0",
