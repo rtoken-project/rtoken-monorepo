@@ -59,15 +59,22 @@ contract("RToken contract", accounts => {
         SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
-    function parseHat(hat) {
+    function parseHat({hatID, recipients, proportions}) {
         const hatObj = {
-            recipients: hat.recipients,
-            proportions: hat.proportions.map(i=>i.toNumber())
+            recipients: recipients,
+            proportions: proportions.map(i=>i.toNumber())
         };
-        if (typeof(hat.hatID) !== "undefined") {
-            hatObj.hatID = hat.hatID.toNumber();
+        if (typeof(hatID) !== "undefined") {
+            hatObj.hatID = hatID.toNumber();
         }
         return hatObj;
+    }
+
+    function parseGlobalStats({totalSupply, totalSavingsAmount}) {
+        return {
+            totalSupply: wad4human(totalSupply),
+            totalSavingsAmount: wad4human(totalSavingsAmount)
+        };
     }
 
     async function doBingeBorrowing(nBlocks = 100) {
@@ -184,7 +191,7 @@ contract("RToken contract", accounts => {
         assert.isTrue((await token.balanceOf.call(customer1)).eq(tokenAmount1.add(toWad(10))));
     });
 
-    it("#2 rToken normal operations with zero hatter", async () => {
+    it.only("#2 rToken normal operations with zero hatter", async () => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
@@ -215,6 +222,10 @@ contract("RToken contract", accounts => {
             receivedLoan: "100.00000",
             receivedSavings: "100.00100",
             interestPayable: "0.00100",
+        });
+        assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
+            totalSupply: "100.00000",
+            totalSavingsAmount: "100.00100"
         });
 
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
@@ -259,6 +270,10 @@ contract("RToken contract", accounts => {
             receivedLoan: "90.00000",
             receivedSavings: "90.00103",
             interestPayable: "0.00000",
+        });
+        assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
+            totalSupply: "90.00103",
+            totalSavingsAmount: "90.00103"
         });
     });
 

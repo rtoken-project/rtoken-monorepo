@@ -10,6 +10,17 @@ import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
  */
 contract IRToken is IERC20 {
 
+
+    /**
+     * @notice Global stats
+     */
+    struct GlobalStats {
+        /// @notice Total redeemable tokens supply
+        uint256 totalSupply;
+        /// @notice Total saving assets in redeemable amount
+        uint256 totalSavingsAmount;
+    }
+
     /**
      * @notice Stats for accounts
      */
@@ -128,6 +139,7 @@ contract IRToken is IERC20 {
      * @notice Amount of token loaned to the recipient along with the savings
      *         assets.
      * @param owner Account owner address
+     * @return amount
      */
     function receivedLoanOf(address owner) external view returns (uint256 amount);
 
@@ -135,6 +147,7 @@ contract IRToken is IERC20 {
      * @notice Get the current interest balance of the owner.
                It is equivalent of: receivedSavings - receivedLoan - freeBalance
      * @param owner Account owner address
+     * @return amount
      */
     function interestPayableOf(address owner) external view returns (uint256 amount);
 
@@ -142,10 +155,36 @@ contract IRToken is IERC20 {
     // statistics views
     ////////////////////////////////////////////////////////////////////////////
     /**
+     * @notice Get the current saving strategy contract
+     * @return Saving strategy address
+     */
+    function getCurrentSavingStrategy() external view returns (address);
+
+    /**
+    * @notice Get saving asset balance for specific saving strategy
+    * @param strategy The savign strategy
+    * @return rAmount Balance in redeemable amount
+    * @return sAmount Balance in native amount of the strategy
+    */
+    function getSavingAssetBalance(address strategy) external view returns (uint256 nAmount, uint256 sAmount);
+
+    /**
+    * @notice Get global stats
+    * @return global stats
+    */
+    function getGlobalStats() external view returns (GlobalStats memory);
+
+    /**
     * @notice Get account stats
     * @param owner Account owner address
+    * @return account stats
     */
     function getAccountStats(address owner) external view returns (AccountStats memory);
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // admin functions
+    ////////////////////////////////////////////////////////////////////////////
 
     ////////////////////////////////////////////////////////////////////////////
     // Events

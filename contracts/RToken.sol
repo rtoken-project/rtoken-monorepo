@@ -65,7 +65,7 @@ contract RToken is IRToken, ReentrancyGuard {
      uint256 public totalSupply;
 
     /**
-     * @dev Returns the amount of tokens owned by `account`.
+     * @notice Returns the amount of tokens owned by `account`.
      */
     function balanceOf(address owner) external view returns (uint256) {
         return accounts[owner].rAmount;
@@ -131,17 +131,13 @@ contract RToken is IRToken, ReentrancyGuard {
     // rToken interface
     //
 
-    /**
-     * @dev mint implementation
-     */
+    /// @dev mint implementation
     function mint(uint256 mintAmount) external nonReentrant returns (bool) {
         mintInternal(mintAmount);
         return true;
     }
 
-    /**
-     * @dev mintWithSelectedHat implementation
-     */
+    /// @dev mintWithSelectedHat implementation
     function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool) {
         require(hatID == SELF_HAT_ID || hatID < hats.length, "Invalid hat ID");
         changeHatInternal(msg.sender, hatID);
@@ -172,9 +168,7 @@ contract RToken is IRToken, ReentrancyGuard {
         return true;
     }
 
-    /**
-     * @dev createHat implementation
-     */
+     /// @dev createHat implementation
     function createHat(
         address[] calldata recipients,
         uint32[] calldata proportions,
@@ -185,24 +179,17 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /**
-     * @notice Change the hat for `msg.sender`
-     * @param hatID The id of the Hat
-     */
+    /// @dev changeHat implementation
     function changeHat(uint256 hatID) external nonReentrant {
         changeHatInternal(msg.sender, hatID);
     }
 
-    /**
-     * @dev getMaximumHatID implementation
-     */
+    /// @dev getMaximumHatID implementation
     function getMaximumHatID() external view returns (uint256 hatID) {
         return hats.length - 1;
     }
 
-    /**
-     * @dev getHatByAddress implementation
-     */
+    /// @dev getHatByAddress implementation
     function getHatByAddress(address owner) external view returns (
         uint256 hatID,
         address[] memory recipients,
@@ -218,9 +205,7 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev getHatByID implementation
-     */
+    /// @dev getHatByID implementation
     function getHatByID(uint256 hatID) external view returns (
         address[] memory recipients,
         uint32[] memory proportions) {
@@ -234,36 +219,28 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev receivedSavingsOf implementation
-     */
+    /// @dev receivedSavingsOf implementation
     function receivedSavingsOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
-        uint256 rGross = account.cAmount
+        uint256 rGross = account.sAmount
             .mul(cToken.exchangeRateStored())
             .div(10 ** 18);
         return rGross;
     }
 
-    /**
-     * @dev receivedLoanOf implementation
-     */
+    /// @dev receivedLoanOf implementation
     function receivedLoanOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
         return account.lDebt;
     }
 
-    /**
-     * @dev interestPayableOf implementation
-     */
+    /// @dev interestPayableOf implementation
     function interestPayableOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
         return getInterestPayableOf(account);
     }
 
-    /**
-     * @dev payInterest implementation
-     */
+    /// @dev payInterest implementation
     function payInterest(address owner) external nonReentrant returns (bool) {
         Account storage account = accounts[owner];
 
@@ -279,36 +256,58 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /**
-     * @dev getAccountStats implementation
-     */
+    /// @dev getAccountStats implementation!1
+    function getGlobalStats() external view returns (GlobalStats memory) {
+        uint256 totalSavingsAmount;
+        totalSavingsAmount += savingAssets[address(0)]
+            .mul(cToken.exchangeRateStored())
+            .div(10 ** 18);
+        return GlobalStats({
+            totalSupply: totalSupply,
+            totalSavingsAmount: totalSavingsAmount
+        });
+    }
+
+    /// @dev getAccountStats implementation
     function getAccountStats(address owner) external view returns (AccountStats memory) {
         Account storage account = accounts[owner];
         return account.stats;
+    }
+
+    /// @dev getCurrentSavingStrategy implementation
+    function getCurrentSavingStrategy() external view returns (address) {
+        return ss;
+    }
+
+    /// @dev getSavingAssetBalance implementation
+    function getSavingAssetBalance(address strategy) external view
+        returns (uint256 nAmount, uint256 sAmount) {
+        sAmount = savingAssets[strategy];
+        nAmount = sAmount
+            .mul(cToken.exchangeRateStored())
+            .div(10 ** 18);
     }
 
     //
     // internal
     //
 
-    /**
-     * @dev Compound token associated with the rToken
-     */
+    /// @dev Current saving strategy contract
+    address ss = address(0);
+
+    /// @dev Compound token associated with the rToken
     CErc20Interface cToken;
 
-    /**
-     * @dev Approved token transfer amounts on behalf of others
-     */
+    /// @dev Saving assets indexed by saving strategies
+    mapping(address => uint256) savingAssets;
+
+    /// @dev Approved token transfer amounts on behalf of others
     mapping(address => mapping(address => uint256)) transferAllowances;
 
-    /**
-     * @dev Hat list
-     */
+    /// @dev Hat list
     Hat[] hats;
 
-    /**
-     * @dev Account structure
-     */
+    /// @dev Account structure
     struct Account {
         //
         // Essential info
@@ -324,15 +323,13 @@ contract RToken is IRToken, ReentrancyGuard {
         /// @dev Loan debt amount for the account
         uint256 lDebt;
         /// @dev Saving asset amount
-        uint256 cAmount;
+        uint256 sAmount;
 
         /// @dev Stats
         AccountStats stats;
     }
 
-    /**
-     * @dev Account mapping
-     */
+    /// @dev Account mapping
     mapping (address => Account) accounts;
 
     /**
@@ -380,8 +377,8 @@ contract RToken is IRToken, ReentrancyGuard {
         }
 
         // lRecipients adjustments
-        uint256 cAmountCollected = estimateAndRecollectLoans(src, tokens);
-        distributeLoans(dst, tokens, cAmountCollected);
+        uint256 sAmountCollected = estimateAndRecollectLoans(src, tokens);
+        distributeLoans(dst, tokens, sAmountCollected);
 
         // rInterest adjustment for src
         if (accounts[src].rInterest > accounts[src].rAmount) {
@@ -416,11 +413,14 @@ contract RToken is IRToken, ReentrancyGuard {
             cMintedAmount = cTotalAfter - cTotalBefore;
         } // else can there be case that we mint but we get less cTokens!?
 
-        // update Account r balances
-        account.rAmount = account.rAmount.add(mintAmount);
+        // update global and account r balances
         totalSupply = totalSupply.add(mintAmount);
+        account.rAmount = account.rAmount.add(mintAmount);
 
-        // update Account c balances
+        // update global stats
+        savingAssets[ss] += cMintedAmount;
+
+        // distribute saving assets as loans to recipients
         distributeLoans(msg.sender, mintAmount, cMintedAmount);
 
         emit Mint(msg.sender, mintAmount);
@@ -438,7 +438,7 @@ contract RToken is IRToken, ReentrancyGuard {
         require(redeemTokens > 0, "Redeem amount cannot be zero");
         require(redeemTokens <= account.rAmount, "Not enough balance to redeem");
 
-        /*uint256 cAmountCollected = */redeemAndRecollectLoans(msg.sender, redeemTokens);
+        uint256 sAmountCollected = redeemAndRecollectLoans(msg.sender, redeemTokens);
 
         // update Account r balances and global statistics
         account.rAmount = account.rAmount.sub(redeemTokens);
@@ -446,6 +446,9 @@ contract RToken is IRToken, ReentrancyGuard {
             account.rInterest = account.rAmount;
         }
         totalSupply = totalSupply.sub(redeemTokens);
+
+        // update global stats
+        savingAssets[ss] -= sAmountCollected;
 
         // transfer the token back
         token.transfer(msg.sender, redeemTokens);
@@ -494,9 +497,9 @@ contract RToken is IRToken, ReentrancyGuard {
     function changeHatInternal(address owner, uint256 hatID) internal {
         Account storage account = accounts[owner];
         if (account.rAmount > 0) {
-            uint256 cAmountCollected = estimateAndRecollectLoans(owner, account.rAmount);
+            uint256 sAmountCollected = estimateAndRecollectLoans(owner, account.rAmount);
             account.hatID = hatID;
-            distributeLoans(owner, account.rAmount, cAmountCollected);
+            distributeLoans(owner, account.rAmount, sAmountCollected);
         } else {
             account.hatID = hatID;
         }
@@ -507,7 +510,7 @@ contract RToken is IRToken, ReentrancyGuard {
      * @dev Get interest payable of the account
      */
     function getInterestPayableOf(Account storage account) internal view returns (uint256) {
-        uint256 rGross = account.cAmount
+        uint256 rGross = account.sAmount
             .mul(cToken.exchangeRateStored())
             .div(10 ** 18);
         if (rGross > (account.lDebt + account.rInterest)) {
@@ -521,23 +524,23 @@ contract RToken is IRToken, ReentrancyGuard {
     /**
      * @dev Distribute the incoming tokens to the recipients as loans.
      *      The tokens are immediately invested into the saving strategy and
-     *      add to the cAmount of the recipient account.
+     *      add to the sAmount of the recipient account.
      *      Recipient also inherits the owner's hat if it does already have one.
      * @param owner Owner account address
      * @param rAmount rToken amount being loaned to the recipients
-     * @param cAmount Amount of saving assets being given to the recipients
+     * @param sAmount Amount of saving assets being given to the recipients
      */
     function distributeLoans(
             address owner,
             uint256 rAmount,
-            uint256 cAmount) internal {
+            uint256 sAmount) internal {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         bool[] memory recipientsNeedsNewHat = new bool[](hat.recipients.length);
         uint i;
         if (hat.recipients.length > 0) {
             uint256 rLeft = rAmount;
-            uint256 cLeft = cAmount;
+            uint256 sLeft = sAmount;
             for (i = 0; i < hat.proportions.length; ++i) {
                 Account storage recipient = accounts[hat.recipients[i]];
                 bool isLastRecipient = i == (hat.proportions.length - 1);
@@ -560,14 +563,14 @@ contract RToken is IRToken, ReentrancyGuard {
                     rLeft = 0;
                 }
 
-                uint256 cAmountRecipient = isLastRecipient ? cLeft:
-                    cAmount
+                uint256 sAmountRecipient = isLastRecipient ? sLeft:
+                    sAmount
                     * hat.proportions[i]
                     / PROPORTION_BASE;
-                recipient.cAmount = recipient.cAmount.add(cAmountRecipient);
+                recipient.sAmount = recipient.sAmount.add(sAmountRecipient);
                 // leftover adjustments
-                if (cLeft >= cAmountRecipient) {
-                    cLeft -= cAmountRecipient;
+                if (sLeft >= sAmountRecipient) {
+                    sLeft -= sAmountRecipient;
                 } else {
                     rLeft = 0;
                 }
@@ -575,7 +578,7 @@ contract RToken is IRToken, ReentrancyGuard {
         } else {
             // Account uses the zero hat, give all interest to the owner
             account.lDebt = account.lDebt.add(rAmount);
-            account.cAmount = account.cAmount.add(cAmount);
+            account.sAmount = account.sAmount.add(sAmount);
         }
 
         // apply to new hat owners
@@ -634,17 +637,17 @@ contract RToken is IRToken, ReentrancyGuard {
      * @param account Owner account
      * @param hat     Owner's hat
      * @param rAmount rToken amount being written of from the recipients
-     * @param cAmount Amount of sasving assets recollected from the recipients
+     * @param sAmount Amount of sasving assets recollected from the recipients
      */
     function recollectLoans(
         Account storage account,
         Hat storage hat,
         uint256 rAmount,
-        uint256 cAmount) internal {
+        uint256 sAmount) internal {
         uint i;
         if (hat.recipients.length > 0) {
             uint256 rLeft = rAmount;
-            uint256 cLeft = cAmount;
+            uint256 sLeft = sAmount;
             for (i = 0; i < hat.proportions.length; ++i) {
                 Account storage recipient = accounts[hat.recipients[i]];
                 bool isLastRecipient = i == (hat.proportions.length - 1);
@@ -669,18 +672,18 @@ contract RToken is IRToken, ReentrancyGuard {
                     rLeft = 0;
                 }
 
-                uint256 cAmountRecipient = isLastRecipient ? cLeft:
-                    cAmount
+                uint256 sAmountRecipient = isLastRecipient ? sLeft:
+                    sAmount
                     * hat.proportions[i]
                     / PROPORTION_BASE;
-                if (recipient.cAmount > cAmountRecipient) {
-                    recipient.cAmount -= cAmountRecipient;
+                if (recipient.sAmount > sAmountRecipient) {
+                    recipient.sAmount -= sAmountRecipient;
                 } else {
-                    recipient.cAmount = 0;
+                    recipient.sAmount = 0;
                 }
                 // leftover adjustments
-                if (cLeft >= cAmountRecipient) {
-                    cLeft -= cAmountRecipient;
+                if (sLeft >= sAmountRecipient) {
+                    sLeft -= sAmountRecipient;
                 } else {
                     rLeft = 0;
                 }
@@ -692,10 +695,10 @@ contract RToken is IRToken, ReentrancyGuard {
             } else {
                 account.lDebt = 0;
             }
-            if (account.cAmount > cAmount) {
-                account.cAmount -= cAmount;
+            if (account.sAmount > sAmount) {
+                account.sAmount -= sAmount;
             } else {
-                account.cAmount = 0;
+                account.sAmount = 0;
             }
         }
     }
