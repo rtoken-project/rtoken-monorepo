@@ -5,14 +5,15 @@
     "license": "MIT",
     "dependencies": {
         "openzeppelin-solidity": "2.3.0",
-        "truffle-contract": "^4.0.26"
+        "truffle-contract": "^4.0.26",
+        "truffle-security": "^1.5.2"
     },
     "devDependencies": {
         "@decentral.ee/web3-test-helpers": "^0.1.0",
+        "dotenv": "^8.0.0",
         "openzeppelin-test-helpers": "^0.4.1",
         "truffle": "^5.0.29",
         "truffle-flattener": "^1.4.0",
-        "dotenv": "^8.0.0",
         "truffle-hdwallet-provider": "^1.0.15"
     },
     "scripts": {
