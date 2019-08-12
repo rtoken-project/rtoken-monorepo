@@ -198,6 +198,13 @@ contract("RToken contract", accounts => {
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [{
                 name: "Mint"
+            }, {
+                name: "Transfer",
+                args: {
+                    from: rToken.address,
+                    to: customer1,
+                    value: toWad(100)
+                }
             }]
         })(toWad(100), {
             from: customer1
@@ -231,6 +238,13 @@ contract("RToken contract", accounts => {
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
                 name: "Redeem"
+            }, {
+                name: "Transfer",
+                args: {
+                    from: customer1,
+                    to: rToken.address,
+                    value: toWad(10)
+                }
             }]
         })(toWad(10), {
             from: customer1
@@ -248,6 +262,13 @@ contract("RToken contract", accounts => {
         await web3tx(rToken.payInterest, "rToken.payInterest to customer1", {
             inLogs: [{
                 name: "InterestPaid"
+            }, {
+                name: "Transfer",
+                args: {
+                    from: rToken.address,
+                    to: customer1
+                    // value: // who knows
+                }
             }]
         })(customer1, { from : admin });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");

@@ -253,6 +253,7 @@ contract RToken is IRToken, ReentrancyGuard {
             account.rAmount = account.rAmount.add(interestAmount);
             totalSupply = totalSupply.add(interestAmount);
             emit InterestPaid(owner, interestAmount);
+            emit Transfer(address(this), owner, interestAmount);
         }
     }
 
@@ -424,6 +425,7 @@ contract RToken is IRToken, ReentrancyGuard {
         distributeLoans(msg.sender, mintAmount, cMintedAmount);
 
         emit Mint(msg.sender, mintAmount);
+        emit Transfer(address(this), msg.sender, mintAmount);
     }
 
     /**
@@ -453,6 +455,7 @@ contract RToken is IRToken, ReentrancyGuard {
         // transfer the token back
         token.transfer(msg.sender, redeemTokens);
 
+        emit Transfer(msg.sender, address(this), redeemTokens);
         emit Redeem(msg.sender, redeemTokens);
     }
 
