@@ -2,7 +2,7 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
-import {ISavingStrategy} from "./ISavingStrategy.sol";
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
 /**
  * @notice RToken interface a ERC20 interface and one can mint new tokens by
@@ -186,10 +186,10 @@ contract IRToken is IERC20 {
     // admin functions
     ////////////////////////////////////////////////////////////////////////////
     /**
-    * @notice Change saving strategy globally
-    * @param savingStrategy Saving strategy instance
+    * @notice Change allocation strategy for the contract instance
+    * @param allocationStrategy Allocation strategy instance
     */
-    function changeSavingStrategy(ISavingStrategy savingStrategy) external;
+    function changeAllocationStrategy(IAllocationStrategy allocationStrategy) external;
 
     ////////////////////////////////////////////////////////////////////////////
     // Events

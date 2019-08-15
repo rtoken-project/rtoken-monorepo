@@ -1,12 +1,15 @@
 pragma solidity ^0.5.8;
 
 /**
- * @notice Saving strategy interface
+ * @notice Allocation strategy for assets.
+ *         - It invests the underlying assets into some yield generating contracts,
+ *           usually lending contracts, in return it gets new assets aka. saving assets.
+ *         - Sainv assets can be redeemed back to the underlying assets plus interest any time.
  */
-interface ISavingStrategy {
+interface IAllocationStrategy {
 
     /**
-     * @notice Underlying asset for the saving strategy
+     * @notice Underlying asset for the strategy
      * @return address Underlying asset address
      */
     function underlying() external view returns (address);
@@ -18,7 +21,7 @@ interface ISavingStrategy {
     function exchangeRateStored() external view returns (uint256);
 
     /**
-      * @notice Applies accrued interest all savings
+      * @notice Applies accrued interest to all savings
       * @dev This should calculates interest accrued from the last checkpointed
       *      block up to the current block and writes new checkpoint to storage.
       * @return bool success(true) or failure(false)

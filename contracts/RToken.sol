@@ -5,7 +5,7 @@ import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import {IERC20, IRToken} from "./IRToken.sol";
-import {ISavingStrategy} from "./ISavingStrategy.sol";
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
@@ -38,9 +38,9 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    constructor(ISavingStrategy savingStrategy) public {
-        iss = savingStrategy;
-        token = IERC20(iss.underlying());
+    constructor(IAllocationStrategy allocationStrategy) public {
+        ias = allocationStrategy;
+        token = IERC20(ias.underlying());
         // special hat aka. zero hat : hatID = 0
         hats.push(Hat(new address[](0), new uint32[](0)));
     }
@@ -229,7 +229,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         Account storage account = accounts[owner];
         uint256 rGross =
             account.sInternalAmount
-            .mul(iss.exchangeRateStored())
+            .mul(ias.exchangeRateStored())
             .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
         return rGross;
     }
@@ -250,7 +250,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     function payInterest(address owner) external nonReentrant returns (bool) {
         Account storage account = accounts[owner];
 
-        iss.accrueInterest();
+        ias.accrueInterest();
         uint256 interestAmount = getInterestPayableOf(account);
 
         if (interestAmount > 0) {
@@ -268,7 +268,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         uint256 totalSavingsAmount;
         totalSavingsAmount +=
             savingAssetOrignalAmount
-            .mul(iss.exchangeRateStored())
+            .mul(ias.exchangeRateStored())
             .div(10 ** 18);
         return GlobalStats({
             totalSupply: totalSupply,
@@ -284,7 +284,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
 
     /// @dev IRToken.getCurrentSavingStrategy implementation
     function getCurrentSavingStrategy() external view returns (address) {
-        return address(iss);
+        return address(ias);
     }
 
     /// @dev IRToken.getSavingAssetBalance implementation
@@ -292,20 +292,21 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         returns (uint256 nAmount, uint256 sAmount) {
         sAmount = savingAssetOrignalAmount;
         nAmount = sAmount
-            .mul(iss.exchangeRateStored())
+            .mul(ias.exchangeRateStored())
             .div(10 ** 18);
     }
 
-    /// @dev IRToken.changeSavingStrategy implementation
-    function changeSavingStrategy(ISavingStrategy savingStrategy) external {
-        ISavingStrategy oldIss = iss;
-        iss = savingStrategy;
+    /// @dev IRToken.changeAllocationStrategy implementation
+    function changeAllocationStrategy(IAllocationStrategy allocationStrategy) external {
+        require(allocationStrategy.underlying() == address(token), "New strategy should have the same underlying asset");
+        IAllocationStrategy oldIas = ias;
+        ias = allocationStrategy;
         // redeem everything from the old strategy
-        uint256 sOriginalBurned = oldIss.redeemUnderlying(totalSupply);
+        uint256 sOriginalBurned = oldIas.redeemUnderlying(totalSupply);
         // invest everything into the new strategy
         token.transferFrom(msg.sender, address(this), totalSupply);
-        token.approve(address(iss), totalSupply);
-        uint256 sOriginalCreated = iss.investUnderlying(totalSupply);
+        token.approve(address(ias), totalSupply);
+        uint256 sOriginalCreated = ias.investUnderlying(totalSupply);
         // calculate new saving asset conversion rate
         // if new original saving asset is 2x in amount
         // then the conversion of internal amount should be also 2x
@@ -320,7 +321,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     //
 
     /// @dev Current saving strategy
-    ISavingStrategy iss;
+    IAllocationStrategy ias;
 
     /// @dev Underlying token
     IERC20 token;
@@ -438,8 +439,8 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
 
         // create saving assets
         token.transferFrom(msg.sender, address(this), mintAmount);
-        token.approve(address(iss), mintAmount);
-        uint256 sOriginalCreated = iss.investUnderlying(mintAmount);
+        token.approve(address(ias), mintAmount);
+        uint256 sOriginalCreated = ias.investUnderlying(mintAmount);
 
         // update global and account r balances
         totalSupply = totalSupply.add(mintAmount);
@@ -544,7 +545,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     function getInterestPayableOf(Account storage account) internal view returns (uint256) {
         uint256 rGross =
             account.sInternalAmount
-            .mul(iss.exchangeRateStored())
+            .mul(ias.exchangeRateStored())
             .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
         if (rGross > (account.lDebt + account.rInterest)) {
             return rGross - account.lDebt - account.rInterest;
@@ -636,10 +637,10 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         // accrue interest so estimate is up to date
-        iss.accrueInterest();
+        ias.accrueInterest();
         sInternalAmount = rAmount
             .mul(savingAssetConversionRate)
-            .div(iss.exchangeRateStored()); // the 1e18 decimals should be cancelled out
+            .div(ias.exchangeRateStored()); // the 1e18 decimals should be cancelled out
         recollectLoans(account, hat, rAmount, sInternalAmount);
     }
 
@@ -656,7 +657,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         uint256 rAmount) internal returns (uint256 sOriginalBurned) {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
-        sOriginalBurned = iss.redeemUnderlying(rAmount);
+        sOriginalBurned = ias.redeemUnderlying(rAmount);
         uint256 sInternalBurned =
             sOriginalBurned
             .mul(savingAssetConversionRate)

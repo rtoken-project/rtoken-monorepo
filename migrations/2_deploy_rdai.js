@@ -12,7 +12,7 @@ module.exports = function(deployer, network) {deployer.then(async () => {
         const compoundSS = await web3tx(CompoundSavingStrategy.new, `CompoundSavingStrategy.new cDAI ${cDAIAddress}`)(
             cDAIAddress
         );
-        const rToken = await web3tx(RToken.new, `RToken.new cDAI ${cDAIAddress}`)(
+        const rToken = await web3tx(RToken.new, `RToken.new savingStrategy ${compoundSS.address}`)(
             compoundSS.address
         );
         console.log("rToken deployed at: ", rToken.address);

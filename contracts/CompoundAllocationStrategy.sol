@@ -1,10 +1,10 @@
 pragma solidity ^0.5.8;
 
-import {ISavingStrategy} from "./ISavingStrategy.sol";
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import {CErc20Interface} from "../compound/contracts/CErc20Interface.sol";
 
-contract CompoundSavingStrategy is ISavingStrategy {
+contract CompoundAllocationStrategy is IAllocationStrategy {
 
     CErc20Interface cToken;
     IERC20 token;

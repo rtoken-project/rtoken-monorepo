@@ -3,7 +3,7 @@ RToken Ethereum Contracts
 
 `RToken`, or Reedemable Token, is an _ERC20_ token that is 1:1 redeemable to its
 underlying _ERC20_ token. The underlying tokens are invested into interest
-earning assets specified by the saving strategy, for example into
+earning assets specified by the allocation strategy, for example into
 [_Compound_](http://compound.finance). Owners of the _rTokens_ can use a
 definition called _hat_ to configure who is the beneficiary of the accumulated
 interest. _RToken_ can be used for community funds, charities, crowdfunding,
@@ -13,35 +13,35 @@ while not losing their earning potentials.
 ## How does it look like
 
 ```
-                +------+
-          +-----+ User +-------+
-          |     +------+       |
-          |                    |
-          |                    |
-          |                    |
-     +----+-----+  +-----------+-----------+
-     |  Dapp    |  |ERC20 Compatible Wallet|
-     +----+-----+  +-----------+-----------+
-          |                    |
-          |                    |                    +-----------------------+
-          |                    |                    |compound.finance cToken|
-          |                    |                    +-----------------------+
-          |                    v                                 ^
-          |    +------------------------------+                  |
-          |    |          RToken              |      +-----------+----------+
-          |    |------------------------------|      |CompoundSavingStrategy|
-          |    | - ERC20 compatbile           |      +-----------+----------+
-          +----> - Mint/Redeem/PayInterst     |                  ^
-               | - "Hat"/Beneficiary system   |                  |
-               | - Changeable saving strategy |------------------+
-               | - Configurable parameters    |  ISavingStrategy interface
-               | - Admin role (human/DAO)     |
-               +------------------------------+
-                           ^
-                           |
-                        +--+--+
-                        |Admin|
-                        +-----+
+            +------+
+      +-----+ User +-------+
+      |     +------+       |
+      |                    |
+      |                    |                      +-----------------------+
+      |                    |                      |compound.finance cToken|
+ +----+-----+  +-----------+-----------+          +-----------------------+
+ |  Dapp    |  |ERC20 Compatible Wallet|                     ^
+ +----+-----+  +-----------+-----------+                     |
+      |                    |                     +--------------------------+
+      |                    |                     |CompoundAllocationStrategy|
+      |                    |                     +--------------------------+
+      |                    |                                 ^
+      |                    v                                 |
+      |    +----------------------------------+              |
+      |    |          RToken                  |              |
+      |    |----------------------------------|              |
+      |    | - ERC20 compatbile               |              |
+      +--->| - Mint/Redeem/PayInterst         |              |
+           | - "Hat"/Beneficiary system       |              |
+           | - Changeable allocation strategy +--------------+
+           | - Configurable parameters        | IAllocationStrategy interface
+           | - Admin role (human/DAO)         |
+           +----------------------------------+
+                       ^
+                       |
+                    +--+--+
+                    |Admin|
+                    +-----+
 ```
 
 ## What does it do
@@ -173,27 +173,29 @@ to accept _rDAI_ to set up their contracts correctly by:
 2. selecting or creating a hat of their choosing
 3. transferring any amount of _rDAI_ to their contracts
 
-### 8. Saving Strategy
+### 8. Allocation Strategy
 
-The _ISavingStrategy_ interface defines what RToken can integrate for investing
-the underlying assets in exchange for earning interest.
+The _IAllocationStrategy_ interface defines what _RToken_ can integrate for
+investing the underlying assets in exchange for saving assets that earns
+interest.
 
 It is changeable by admin. Per request, the _rDai_ contract will redeem all
-underlying assets at once from old saving strategy, and invest all into new
-saving strategy.
+underlying assets at once from old allocation strategy, and invest all into new
+allocation strategy.
 
-_CompoundSavingStrategy_ is one implementation. In _rDai_ case, it is _cDai_.
+_CompoundAllocationStrategy_ is one implementation. In case of _rDai_, it is
+_cDai_.
 
-While it is not possible to forbid in smart contracts using risky strategy,
-since it could cause the redeemability to fail if the saving strategy has heavy
-losses, it is up to the admin to make a sensible choice of what consists of a
-proper saving strategy.
+While it is not possible to forbid admin from using risky strategy, and risk
+strategy could cause redeemability to fail if the strategy has heavy losses,
+it is up to the admin to make a sensible choice of what consists of a
+proper allocation strategy.
 
 ### 9. Admin & Governance
 
 The `RToken` contract has an admin role who can:
 
-- Change saving strategy
+- Change allocation strategy
 - Configure interest payment rules:
   - Minimal threshold of "interest amount / loaned tokens"
   - Minimal period before first interest payment
