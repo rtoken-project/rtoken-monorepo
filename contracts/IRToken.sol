@@ -2,6 +2,7 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import {ISavingStrategy} from "./ISavingStrategy.sol";
 
 /**
  * @notice RToken interface a ERC20 interface and one can mint new tokens by
@@ -162,11 +163,10 @@ contract IRToken is IERC20 {
 
     /**
     * @notice Get saving asset balance for specific saving strategy
-    * @param strategy The savign strategy
     * @return rAmount Balance in redeemable amount
     * @return sAmount Balance in native amount of the strategy
     */
-    function getSavingAssetBalance(address strategy) external view returns (uint256 nAmount, uint256 sAmount);
+    function getSavingAssetBalance() external view returns (uint256 nAmount, uint256 sAmount);
 
     /**
     * @notice Get global stats
@@ -185,6 +185,11 @@ contract IRToken is IERC20 {
     ////////////////////////////////////////////////////////////////////////////
     // admin functions
     ////////////////////////////////////////////////////////////////////////////
+    /**
+    * @notice Change saving strategy globally
+    * @param savingStrategy Saving strategy instance
+    */
+    function changeSavingStrategy(ISavingStrategy savingStrategy) external;
 
     ////////////////////////////////////////////////////////////////////////////
     // Events

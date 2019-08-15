@@ -3,6 +3,7 @@ const ERC20Mintable = artifacts.require("ERC20Mintable");
 const ComptrollerMock = artifacts.require("ComptrollerMock");
 const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CErc20 = artifacts.require("CErc20");
+const CompoundSavingStrategy = artifacts.require("CompoundSavingStrategy");
 const RToken = artifacts.require("RToken");
 const { web3tx } = require("@decentral.ee/web3-test-helpers");
 const { toDecimals, fromDecimals } = require("../lib/math-utils");
@@ -52,8 +53,13 @@ contract("RToken contract", accounts => {
             18, {
                 from: admin
             });
-        rToken = await web3tx(RToken.new, "RToken.new")(
+        const compoundSS = await web3tx(CompoundSavingStrategy.new, "CompoundSavingStrategy.new")(
             cToken.address, {
+                from: admin
+            }
+        );
+        rToken = await web3tx(RToken.new, "RToken.new")(
+            compoundSS.address, {
                 from: admin
             });
         SELF_HAT_ID = await rToken.SELF_HAT_ID.call();

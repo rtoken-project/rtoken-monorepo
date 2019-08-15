@@ -10,7 +10,41 @@ interest. _RToken_ can be used for community funds, charities, crowdfunding,
 etc. It is also a building block for _DApps_ that need to lock underlying tokens
 while not losing their earning potentials.
 
-## How it works
+## How does it look like
+
+```
+                +------+
+          +-----+ User +-------+
+          |     +------+       |
+          |                    |
+          |                    |
+          |                    |
+     +----+-----+  +-----------+-----------+
+     |  Dapp    |  |ERC20 Compatible Wallet|
+     +----+-----+  +-----------+-----------+
+          |                    |
+          |                    |                    +-----------------------+
+          |                    |                    |compound.finance cToken|
+          |                    |                    +-----------------------+
+          |                    v                                 ^
+          |    +------------------------------+                  |
+          |    |          RToken              |      +-----------+----------+
+          |    |------------------------------|      |CompoundSavingStrategy|
+          |    | - ERC20 compatbile           |      +-----------+----------+
+          +----> - Mint/Redeem/PayInterst     |                  ^
+               | - "Hat"/Beneficiary system   |                  |
+               | - Changeable saving strategy |------------------+
+               | - Configurable parameters    |  ISavingStrategy interface
+               | - Admin role (human/DAO)     |
+               +------------------------------+
+                           ^
+                           |
+                        +--+--+
+                        |Admin|
+                        +-----+
+```
+
+## What does it do
 
 As an example, let's pick [_DAI_](https://dai.makerdao.com/) as our underlying
 token contract. As a result, the _rToken_ instantiation is conveniently called
@@ -139,11 +173,27 @@ to accept _rDAI_ to set up their contracts correctly by:
 2. selecting or creating a hat of their choosing
 3. transferring any amount of _rDAI_ to their contracts
 
-### 8. Governance
+### 8. Saving Strategy
+
+The _ISavingStrategy_ interface defines what RToken can integrate for investing
+the underlying assets in exchange for earning interest.
+
+It is changeable by admin. Per request, the _rDai_ contract will redeem all
+underlying assets at once from old saving strategy, and invest all into new
+saving strategy.
+
+_CompoundSavingStrategy_ is one implementation. In _rDai_ case, it is _cDai_.
+
+While it is not possible to forbid in smart contracts using risky strategy,
+since it could cause the redeemability to fail if the saving strategy has heavy
+losses, it is up to the admin to make a sensible choice of what consists of a
+proper saving strategy.
+
+### 9. Admin & Governance
 
 The `RToken` contract has an admin role who can:
 
-- Configure saving strategy
+- Change saving strategy
 - Configure interest payment rules:
   - Minimal threshold of "interest amount / loaned tokens"
   - Minimal period before first interest payment
@@ -155,3 +205,7 @@ of this admin. For maximum decentralization, the admin could be a DAO that is
 implemented by a DAO framework such as [Aragon](https://aragon.org/), and the
 hat change could be controlled by a arbitration process such as
 (Kleros)(https://kleros.io/).
+
+# How is it implemented
+
+TODO...

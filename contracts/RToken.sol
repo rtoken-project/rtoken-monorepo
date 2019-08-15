@@ -2,11 +2,15 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
-import {CErc20Interface} from '../compound/contracts/CErc20Interface.sol';
 import {IERC20, IRToken} from "./IRToken.sol";
+import {ISavingStrategy} from "./ISavingStrategy.sol";
 
-contract RToken is IRToken, ReentrancyGuard {
+/**
+ * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
+ */
+contract RToken is IRToken, Ownable, ReentrancyGuard {
 
     using SafeMath for uint256;
 
@@ -34,8 +38,9 @@ contract RToken is IRToken, ReentrancyGuard {
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    constructor (CErc20Interface cToken_) public {
-        cToken = cToken_;
+    constructor(ISavingStrategy savingStrategy) public {
+        iss = savingStrategy;
+        token = IERC20(iss.underlying());
         // special hat aka. zero hat : hatID = 0
         hats.push(Hat(new address[](0), new uint32[](0)));
     }
@@ -131,13 +136,13 @@ contract RToken is IRToken, ReentrancyGuard {
     // rToken interface
     //
 
-    /// @dev mint implementation
+    /// @dev IRToken.mint implementation
     function mint(uint256 mintAmount) external nonReentrant returns (bool) {
         mintInternal(mintAmount);
         return true;
     }
 
-    /// @dev mintWithSelectedHat implementation
+    /// @dev IRToken.mintWithSelectedHat implementation
     function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool) {
         require(hatID == SELF_HAT_ID || hatID < hats.length, "Invalid hat ID");
         changeHatInternal(msg.sender, hatID);
@@ -146,7 +151,7 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
-     * @dev mintWithNewHat implementation
+     * @dev IRToken.mintWithNewHat implementation
      */
     function mintWithNewHat(uint256 mintAmount,
         address[] calldata recipients,
@@ -160,7 +165,7 @@ contract RToken is IRToken, ReentrancyGuard {
     }
 
     /**
-     * @dev redeem implementation
+     * @dev IRToken.redeem implementation
      *      It withdraws equal amount of initially supplied underlying assets
      */
     function redeem(uint256 redeemTokens) external nonReentrant returns (bool) {
@@ -168,7 +173,7 @@ contract RToken is IRToken, ReentrancyGuard {
         return true;
     }
 
-     /// @dev createHat implementation
+     /// @dev IRToken.createHat implementation
     function createHat(
         address[] calldata recipients,
         uint32[] calldata proportions,
@@ -179,17 +184,17 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /// @dev changeHat implementation
+    /// @dev IRToken.changeHat implementation
     function changeHat(uint256 hatID) external nonReentrant {
         changeHatInternal(msg.sender, hatID);
     }
 
-    /// @dev getMaximumHatID implementation
+    /// @dev IRToken.getMaximumHatID implementation
     function getMaximumHatID() external view returns (uint256 hatID) {
         return hats.length - 1;
     }
 
-    /// @dev getHatByAddress implementation
+    /// @dev IRToken.getHatByAddress implementation
     function getHatByAddress(address owner) external view returns (
         uint256 hatID,
         address[] memory recipients,
@@ -205,7 +210,7 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /// @dev getHatByID implementation
+    /// @dev IRToken.getHatByID implementation
     function getHatByID(uint256 hatID) external view returns (
         address[] memory recipients,
         uint32[] memory proportions) {
@@ -219,32 +224,33 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /// @dev receivedSavingsOf implementation
+    /// @dev IRToken.receivedSavingsOf implementation
     function receivedSavingsOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
-        uint256 rGross = account.sAmount
-            .mul(cToken.exchangeRateStored())
-            .div(10 ** 18);
+        uint256 rGross =
+            account.sInternalAmount
+            .mul(iss.exchangeRateStored())
+            .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
         return rGross;
     }
 
-    /// @dev receivedLoanOf implementation
+    /// @dev IRToken.receivedLoanOf implementation
     function receivedLoanOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
         return account.lDebt;
     }
 
-    /// @dev interestPayableOf implementation
+    /// @dev IRToken.interestPayableOf implementation
     function interestPayableOf(address owner) external view returns (uint256 amount) {
         Account storage account = accounts[owner];
         return getInterestPayableOf(account);
     }
 
-    /// @dev payInterest implementation
+    /// @dev IRToken.payInterest implementation
     function payInterest(address owner) external nonReentrant returns (bool) {
         Account storage account = accounts[owner];
 
-        cToken.accrueInterest();
+        iss.accrueInterest();
         uint256 interestAmount = getInterestPayableOf(account);
 
         if (interestAmount > 0) {
@@ -257,11 +263,12 @@ contract RToken is IRToken, ReentrancyGuard {
         }
     }
 
-    /// @dev getAccountStats implementation!1
+    /// @dev IRToken.getAccountStats implementation!1
     function getGlobalStats() external view returns (GlobalStats memory) {
         uint256 totalSavingsAmount;
-        totalSavingsAmount += savingAssets[address(0)]
-            .mul(cToken.exchangeRateStored())
+        totalSavingsAmount +=
+            savingAssetOrignalAmount
+            .mul(iss.exchangeRateStored())
             .div(10 ** 18);
         return GlobalStats({
             totalSupply: totalSupply,
@@ -269,38 +276,65 @@ contract RToken is IRToken, ReentrancyGuard {
         });
     }
 
-    /// @dev getAccountStats implementation
+    /// @dev IRToken.getAccountStats implementation
     function getAccountStats(address owner) external view returns (AccountStats memory) {
         Account storage account = accounts[owner];
         return account.stats;
     }
 
-    /// @dev getCurrentSavingStrategy implementation
+    /// @dev IRToken.getCurrentSavingStrategy implementation
     function getCurrentSavingStrategy() external view returns (address) {
-        return ss;
+        return address(iss);
     }
 
-    /// @dev getSavingAssetBalance implementation
-    function getSavingAssetBalance(address strategy) external view
+    /// @dev IRToken.getSavingAssetBalance implementation
+    function getSavingAssetBalance() external view
         returns (uint256 nAmount, uint256 sAmount) {
-        sAmount = savingAssets[strategy];
+        sAmount = savingAssetOrignalAmount;
         nAmount = sAmount
-            .mul(cToken.exchangeRateStored())
+            .mul(iss.exchangeRateStored())
             .div(10 ** 18);
+    }
+
+    /// @dev IRToken.changeSavingStrategy implementation
+    function changeSavingStrategy(ISavingStrategy savingStrategy) external {
+        ISavingStrategy oldIss = iss;
+        iss = savingStrategy;
+        // redeem everything from the old strategy
+        uint256 sOriginalBurned = oldIss.redeemUnderlying(totalSupply);
+        // invest everything into the new strategy
+        token.transferFrom(msg.sender, address(this), totalSupply);
+        token.approve(address(iss), totalSupply);
+        uint256 sOriginalCreated = iss.investUnderlying(totalSupply);
+        // calculate new saving asset conversion rate
+        // if new original saving asset is 2x in amount
+        // then the conversion of internal amount should be also 2x
+        savingAssetConversionRate =
+            sOriginalCreated
+            .mul(10 ** 18)
+            .div(sOriginalBurned);
     }
 
     //
     // internal
     //
 
-    /// @dev Current saving strategy contract
-    address ss = address(0);
+    /// @dev Current saving strategy
+    ISavingStrategy iss;
 
-    /// @dev Compound token associated with the rToken
-    CErc20Interface cToken;
+    /// @dev Underlying token
+    IERC20 token;
 
-    /// @dev Saving assets indexed by saving strategies
-    mapping(address => uint256) savingAssets;
+    /// @dev Saving assets original amount
+    uint256 savingAssetOrignalAmount;
+
+    /// @dev Saving asset original to internal amount conversion rate.
+    ///      - It has 18 decimals
+    ///      - It starts with value 1.
+    ///      - Each strategy switching results a new conversion rate
+    uint256 savingAssetConversionRate = 10 ** 18;
+
+    /// @dev Saving assets exchange rate with
 
     /// @dev Approved token transfer amounts on behalf of others
     mapping(address => mapping(address => uint256)) transferAllowances;
@@ -323,8 +357,8 @@ contract RToken is IRToken, ReentrancyGuard {
         mapping (address => uint256) lRecipients;
         /// @dev Loan debt amount for the account
         uint256 lDebt;
-        /// @dev Saving asset amount
-        uint256 sAmount;
+        /// @dev Saving asset amount internal
+        uint256 sInternalAmount;
 
         /// @dev Stats
         AccountStats stats;
@@ -378,8 +412,8 @@ contract RToken is IRToken, ReentrancyGuard {
         }
 
         // lRecipients adjustments
-        uint256 sAmountCollected = estimateAndRecollectLoans(src, tokens);
-        distributeLoans(dst, tokens, sAmountCollected);
+        uint256 sInternalAmountCollected = estimateAndRecollectLoans(src, tokens);
+        distributeLoans(dst, tokens, sInternalAmountCollected);
 
         // rInterest adjustment for src
         if (accounts[src].rInterest > accounts[src].rAmount) {
@@ -398,31 +432,28 @@ contract RToken is IRToken, ReentrancyGuard {
      * @param mintAmount The amount of the underlying asset to supply
      */
     function mintInternal(uint256 mintAmount) internal {
-        IERC20 token = IERC20(cToken.underlying());
         require(token.allowance(msg.sender, address(this)) >= mintAmount, "Not enough allowance");
 
         Account storage account = accounts[msg.sender];
 
-        // mint c tokens
+        // create saving assets
         token.transferFrom(msg.sender, address(this), mintAmount);
-        token.approve(address(cToken), mintAmount);
-        uint256 cTotalBefore = cToken.totalSupply();
-        require(cToken.mint(mintAmount) == 0, "mint failed");
-        uint256 cTotalAfter = cToken.totalSupply();
-        uint256 cMintedAmount;
-        if (cTotalAfter > cTotalBefore) {
-            cMintedAmount = cTotalAfter - cTotalBefore;
-        } // else can there be case that we mint but we get less cTokens!?
+        token.approve(address(iss), mintAmount);
+        uint256 sOriginalCreated = iss.investUnderlying(mintAmount);
 
         // update global and account r balances
         totalSupply = totalSupply.add(mintAmount);
         account.rAmount = account.rAmount.add(mintAmount);
 
         // update global stats
-        savingAssets[ss] += cMintedAmount;
+        savingAssetOrignalAmount += sOriginalCreated;
 
         // distribute saving assets as loans to recipients
-        distributeLoans(msg.sender, mintAmount, cMintedAmount);
+        uint256 sInternalCreated =
+            sOriginalCreated
+            .mul(savingAssetConversionRate)
+            .div(10 ** 18);
+        distributeLoans(msg.sender, mintAmount, sInternalCreated);
 
         emit Mint(msg.sender, mintAmount);
         emit Transfer(address(this), msg.sender, mintAmount);
@@ -431,32 +462,30 @@ contract RToken is IRToken, ReentrancyGuard {
     /**
      * @notice Sender redeems rTokens in exchange for the underlying asset
      * @dev Withdraw equal amount of initially supplied underlying assets
-     * @param redeemTokens The number of rTokens to redeem into underlying
+     * @param redeemAmount The number of rTokens to redeem into underlying
      */
-    function redeemInternal(uint256 redeemTokens) internal {
-        IERC20 token = IERC20(cToken.underlying());
-
+    function redeemInternal(uint256 redeemAmount) internal {
         Account storage account = accounts[msg.sender];
-        require(redeemTokens > 0, "Redeem amount cannot be zero");
-        require(redeemTokens <= account.rAmount, "Not enough balance to redeem");
+        require(redeemAmount > 0, "Redeem amount cannot be zero");
+        require(redeemAmount <= account.rAmount, "Not enough balance to redeem");
 
-        uint256 sAmountCollected = redeemAndRecollectLoans(msg.sender, redeemTokens);
+        uint256 sOriginalBurned = redeemAndRecollectLoans(msg.sender, redeemAmount);
 
         // update Account r balances and global statistics
-        account.rAmount = account.rAmount.sub(redeemTokens);
+        account.rAmount = account.rAmount.sub(redeemAmount);
         if (account.rInterest > account.rAmount) {
             account.rInterest = account.rAmount;
         }
-        totalSupply = totalSupply.sub(redeemTokens);
+        totalSupply = totalSupply.sub(redeemAmount);
 
         // update global stats
-        savingAssets[ss] -= sAmountCollected;
+        savingAssetOrignalAmount -= sOriginalBurned;
 
         // transfer the token back
-        token.transfer(msg.sender, redeemTokens);
+        token.transfer(msg.sender, redeemAmount);
 
-        emit Transfer(msg.sender, address(this), redeemTokens);
-        emit Redeem(msg.sender, redeemTokens);
+        emit Transfer(msg.sender, address(this), redeemAmount);
+        emit Redeem(msg.sender, redeemAmount);
     }
 
     /**
@@ -500,9 +529,9 @@ contract RToken is IRToken, ReentrancyGuard {
     function changeHatInternal(address owner, uint256 hatID) internal {
         Account storage account = accounts[owner];
         if (account.rAmount > 0) {
-            uint256 sAmountCollected = estimateAndRecollectLoans(owner, account.rAmount);
+            uint256 sInternalAmountCollected = estimateAndRecollectLoans(owner, account.rAmount);
             account.hatID = hatID;
-            distributeLoans(owner, account.rAmount, sAmountCollected);
+            distributeLoans(owner, account.rAmount, sInternalAmountCollected);
         } else {
             account.hatID = hatID;
         }
@@ -513,9 +542,10 @@ contract RToken is IRToken, ReentrancyGuard {
      * @dev Get interest payable of the account
      */
     function getInterestPayableOf(Account storage account) internal view returns (uint256) {
-        uint256 rGross = account.sAmount
-            .mul(cToken.exchangeRateStored())
-            .div(10 ** 18);
+        uint256 rGross =
+            account.sInternalAmount
+            .mul(iss.exchangeRateStored())
+            .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
         if (rGross > (account.lDebt + account.rInterest)) {
             return rGross - account.lDebt - account.rInterest;
         } else {
@@ -531,19 +561,19 @@ contract RToken is IRToken, ReentrancyGuard {
      *      Recipient also inherits the owner's hat if it does already have one.
      * @param owner Owner account address
      * @param rAmount rToken amount being loaned to the recipients
-     * @param sAmount Amount of saving assets being given to the recipients
+     * @param sInternalAmount Amount of saving assets (internal amount) being given to the recipients
      */
     function distributeLoans(
             address owner,
             uint256 rAmount,
-            uint256 sAmount) internal {
+            uint256 sInternalAmount) internal {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         bool[] memory recipientsNeedsNewHat = new bool[](hat.recipients.length);
         uint i;
         if (hat.recipients.length > 0) {
             uint256 rLeft = rAmount;
-            uint256 sLeft = sAmount;
+            uint256 sInternalLeft = sInternalAmount;
             for (i = 0; i < hat.proportions.length; ++i) {
                 Account storage recipient = accounts[hat.recipients[i]];
                 bool isLastRecipient = i == (hat.proportions.length - 1);
@@ -566,14 +596,14 @@ contract RToken is IRToken, ReentrancyGuard {
                     rLeft = 0;
                 }
 
-                uint256 sAmountRecipient = isLastRecipient ? sLeft:
-                    sAmount
+                uint256 sInternalAmountRecipient = isLastRecipient ? sInternalLeft:
+                    sInternalAmount
                     * hat.proportions[i]
                     / PROPORTION_BASE;
-                recipient.sAmount = recipient.sAmount.add(sAmountRecipient);
+                recipient.sInternalAmount = recipient.sInternalAmount.add(sInternalAmountRecipient);
                 // leftover adjustments
-                if (sLeft >= sAmountRecipient) {
-                    sLeft -= sAmountRecipient;
+                if (sInternalLeft >= sInternalAmountRecipient) {
+                    sInternalLeft -= sInternalAmountRecipient;
                 } else {
                     rLeft = 0;
                 }
@@ -581,7 +611,7 @@ contract RToken is IRToken, ReentrancyGuard {
         } else {
             // Account uses the zero hat, give all interest to the owner
             account.lDebt = account.lDebt.add(rAmount);
-            account.sAmount = account.sAmount.add(sAmount);
+            account.sInternalAmount = account.sInternalAmount.add(sInternalAmount);
         }
 
         // apply to new hat owners
@@ -598,19 +628,19 @@ contract RToken is IRToken, ReentrancyGuard {
      * @param owner Owner account address
      * @param rAmount rToken amount neeeds to be recollected from the recipients
      *                by giving back estimated amount of saving assets
-     * @return Estimated amount of saving assets needs to recollected
+     * @return Estimated amount of saving assets (internal) needs to recollected
      */
     function estimateAndRecollectLoans(
         address owner,
-        uint256 rAmount) internal returns (uint256 cEstimatedAmount) {
+        uint256 rAmount) internal returns (uint256 sInternalAmount) {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
         // accrue interest so estimate is up to date
-        cToken.accrueInterest();
-        cEstimatedAmount = rAmount
-            .mul(10 ** 18)
-            .div(cToken.exchangeRateStored());
-        recollectLoans(account, hat, rAmount, cEstimatedAmount);
+        iss.accrueInterest();
+        sInternalAmount = rAmount
+            .mul(savingAssetConversionRate)
+            .div(iss.exchangeRateStored()); // the 1e18 decimals should be cancelled out
+        recollectLoans(account, hat, rAmount, sInternalAmount);
     }
 
     /**
@@ -623,16 +653,15 @@ contract RToken is IRToken, ReentrancyGuard {
      */
     function redeemAndRecollectLoans(
         address owner,
-        uint256 rAmount) internal returns (uint256 cBurnedAmount) {
+        uint256 rAmount) internal returns (uint256 sOriginalBurned) {
         Account storage account = accounts[owner];
         Hat storage hat = hats[account.hatID == SELF_HAT_ID ? 0 : account.hatID];
-        uint256 cTotalBefore = cToken.totalSupply();
-        require(cToken.redeemUnderlying(rAmount) == 0, "redeemUnderlying failed");
-        uint256 cTotalAfter = cToken.totalSupply();
-        if (cTotalAfter < cTotalBefore) {
-            cBurnedAmount = cTotalBefore - cTotalAfter;
-        } // else can there be case that we end up with more cTokens ?!
-        recollectLoans(account, hat, rAmount, cBurnedAmount);
+        sOriginalBurned = iss.redeemUnderlying(rAmount);
+        uint256 sInternalBurned =
+            sOriginalBurned
+            .mul(savingAssetConversionRate)
+            .div(10 ** 18);
+        recollectLoans(account, hat, rAmount, sInternalBurned);
     }
 
     /**
@@ -640,17 +669,17 @@ contract RToken is IRToken, ReentrancyGuard {
      * @param account Owner account
      * @param hat     Owner's hat
      * @param rAmount rToken amount being written of from the recipients
-     * @param sAmount Amount of sasving assets recollected from the recipients
+     * @param sInternalAmount Amount of sasving assets (internal amount) recollected from the recipients
      */
     function recollectLoans(
         Account storage account,
         Hat storage hat,
         uint256 rAmount,
-        uint256 sAmount) internal {
+        uint256 sInternalAmount) internal {
         uint i;
         if (hat.recipients.length > 0) {
             uint256 rLeft = rAmount;
-            uint256 sLeft = sAmount;
+            uint256 sInternalLeft = sInternalAmount;
             for (i = 0; i < hat.proportions.length; ++i) {
                 Account storage recipient = accounts[hat.recipients[i]];
                 bool isLastRecipient = i == (hat.proportions.length - 1);
@@ -675,18 +704,18 @@ contract RToken is IRToken, ReentrancyGuard {
                     rLeft = 0;
                 }
 
-                uint256 sAmountRecipient = isLastRecipient ? sLeft:
-                    sAmount
+                uint256 sInternalAmountRecipient = isLastRecipient ? sInternalLeft:
+                    sInternalAmount
                     * hat.proportions[i]
                     / PROPORTION_BASE;
-                if (recipient.sAmount > sAmountRecipient) {
-                    recipient.sAmount -= sAmountRecipient;
+                if (recipient.sInternalAmount > sInternalAmountRecipient) {
+                    recipient.sInternalAmount -= sInternalAmountRecipient;
                 } else {
-                    recipient.sAmount = 0;
+                    recipient.sInternalAmount = 0;
                 }
                 // leftover adjustments
-                if (sLeft >= sAmountRecipient) {
-                    sLeft -= sAmountRecipient;
+                if (sInternalLeft >= sInternalAmountRecipient) {
+                    sInternalLeft -= sInternalAmountRecipient;
                 } else {
                     rLeft = 0;
                 }
@@ -698,10 +727,10 @@ contract RToken is IRToken, ReentrancyGuard {
             } else {
                 account.lDebt = 0;
             }
-            if (account.sAmount > sAmount) {
-                account.sAmount -= sAmount;
+            if (account.sInternalAmount > sInternalAmount) {
+                account.sInternalAmount -= sInternalAmount;
             } else {
-                account.sAmount = 0;
+                account.sInternalAmount = 0;
             }
         }
     }
