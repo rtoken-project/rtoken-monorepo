@@ -211,3 +211,8 @@ hat change could be controlled by a arbitration process such as
 # How is it implemented
 
 TODO...
+
+# Deployed Contracts
+
+rDAI Rinkeby: `0x46b7cc7dd18eC78d639f329f3Df0d8AE094cA8b6`
+rDAI Kovan: `0x82679b504e783270A861711f72d5809feA6fC607`

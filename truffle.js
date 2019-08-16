@@ -67,6 +67,21 @@ module.exports = {
             skipDryRun: false // Skip dry run before migrations? (default: false for public nets )
         },
 
+        kovan: {
+            provider: () => new HDWalletProvider(
+                process.env.KOVAN_MNEMONIC,
+                process.env.KOVAN_PROVIDER_URL,
+                0, //address_index
+                10, // num_addresses
+                false // shareNonce
+            ),
+            network_id: 42, // Kovan's id
+            //gas: 7017622, //
+            //confirmations: 2, // # of confs to wait between deployments. (default: 0)
+            timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
+            skipDryRun: false // Skip dry run before migrations? (default: false for public nets )
+        },
+
         // Another network with more advanced options...
         // advanced: {
         // port: 8777,             // Custom port
