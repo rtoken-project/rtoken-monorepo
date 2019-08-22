@@ -52,12 +52,12 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     /**
      * @notice EIP-20 token name for this token
      */
-    string public name = "Redeemable DAI (rDAI)";
+    string public name = "Redeemable DAI (rDAI ethberlin)";
 
     /**
      * @notice EIP-20 token symbol for this token
      */
-    string public symbol = "rDAI";
+    string public symbol = "rDAItest";
 
     /**
      * @notice EIP-20 token decimals for this token
@@ -169,7 +169,12 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
      *      It withdraws equal amount of initially supplied underlying assets
      */
     function redeem(uint256 redeemTokens) external nonReentrant returns (bool) {
-        redeemInternal(redeemTokens);
+        redeemInternal(msg.sender, redeemTokens);
+        return true;
+    }
+
+    function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool) {
+        redeemInternal(redeemTo, redeemTokens);
         return true;
     }
 
@@ -463,9 +468,10 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     /**
      * @notice Sender redeems rTokens in exchange for the underlying asset
      * @dev Withdraw equal amount of initially supplied underlying assets
+     * @param redeemTo Destination address to send the redeemed tokens to
      * @param redeemAmount The number of rTokens to redeem into underlying
      */
-    function redeemInternal(uint256 redeemAmount) internal {
+    function redeemInternal(address redeemTo, uint256 redeemAmount) internal {
         Account storage account = accounts[msg.sender];
         require(redeemAmount > 0, "Redeem amount cannot be zero");
         require(redeemAmount <= account.rAmount, "Not enough balance to redeem");
@@ -483,10 +489,10 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         savingAssetOrignalAmount -= sOriginalBurned;
 
         // transfer the token back
-        token.transfer(msg.sender, redeemAmount);
+        token.transfer(redeemTo, redeemAmount);
 
         emit Transfer(msg.sender, address(this), redeemAmount);
-        emit Redeem(msg.sender, redeemAmount);
+        emit Redeem(msg.sender, redeemTo, redeemAmount);
     }
 
     /**

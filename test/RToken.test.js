@@ -3,7 +3,7 @@ const ERC20Mintable = artifacts.require("ERC20Mintable");
 const ComptrollerMock = artifacts.require("ComptrollerMock");
 const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CErc20 = artifacts.require("CErc20");
-const CompoundSavingStrategy = artifacts.require("CompoundSavingStrategy");
+const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
 const { web3tx } = require("@decentral.ee/web3-test-helpers");
 const { toDecimals, fromDecimals } = require("../lib/math-utils");
@@ -53,7 +53,7 @@ contract("RToken contract", accounts => {
             18, {
                 from: admin
             });
-        const compoundSS = await web3tx(CompoundSavingStrategy.new, "CompoundSavingStrategy.new")(
+        const compoundSS = await web3tx(CompoundAllocationStrategy.new, "CompoundAllocationStrategy.new")(
             cToken.address, {
                 from: admin
             }
@@ -243,7 +243,12 @@ contract("RToken contract", accounts => {
 
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
-                name: "Redeem"
+                name: "Redeem",
+                args: {
+                    redeemer: customer1,
+                    redeemTo: customer1,
+                    redeemAmount: toWad(10),
+                }
             }, {
                 name: "Transfer",
                 args: {
@@ -302,6 +307,27 @@ contract("RToken contract", accounts => {
             totalSupply: "90.00103",
             totalSavingsAmount: "90.00103"
         });
+
+        await web3tx(rToken.redeemAndTransfer, "rToken.redeem 2 of customer1 to customer3", {
+            inLogs: [{
+                name: "Redeem",
+                args: {
+                    redeemer: customer1,
+                    redeemTo: customer3,
+                    redeemAmount: toWad(2),
+                }
+            }, {
+                name: "Transfer",
+                args: {
+                    from: customer1,
+                    to: rToken.address,
+                    value: toWad(2)
+                }
+            }]
+        })(customer3, toWad(2), {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer3)), "2.00000");
     });
 
     it("#3 rToken normal operations with hat", async () => {

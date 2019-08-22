@@ -68,6 +68,14 @@ contract IRToken is IERC20 {
     function redeem(uint256 redeemTokens) external returns (bool);
 
     /**
+     * @notice Sender redeems rTokens in exchange for the underlying asset then immediately transfer them to a differen user
+     * @param redeemTo Destination address to send the redeemed tokens to
+     * @param redeemTokens The number of rTokens to redeem into underlying
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool);
+
+    /**
      * @notice Create a new Hat
      * @param recipients List of beneficial recipients
      * @param proportions Relative proportions of benefits received by the recipients
@@ -197,17 +205,17 @@ contract IRToken is IERC20 {
     /**
      * @notice Event emitted when tokens are minted
      */
-    event Mint(address minter, uint256 mintAmount);
+    event Mint(address indexed minter, uint256 mintAmount);
 
     /**
      * @notice Event emitted when tokens are redeemed
      */
-    event Redeem(address redeemer, uint256 redeemAmount);
+    event Redeem(address indexed redeemer, address indexed redeemTo, uint256 redeemAmount);
 
     /**
      * @notice Event emitted when interest paid
      */
-    event InterestPaid(address recipient, uint256 interestAmount);
+    event InterestPaid(address indexed recipient, uint256 interestAmount);
 
     /**
      * @notice A new hat is created
@@ -217,5 +225,5 @@ contract IRToken is IERC20 {
     /**
      * @notice Hat is changed for the account
      */
-    event HatChanged(address account, uint256 indexed hatID);
+    event HatChanged(address indexed account, uint256 indexed hatID);
 }
