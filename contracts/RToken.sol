@@ -143,7 +143,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.mintWithSelectedHat implementation
-    function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool) {
+    function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external nonReentrant returns (bool) {
         require(hatID == SELF_HAT_ID || hatID < hats.length, "Invalid hat ID");
         changeHatInternal(msg.sender, hatID);
         mintInternal(mintAmount);
@@ -302,7 +302,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.changeAllocationStrategy implementation
-    function changeAllocationStrategy(IAllocationStrategy allocationStrategy) external {
+    function changeAllocationStrategy(IAllocationStrategy allocationStrategy) external nonReentrant onlyOwner {
         require(allocationStrategy.underlying() == address(token), "New strategy should have the same underlying asset");
         IAllocationStrategy oldIas = ias;
         ias = allocationStrategy;
