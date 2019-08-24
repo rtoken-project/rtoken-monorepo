@@ -67,24 +67,13 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
      /**
       * @notice Total number of tokens in circulation
       */
-     uint256 public totalSupply;
+    uint256 public totalSupply;
 
     /**
      * @notice Returns the amount of tokens owned by `account`.
      */
     function balanceOf(address owner) external view returns (uint256) {
         return accounts[owner].rAmount;
-    }
-
-    /**
-     * @notice Moves `amount` tokens from the caller's account to `recipient`.
-     *
-     * Returns a boolean value indicating whether the operation succeeded.
-     *
-     * Emits a `Transfer` event.
-     */
-    function transfer(address dst, uint256 amount) external nonReentrant returns (bool) {
-        return transferInternal(msg.sender, msg.sender, dst, amount);
     }
 
     /**
@@ -117,6 +106,32 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         transferAllowances[src][spender] = amount;
         emit Approval(src, spender, amount);
         return true;
+    }
+
+    /**
+     * @notice Moves `amount` tokens from the caller's account to `dst`.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a `Transfer` event.
+     * May also emit `InterestPaid` event.
+     */
+    function transfer(address dst, uint256 amount) external nonReentrant returns (bool) {
+        return transferInternal(msg.sender, msg.sender, dst, amount);
+    }
+
+    /// @dev IRToken.transferAll implementation
+    function transferAll(address dst) external returns (bool) {
+        address src = msg.sender;
+        payInterestInternal(src);
+        return transferInternal(src, src, dst, accounts[src].rAmount);
+    }
+
+    /// @dev IRToken.transferAllFrom implementation
+    function transferAllFrom(address src, address dst) external returns (bool) {
+        payInterestInternal(src);
+        payInterestInternal(dst);
+        return transferInternal(msg.sender, src, dst, accounts[src].rAmount);
     }
 
     /**
@@ -169,12 +184,33 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
      *      It withdraws equal amount of initially supplied underlying assets
      */
     function redeem(uint256 redeemTokens) external nonReentrant returns (bool) {
-        redeemInternal(msg.sender, redeemTokens);
+        address src = msg.sender;
+        payInterestInternal(src);
+        redeemInternal(src, redeemTokens);
         return true;
     }
 
+    /// @dev IRToken.redeemAll implementation
+    function redeemAll() external nonReentrant returns (bool) {
+        address src = msg.sender;
+        payInterestInternal(src);
+        redeemInternal(src, accounts[src].rAmount);
+        return true;
+    }
+
+    /// @dev IRToken.redeemAndTransfer implementation
     function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool) {
+        address src = msg.sender;
+        payInterestInternal(src);
         redeemInternal(redeemTo, redeemTokens);
+        return true;
+    }
+
+    /// @dev IRToken.redeemAndTransferAll implementation
+    function redeemAndTransferAll(address redeemTo) external returns (bool) {
+        address src = msg.sender;
+        payInterestInternal(src);
+        redeemInternal(redeemTo, accounts[src].rAmount);
         return true;
     }
 
@@ -253,19 +289,8 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
 
     /// @dev IRToken.payInterest implementation
     function payInterest(address owner) external nonReentrant returns (bool) {
-        Account storage account = accounts[owner];
-
-        ias.accrueInterest();
-        uint256 interestAmount = getInterestPayableOf(account);
-
-        if (interestAmount > 0) {
-            account.stats.cumulativeInterest = account.stats.cumulativeInterest.add(interestAmount);
-            account.rInterest = account.rInterest.add(interestAmount);
-            account.rAmount = account.rAmount.add(interestAmount);
-            totalSupply = totalSupply.add(interestAmount);
-            emit InterestPaid(owner, interestAmount);
-            emit Transfer(address(this), owner, interestAmount);
-        }
+        payInterestInternal(owner);
+        return true;
     }
 
     /// @dev IRToken.getAccountStats implementation!1
@@ -384,6 +409,10 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
      */
     function transferInternal(address spender, address src, address dst, uint256 tokens) internal returns (bool) {
         require(src != dst, "src should not equal dst");
+
+        // pay the interest before doing the transfer
+        payInterestInternal(src);
+
         require(accounts[src].rAmount >= tokens, "Not enough balance to transfer");
 
         /* Get the allowance, infinite for the account owner */
@@ -486,7 +515,11 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         totalSupply = totalSupply.sub(redeemAmount);
 
         // update global stats
-        savingAssetOrignalAmount -= sOriginalBurned;
+        if (savingAssetOrignalAmount > sOriginalBurned) {
+            savingAssetOrignalAmount -= sOriginalBurned;
+        } else {
+            savingAssetOrignalAmount = 0;
+        }
 
         // transfer the token back
         token.transfer(redeemTo, redeemAmount);
@@ -739,6 +772,26 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
             } else {
                 account.sInternalAmount = 0;
             }
+        }
+    }
+
+    /**
+     * @dev pay interest to the owner
+     * @param owner Account owner address
+     */
+    function payInterestInternal(address owner) internal {
+        Account storage account = accounts[owner];
+
+        ias.accrueInterest();
+        uint256 interestAmount = getInterestPayableOf(account);
+
+        if (interestAmount > 0) {
+            account.stats.cumulativeInterest = account.stats.cumulativeInterest.add(interestAmount);
+            account.rInterest = account.rInterest.add(interestAmount);
+            account.rAmount = account.rAmount.add(interestAmount);
+            totalSupply = totalSupply.add(interestAmount);
+            emit InterestPaid(owner, interestAmount);
+            emit Transfer(address(this), owner, interestAmount);
         }
     }
 }

@@ -61,11 +61,27 @@ contract IRToken is IERC20 {
         uint32[] calldata proportions) external returns (bool);
 
     /**
+     * @notice Moves all tokens from the caller's account to `dst`.
+     */
+    function transferAll(address dst) external returns (bool);
+
+    /**
+     * @notice Moves all tokens from `src` account to `dst`.
+     */
+    function transferAllFrom(address src, address dst) external returns (bool);
+
+    /**
      * @notice Sender redeems rTokens in exchange for the underlying asset
      * @param redeemTokens The number of rTokens to redeem into underlying
      * @return uint 0=success, otherwise a failure
      */
     function redeem(uint256 redeemTokens) external returns (bool);
+
+    /**
+     * @notice Sender redeems all rTokens in exchange for the underlying asset
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAll() external returns (bool);
 
     /**
      * @notice Sender redeems rTokens in exchange for the underlying asset then immediately transfer them to a differen user
@@ -74,6 +90,13 @@ contract IRToken is IERC20 {
      * @return uint 0=success, otherwise a failure
      */
     function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool);
+
+    /**
+     * @notice Sender redeems all rTokens in exchange for the underlying asset then immediately transfer them to a differen user
+     * @param redeemTo Destination address to send the redeemed tokens to
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAndTransferAll(address redeemTo) external returns (bool);
 
     /**
      * @notice Create a new Hat

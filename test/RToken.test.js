@@ -254,13 +254,13 @@ contract("RToken contract", accounts => {
             from: customer1
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
-        assert.equal(wad4human(await rToken.totalSupply.call()), "90.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "90.00101");
         await expectAccount(customer1, {
-            tokenBalance: "90.00000",
-            cumulativeInterest: "0.00000",
+            tokenBalance: "90.00101",
+            cumulativeInterest: "0.00101",
             receivedLoan: "90.00000",
             receivedSavings: "90.00101",
-            interestPayable: "0.00101",
+            interestPayable: "0.00000",
         });
 
         await web3tx(rToken.payInterest, "rToken.payInterest to customer1", {
@@ -665,7 +665,7 @@ contract("RToken contract", accounts => {
             from: customer2
         });
         assert.isTrue((await token.balanceOf.call(customer2)).eq(customer2RBalance));
-        assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "100.00002");
     });
 
     it("#6 transfer and switch hats", async () => {
@@ -965,7 +965,6 @@ contract("RToken contract", accounts => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
-        await expectRevert(rToken.mintWithSelectedHat(toWad(1), 1), "Invalid hat ID");
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
                 name: "Mint"
@@ -976,5 +975,199 @@ contract("RToken contract", accounts => {
         await expectRevert(web3tx(compoundAS.redeemUnderlying, "redeemUnderlying by admin")(toWad(100), {
             from: admin
         }), "Ownable: caller is not the owner");
+    });
+
+    it("#11 transferAll", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+
+        await doBingeBorrowing();
+
+        await web3tx(rToken.transferAll, "rToken.transferAll from customer1 to customer2", {
+            inLogs: [{
+                name: "InterestPaid"
+            }, {
+                name: "Transfer"
+            }]
+        })(customer2, {
+            from: customer1
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00101",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "100.00101",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00101",
+            receivedSavings: "100.00101",
+            interestPayable: "0.00000",
+        });
+    });
+
+    it("#12 redeemAll", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer2, toWad(100), {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer2")(rToken.address, toWad(100), {
+            from: customer2
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer2 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer2
+        });
+
+        await doBingeBorrowing();
+
+        await web3tx(rToken.redeemAll, "rToken.redeemAll for customer1", {
+            inLogs: [{
+                name: "InterestPaid"
+            }, {
+                name: "Transfer"
+            }, {
+                name: "Redeem"
+            }]
+        })({
+            from: customer1
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00051",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00051");
+    });
+
+    it("#13 approve & transferFrom & transferAllFrom", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+        await web3tx(rToken.approve, "token.approve customer 2 by customer1")(customer2, toWad(50), {
+            from: customer1
+        });
+        assert.isTrue((await rToken.allowance.call(customer1, customer2)).eq(toWad(50)));
+        await expectRevert(web3tx(rToken.transferFrom, "rToken transferFrom customer1 -> customer3 by customer2 more than approved")(
+            customer1, customer3,
+            toWad(50).add(web3.utils.toBN(1)), {
+                from: customer2
+            }), "Not enough allowance for transfer");
+        await web3tx(rToken.transferFrom, "rToken transferFrom customer1 -> customer3 by customer2 all approved")(
+            customer1, customer3,
+            toWad(50), {
+                from: customer2
+            });
+        assert.isTrue((await rToken.allowance.call(customer1, customer2)).eq(toWad(0)));
+        await web3tx(rToken.approve, "token.approve customer 2 by customer1")(customer2, toWad(10000), {
+            from: customer1
+        });
+
+        await doBingeBorrowing();
+
+        await web3tx(rToken.transferAllFrom, "rToken transferAllFrom customer1 -> customer3 by customer2")(
+            customer1, customer3, {
+                from: customer2
+            });
+        await expectAccount(customer1, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00051",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "100.00101",
+            cumulativeInterest: "0.00051",
+            receivedLoan: "100.00051",
+            receivedSavings: "100.00101",
+            interestPayable: "0.00000",
+        });
+    });
+
+    it("#13 redeemAndTransferAll", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer2, toWad(100), {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer2")(rToken.address, toWad(100), {
+            from: customer2
+        });
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer2 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer2
+        });
+
+        await doBingeBorrowing();
+
+        await web3tx(rToken.redeemAndTransferAll, "rToken.redeemAndTransferAll for customer1", {
+            inLogs: [{
+                name: "InterestPaid"
+            }, {
+                name: "Transfer"
+            }, {
+                name: "Redeem"
+            }]
+        })(customer3, {
+            from: customer1
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00051",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer3)), "100.00051");
     });
 });
