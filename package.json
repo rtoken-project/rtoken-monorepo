@@ -9,7 +9,7 @@
         "truffle-security": "^1.5.3"
     },
     "devDependencies": {
-        "@decentral.ee/web3-test-helpers": "^0.1.0",
+        "@decentral.ee/web3-test-helpers": "^0.2.0",
         "dotenv": "^8.0.0",
         "openzeppelin-test-helpers": "^0.4.2",
         "truffle": "^5.0.31",

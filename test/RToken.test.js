@@ -5,16 +5,7 @@ const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CErc20 = artifacts.require("CErc20");
 const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
-const { web3tx } = require("@decentral.ee/web3-test-helpers");
-const { toDecimals, fromDecimals } = require("../lib/math-utils");
-
-function wad4human(wad, decimals = 5) {
-    return Number(fromDecimals(wad.toString(), 18)).toFixed(decimals);
-}
-
-function toWad(n) {
-    return web3.utils.toBN(toDecimals(n, 18));
-}
+const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 contract("RToken contract", accounts => {
     //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -27,6 +18,7 @@ contract("RToken contract", accounts => {
     const customer4 = accounts[5];
     let token;
     let cToken;
+    let compoundAS;
     let rToken;
     let SELF_HAT_ID;
 
@@ -53,15 +45,16 @@ contract("RToken contract", accounts => {
             18, {
                 from: admin
             });
-        const compoundSS = await web3tx(CompoundAllocationStrategy.new, "CompoundAllocationStrategy.new")(
+        compoundAS = await web3tx(CompoundAllocationStrategy.new, "CompoundAllocationStrategy.new")(
             cToken.address, {
                 from: admin
             }
         );
         rToken = await web3tx(RToken.new, "RToken.new")(
-            compoundSS.address, {
+            compoundAS.address, {
                 from: admin
             });
+        await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
         SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
@@ -966,5 +959,22 @@ contract("RToken contract", accounts => {
             receivedSavings: "20.00000",
             interestPayable: "0.00000",
         });
+    });
+
+    it("#10 CompoundAs ownership protection", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await expectRevert(rToken.mintWithSelectedHat(toWad(1), 1), "Invalid hat ID");
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), await rToken.SELF_HAT_ID.call(), {
+            from: customer1
+        });
+        await expectRevert(web3tx(compoundAS.redeemUnderlying, "redeemUnderlying by admin")(toWad(100), {
+            from: admin
+        }), "Ownable: caller is not the owner");
     });
 });

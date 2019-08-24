@@ -34,6 +34,8 @@ module.exports = async (callback) => {
                 }
             );
             console.log("rDai deployed at: ", rToken.address);
+            console.log("transfer ownership of compoundAS to new rDai", rToken.address);
+            await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
         }
         callback();
     } catch (err) {

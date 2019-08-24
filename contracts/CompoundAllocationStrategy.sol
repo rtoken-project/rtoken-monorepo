@@ -1,10 +1,11 @@
 pragma solidity ^0.5.8;
 
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import {CErc20Interface} from "../compound/contracts/CErc20Interface.sol";
 
-contract CompoundAllocationStrategy is IAllocationStrategy {
+contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
 
     CErc20Interface cToken;
     IERC20 token;
@@ -30,7 +31,7 @@ contract CompoundAllocationStrategy is IAllocationStrategy {
     }
 
     /// @dev ISavingStrategy.investUnderlying implementation
-    function investUnderlying(uint256 investAmount) external returns (uint256) {
+    function investUnderlying(uint256 investAmount) external onlyOwner returns (uint256) {
         token.transferFrom(msg.sender, address(this), investAmount);
         token.approve(address(cToken), investAmount);
         uint256 cTotalBefore = cToken.totalSupply();
@@ -45,7 +46,7 @@ contract CompoundAllocationStrategy is IAllocationStrategy {
     }
 
     /// @dev ISavingStrategy.redeemUnderlying implementation
-    function redeemUnderlying(uint256 redeemAmount) external returns (uint256) {
+    function redeemUnderlying(uint256 redeemAmount) external onlyOwner returns (uint256) {
         uint256 cTotalBefore = cToken.totalSupply();
         // TODO should we handle redeem failure?
         require(cToken.redeemUnderlying(redeemAmount) == 0, "redeemUnderlying failed");
