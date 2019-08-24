@@ -7,8 +7,8 @@ import {CErc20Interface} from "../compound/contracts/CErc20Interface.sol";
 
 contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
 
-    CErc20Interface cToken;
-    IERC20 token;
+    CErc20Interface private cToken;
+    IERC20 private token;
 
     constructor(CErc20Interface cToken_) public {
         cToken = cToken_;

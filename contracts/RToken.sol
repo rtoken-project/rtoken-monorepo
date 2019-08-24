@@ -121,14 +121,14 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.transferAll implementation
-    function transferAll(address dst) external returns (bool) {
+    function transferAll(address dst) external nonReentrant returns (bool) {
         address src = msg.sender;
         payInterestInternal(src);
         return transferInternal(src, src, dst, accounts[src].rAmount);
     }
 
     /// @dev IRToken.transferAllFrom implementation
-    function transferAllFrom(address src, address dst) external returns (bool) {
+    function transferAllFrom(address src, address dst) external nonReentrant returns (bool) {
         payInterestInternal(src);
         payInterestInternal(dst);
         return transferInternal(msg.sender, src, dst, accounts[src].rAmount);
@@ -199,7 +199,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.redeemAndTransfer implementation
-    function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool) {
+    function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external nonReentrant returns (bool) {
         address src = msg.sender;
         payInterestInternal(src);
         redeemInternal(redeemTo, redeemTokens);
@@ -207,7 +207,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.redeemAndTransferAll implementation
-    function redeemAndTransferAll(address redeemTo) external returns (bool) {
+    function redeemAndTransferAll(address redeemTo) external nonReentrant returns (bool) {
         address src = msg.sender;
         payInterestInternal(src);
         redeemInternal(redeemTo, accounts[src].rAmount);
@@ -351,27 +351,27 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     //
 
     /// @dev Current saving strategy
-    IAllocationStrategy ias;
+    IAllocationStrategy private ias;
 
     /// @dev Underlying token
-    IERC20 token;
+    IERC20 private token;
 
     /// @dev Saving assets original amount
-    uint256 savingAssetOrignalAmount;
+    uint256 private savingAssetOrignalAmount;
 
     /// @dev Saving asset original to internal amount conversion rate.
     ///      - It has 18 decimals
     ///      - It starts with value 1.
     ///      - Each strategy switching results a new conversion rate
-    uint256 savingAssetConversionRate = 10 ** 18;
+    uint256 private savingAssetConversionRate = 10 ** 18;
 
     /// @dev Saving assets exchange rate with
 
     /// @dev Approved token transfer amounts on behalf of others
-    mapping(address => mapping(address => uint256)) transferAllowances;
+    mapping(address => mapping(address => uint256)) private transferAllowances;
 
     /// @dev Hat list
-    Hat[] hats;
+    Hat[] private hats;
 
     /// @dev Account structure
     struct Account {
@@ -396,7 +396,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev Account mapping
-    mapping (address => Account) accounts;
+    mapping (address => Account) private accounts;
 
     /**
      * @dev Transfer `tokens` tokens from `src` to `dst` by `spender`

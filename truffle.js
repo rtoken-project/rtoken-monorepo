@@ -58,7 +58,7 @@ module.exports = {
                 process.env.RINKEBY_PROVIDER_URL,
                 0, //address_index
                 10, // num_addresses
-                false // shareNonce
+                true // shareNonce
             ),
             network_id: 4, // Rinkeby's id
             //gas: 7017622, //
@@ -73,7 +73,7 @@ module.exports = {
                 process.env.KOVAN_PROVIDER_URL,
                 0, //address_index
                 10, // num_addresses
-                false // shareNonce
+                true // shareNonce
             ),
             network_id: 42, // Kovan's id
             //gas: 7017622, //
@@ -88,7 +88,7 @@ module.exports = {
                 process.env.MAINNET_PROVIDER_URL,
                 0, //address_index
                 10, // num_addresses
-                false // shareNonce
+                true // shareNonce
             ),
             network_id: 1, // mainnet's id
             //gas: 7017622, //
@@ -135,14 +135,14 @@ module.exports = {
     // Configure your compilers
     compilers: {
         solc: {
-            // version: "0.5.1",    // Fetch exact version from solc-bin (default: truffle's version)
+            version: "0.5.11",    // Fetch exact version from solc-bin (default: truffle's version)
             // docker: true,        // Use "0.5.1" you've installed locally with docker (default: false)
             settings: {          // See the solidity docs for advice about optimization and evmVersion
                 optimizer: {
                     enabled: true,
                     runs: 200
                 },
-                evmVersion: "byzantium"
+                // evmVersion: "petersburg" use default
             }
         }
     }

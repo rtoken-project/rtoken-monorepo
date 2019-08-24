@@ -215,10 +215,18 @@ TODO...
 # Deployed Contracts
 
 ## Rinkeby
-rDAI (latest): `0x46b7cc7dd18eC78d639f329f3Df0d8AE094cA8b6`
+
+DAI: 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
+cDAI: 0x6d7f0754ffeb405d23c51ce938289d4835be3b14
+DaiCompoundAllocationStrategy (latest): [0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
+rDAI (latest): [0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
 
 ## Kovan
-rDAI (latest): `0x82679b504e783270A861711f72d5809feA6fC607`
+
+DAI: 0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99
+cDAI: 0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496
+DaiCompoundAllocationStrategy (latest): [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
+rDAI (latest): [0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
 
 ## Mainnet
 
