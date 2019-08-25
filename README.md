@@ -230,4 +230,7 @@ rDAI (latest): [0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.ethers
 
 ## Mainnet
 
-rDai (ethberlin): TBD
+DAI: 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359
+cDAI: 0xf5dce57282a584d2746faf1593d3121fcac444dc
+DaiCompoundAllocationStrategy (ethberlin): [0x8e8f05f1ad16d20e66bd0922b510332104ddac7b](https://etherscan.io/address/0x8e8f05f1ad16d20e66bd0922b510332104ddac7b)
+rDAI (ethberlin): [0xF97e00463fE35ed1774E9c2977AC96c3cD762548](https://etherscan.io/address/0xF97e00463fE35ed1774E9c2977AC96c3cD762548)
