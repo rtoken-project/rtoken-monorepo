@@ -645,7 +645,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
                 if (sInternalLeft >= sInternalAmountRecipient) {
                     sInternalLeft -= sInternalAmountRecipient;
                 } else {
-                    rLeft = 0;
+                    sInternalLeft = 0;
                 }
             }
         } else {
@@ -757,7 +757,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
                 if (sInternalLeft >= sInternalAmountRecipient) {
                     sInternalLeft -= sInternalAmountRecipient;
                 } else {
-                    rLeft = 0;
+                    sInternalLeft = 0;
                 }
             }
         } else {
