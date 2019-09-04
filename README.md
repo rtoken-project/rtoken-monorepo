@@ -134,7 +134,7 @@ hat switching process.
 Interest payment rules may apply as per configuration (see _Governance
 section_).
 
-### 6. Hat Inheritance Rules
+### 7. Hat Inheritance Rules
 
 In order to maximize the cause the hat owners choose, the following rules are
 stipulated in order to allow hats to spread to new users:
@@ -155,7 +155,7 @@ _rDAI_, Bob inherits Alice's hat, and UNICEF France keep accruing interest. Bob
 then sends the 100 _rDAI_ along to Charlie. But Charlie already has a hat, so
 the underlying 100 _DAI_ are now loaned to Charlie's chosen recipients.
 
-### 7. Hats for contract addresses
+### 8. Hats for contract addresses
 
 As most contract addresses can't execute arbitrary functions, they can generally
 only change hat once, from inheritance by the first user to send _rDAI_ to the
@@ -173,7 +173,7 @@ to accept _rDAI_ to set up their contracts correctly by:
 2. selecting or creating a hat of their choosing
 3. transferring any amount of _rDAI_ to their contracts
 
-### 8. Allocation Strategy
+### 9. Allocation Strategy
 
 The _IAllocationStrategy_ interface defines what _RToken_ can integrate for
 investing the underlying assets in exchange for saving assets that earns
@@ -191,7 +191,7 @@ strategy could cause redeemability to fail if the strategy has heavy losses,
 it is up to the admin to make a sensible choice of what consists of a
 proper allocation strategy.
 
-### 9. Admin & Governance
+### 10. Admin & Governance
 
 The `RToken` contract has an admin role who can:
 
