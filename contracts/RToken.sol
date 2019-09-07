@@ -384,7 +384,7 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
         uint256 rAmount;
         /// @dev Redeemable token balance portion that is from interest payment
         uint256 rInterest;
-        /// @dev Loan recipients and their amount of debt
+        /// @dev Mapping of recipients and their amount of debt
         mapping (address => uint256) lRecipients;
         /// @dev Loan debt amount for the account
         uint256 lDebt;

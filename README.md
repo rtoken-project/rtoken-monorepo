@@ -193,6 +193,8 @@ proper allocation strategy.
 
 ### 10. Admin & Governance
 
+**(TODO NOTE! The list is not final and some are to be implemented!)**
+
 The `RToken` contract has an admin role who can:
 
 - Change allocation strategy
@@ -208,9 +210,115 @@ implemented by a DAO framework such as [Aragon](https://aragon.org/), and the
 hat change could be controlled by a arbitration process such as
 (Kleros)(https://kleros.io/).
 
-# How is it implemented
+# How It Is implemented
 
-TODO...
+## Project Structure
+
+The project uses truffle as development framework, and the contracts are written
+in solidity.
+
+The main contract is `RToken`, and the interface of it is in `IRToken` with more
+comments aimed for users of the `RToken` contract.
+
+The allocation strategy is defined in the `IAllocationStrategy` contract.
+
+The compound implementation of it is in the `CompoundAllocationStrategy`
+contract. Compound V2 contracts are pulled from the _etherscan_ and stored under
+the `compound/contracts` directory. `CErc20Interface` contract is used by to
+implement the `CompoundAllocationStrategy`.
+
+## RToken Account
+
+Each address has an _RToken Account_. The account data includes:
+
+* `hatID` - the hat associated with the account,
+* internal accounting information,
+* account statistics.
+
+## RToken Internal Accounting
+
+There are three types of assets are changing hands during different processes:
+
+* underlying tokens,
+* `rToken`,
+* saving assets (managed by allocation strategy).
+
+The rules are:
+
+* depositors of underlying token is given equivalent amount of `rToken`,
+* underlying tokens are "loaned" to the hat recipients as debt,
+* underlying tokens are transferred to the allocation strategy and becomes
+saving assets that are owned by the hat recipients.
+
+Another way to look at is that, hat recipients owes the donor the original
+underlying assets as debt denominated in `rToken`, while the underlying tokens
+are converted to saving assets and owned by the hat recipients.
+
+The related account data properties are:
+
+* `rAmount` - Redeemable token balance for the account.
+* `rInterest` - Redeemable token balance portion that is from interest payment.
+* `lRecipients` - Mapping of recipients and their amount of debt.
+* `lDebt` - Loan debt amount for the account.
+* `sInternalAmount` - Saving asset amount internal.
+
+### Mint Process
+
+When some underlying token is transferred to the `rToken` contract:
+
+* an equivalent `rAmount` of `rToken` is minted,
+* underlying tokens are distributed to the hat recipients,
+* `lRecipients` records the amount of underlying tokens owed by each
+  hat recipients,
+* each hat recipients also adds those amount to their `lDebt` accordingly,
+* the underlying tokens are transferred to the `AllocationStrategy`, and
+  `sInternalAmount` of saving assets are created and owned by the hat
+  recipients.
+
+### Redeem Process
+
+When user (aka. _redeemer_) wants to redeem `rToken` for underlying tokens:
+
+* a portion of saving assets of each hat recipients are converted back to the
+underlying token to cover exact same amount of `rToken` that is asked,
+* underlying tokens are given back to the _redeemer_,
+* _redeemer_ gets back its underlying tokens.
+
+### Important Internal Functions
+
+Ownership change logic is implemented by these two functions.
+
+* `distributeLoans` - loan underlying tokens to hat recipients and convert them to
+  saving assets.
+* `recollectLoans` - convert saving tokens back to underlying assets and pay back
+  debt owned by the hat recipients.
+
+### Transfer Process
+
+The `src` `recollectLoans` from its hat recipients, transfers the underlying
+tokens recollected to the `dst`, then the `dst` `distributeLoans` to its hat
+recipients
+
+## RToken Allocation Strategy Switching
+
+**(TODO! NOTE! This feature is still under development!)**
+
+`RToken` has one saving strategy at a time, and all underlying assets are
+transferred to and converted to saving assets that are expected to be liquid
+and growing in value measured in underlying tokens.
+
+`RToken` allows the admin to switch the allocation strategy during the contract
+life time.
+
+When the switching happens, all saving assets are converted to underlying tokens
+and then reinvested in new saving assets immediately. There is inevitably a
+difference in the exchange rate of different saving assets, a internal property
+`savingAssetConversionRate` is used for the adjustment, in order to make this equation true before and after the switching:
+
+```
+savingAssetOrignalAmount = sum(account.sInternalAmount / savingAssetConversionRate
+for all accounts)
+```
 
 # Deployed Contracts
 
@@ -218,19 +326,31 @@ TODO...
 
 DAI: 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
 cDAI: 0x6d7f0754ffeb405d23c51ce938289d4835be3b14
-DaiCompoundAllocationStrategy (latest): [0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
-rDAI (latest): [0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
+DaiCompoundAllocationStrategy (latest):
+
+[0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
+rDAI (latest):
+
+[0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
 
 ## Kovan
 
 DAI: 0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99
 cDAI: 0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496
-DaiCompoundAllocationStrategy (latest): [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
-rDAI (latest): [0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
+DaiCompoundAllocationStrategy (latest):
+
+[0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
+rDAI (latest):
+
+[0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
 
 ## Mainnet
 
 DAI: 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359
 cDAI: 0xf5dce57282a584d2746faf1593d3121fcac444dc
-DaiCompoundAllocationStrategy (ethberlin): [0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
-rDAI (ethberlin): [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
+DaiCompoundAllocationStrategy (ethberlin):
+
+[0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
+rDAI (ethberlin):
+
+[0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
