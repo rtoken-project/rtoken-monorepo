@@ -309,12 +309,12 @@ recipients
 
 To become a allocation strategy, one would need to implement:
 
-`exchangeRateStored` - Calculates the exchange rate from the underlying to the
+* `exchangeRateStored` - Calculates the exchange rate from the underlying to the
 saving assets
-`accrueInterest` - Applies accrued interest to all savings
-`investUnderlying` - Sender supplies underlying assets into the market and
+* `accrueInterest` - Applies accrued interest to all savings
+* `investUnderlying` - Sender supplies underlying assets into the market and
 receives saving assets in exchange
-`redeemUnderlying` - Sender redeems saving assets in exchange for a specified
+* `redeemUnderlying` - Sender redeems saving assets in exchange for a specified
 amount of underlying asset
 
 ### Compound Allocation Strategy
