@@ -210,7 +210,7 @@ implemented by a DAO framework such as [Aragon](https://aragon.org/), and the
 hat change could be controlled by a arbitration process such as
 (Kleros)(https://kleros.io/).
 
-# How It Is implemented
+# How It Is Implemented
 
 ## Project Structure
 
