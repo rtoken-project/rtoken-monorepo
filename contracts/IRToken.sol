@@ -1,6 +1,7 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
+import {Structs} from "./Structs.sol";
 import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
@@ -9,7 +10,7 @@ import {IAllocationStrategy} from "./IAllocationStrategy.sol";
  *      trasfering underlying token into the contract, configure _hats_ for
  *      addresses and pay earned interest in new _rTokens_.
  */
-contract IRToken is IERC20 {
+contract IRToken is Structs, IERC20 {
 
 
     /**
@@ -21,15 +22,6 @@ contract IRToken is IERC20 {
         /// @notice Total saving assets in redeemable amount
         uint256 totalSavingsAmount;
     }
-
-    /**
-     * @notice Stats for accounts
-     */
-    struct AccountStats {
-        /// @notice Cumulative interests paid
-        uint256 cumulativeInterest;
-    }
-
 
     ////////////////////////////////////////////////////////////////////////////
     // For external transactions

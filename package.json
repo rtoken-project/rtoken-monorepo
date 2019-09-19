@@ -1,27 +1,29 @@
 {
-    "name": "@decentral.ee/rtoken-contracts",
-    "version": "0.1.1",
-    "description": "RToken Ethereum contracts",
-    "license": "MIT",
-    "dependencies": {
-        "openzeppelin-solidity": "2.3.0",
-        "truffle-contract": "^4.0.28",
-        "truffle-security": "^1.5.3"
-    },
-    "devDependencies": {
-        "@decentral.ee/web3-test-helpers": "^0.2.0",
-        "dotenv": "^8.0.0",
-        "openzeppelin-test-helpers": "^0.4.2",
-        "truffle": "^5.0.31",
-        "truffle-flattener": "^1.4.0",
-        "truffle-hdwallet-provider": "^1.0.16"
-    },
-    "scripts": {
-        "build": "npm run build:truffle:compile",
-        "build:truffle:compile": "rm -f build/contracts/*;truffle compile",
-        "test": "truffle test --network development test/all.js",
-        "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run test 2>&1'",
-        "lint": "run-s lint:*",
-        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"
-    }
+  "name": "@decentral.ee/rtoken-contracts",
+  "version": "0.1.1",
+  "description": "RToken Ethereum contracts",
+  "license": "MIT",
+  "dependencies": {
+    "openzeppelin-solidity": "2.3.0",
+    "truffle-contract": "^4.0.28",
+    "truffle-security": "^1.5.3"
+  },
+  "devDependencies": {
+    "@decentral.ee/web3-test-helpers": "^0.2.0",
+    "dotenv": "^8.0.0",
+    "openzeppelin-test-helpers": "^0.4.2",
+    "sol-proxy": "^0.1.1",
+    "truffle": "^5.0.31",
+    "truffle-flattener": "^1.4.0",
+    "truffle-hdwallet-provider": "^1.0.16"
+  },
+  "scripts": {
+    "build": "npm run build:truffle:compile",
+    "build:truffle:compile": "rm -f build/contracts/*;truffle compile",
+    "test": "truffle test --network development test/all.js",
+    "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run test 2>&1'",
+    "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
+    "lint": "run-s lint:*",
+    "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"
+  }
 }

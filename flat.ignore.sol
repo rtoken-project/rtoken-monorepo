@@ -1,13 +1,700 @@
+
+// File: openzeppelin-solidity/contracts/token/ERC20/IERC20.sol
+
+pragma solidity ^0.5.0;
+
+/**
+ * @dev Interface of the ERC20 standard as defined in the EIP. Does not include
+ * the optional functions; to access them see `ERC20Detailed`.
+ */
+interface IERC20 {
+    /**
+     * @dev Returns the amount of tokens in existence.
+     */
+    function totalSupply() external view returns (uint256);
+
+    /**
+     * @dev Returns the amount of tokens owned by `account`.
+     */
+    function balanceOf(address account) external view returns (uint256);
+
+    /**
+     * @dev Moves `amount` tokens from the caller's account to `recipient`.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a `Transfer` event.
+     */
+    function transfer(address recipient, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Returns the remaining number of tokens that `spender` will be
+     * allowed to spend on behalf of `owner` through `transferFrom`. This is
+     * zero by default.
+     *
+     * This value changes when `approve` or `transferFrom` are called.
+     */
+    function allowance(address owner, address spender) external view returns (uint256);
+
+    /**
+     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * > Beware that changing an allowance with this method brings the risk
+     * that someone may use both the old and the new allowance by unfortunate
+     * transaction ordering. One possible solution to mitigate this race
+     * condition is to first reduce the spender's allowance to 0 and set the
+     * desired value afterwards:
+     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729
+     *
+     * Emits an `Approval` event.
+     */
+    function approve(address spender, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Moves `amount` tokens from `sender` to `recipient` using the
+     * allowance mechanism. `amount` is then deducted from the caller's
+     * allowance.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a `Transfer` event.
+     */
+    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool);
+
+    /**
+     * @dev Emitted when `value` tokens are moved from one account (`from`) to
+     * another (`to`).
+     *
+     * Note that `value` may be zero.
+     */
+    event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev Emitted when the allowance of a `spender` for an `owner` is set by
+     * a call to `approve`. `value` is the new allowance.
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+}
+
+// File: contracts/IAllocationStrategy.sol
+
+pragma solidity ^0.5.8;
+
+/**
+ * @notice Allocation strategy for assets.
+ *         - It invests the underlying assets into some yield generating contracts,
+ *           usually lending contracts, in return it gets new assets aka. saving assets.
+ *         - Sainv assets can be redeemed back to the underlying assets plus interest any time.
+ */
+interface IAllocationStrategy {
+
+    /**
+     * @notice Underlying asset for the strategy
+     * @return address Underlying asset address
+     */
+    function underlying() external view returns (address);
+
+    /**
+     * @notice Calculates the exchange rate from the underlying to the saving assets
+     * @return uint256 Calculated exchange rate scaled by 1e18
+     */
+    function exchangeRateStored() external view returns (uint256);
+
+    /**
+      * @notice Applies accrued interest to all savings
+      * @dev This should calculates interest accrued from the last checkpointed
+      *      block up to the current block and writes new checkpoint to storage.
+      * @return bool success(true) or failure(false)
+      */
+    function accrueInterest() external returns (bool);
+
+    /**
+     * @notice Sender supplies underlying assets into the market and receives saving assets in exchange
+     * @dev Interst shall be accrued
+     * @param investAmount The amount of the underlying asset to supply
+     * @return uint256 Amount of saving assets created
+     */
+    function investUnderlying(uint256 investAmount) external returns (uint256);
+
+    /**
+     * @notice Sender redeems saving assets in exchange for a specified amount of underlying asset
+     * @dev Interst shall be accrued
+     * @param redeemAmount The amount of underlying to redeem
+     * @return uint256 Amount of saving assets burned
+     */
+    function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+
+}
+
+// File: contracts/IRToken.sol
+
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
-import {Storage} from "./Storage.sol";
-import {Proxiable} from "./Proxiable.sol";
-import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
-import {IERC20, IRToken} from "./IRToken.sol";
-import {IAllocationStrategy} from "./IAllocationStrategy.sol";
+
+
+/**
+ * @notice RToken interface a ERC20 interface and one can mint new tokens by
+ *      trasfering underlying token into the contract, configure _hats_ for
+ *      addresses and pay earned interest in new _rTokens_.
+ */
+contract IRToken is IERC20 {
+
+
+    /**
+     * @notice Global stats
+     */
+    struct GlobalStats {
+        /// @notice Total redeemable tokens supply
+        uint256 totalSupply;
+        /// @notice Total saving assets in redeemable amount
+        uint256 totalSavingsAmount;
+    }
+
+    /**
+     * @notice Stats for accounts
+     */
+    struct AccountStats {
+        /// @notice Cumulative interests paid
+        uint256 cumulativeInterest;
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////
+    // For external transactions
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * @notice Sender supplies assets into the market and receives rTokens in exchange
+     * @param mintAmount The amount of the underlying asset to supply
+     * @return uint 0=success, otherwise a failure
+     */
+    function mint(uint256 mintAmount) external returns (bool);
+
+    /**
+     * @notice Sender supplies assets into the market and receives rTokens in exchange
+     *         Also setting the a selected hat for the account.
+     * @param hatID The id of the selected Hat
+     * @return uint 0=success, otherwise a failure
+     */
+    function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool);
+
+    /**
+     * @notice Sender supplies assets into the market and receives rTokens in exchange
+     *         Also setting the a new hat for the account.
+     * @param mintAmount The amount of the underlying asset to supply
+     * @param proportions Relative proportions of benefits received by the recipients
+     * @return uint 0=success, otherwise a failure
+     */
+    function mintWithNewHat(uint256 mintAmount,
+        address[] calldata recipients,
+        uint32[] calldata proportions) external returns (bool);
+
+    /**
+     * @notice Moves all tokens from the caller's account to `dst`.
+     */
+    function transferAll(address dst) external returns (bool);
+
+    /**
+     * @notice Moves all tokens from `src` account to `dst`.
+     */
+    function transferAllFrom(address src, address dst) external returns (bool);
+
+    /**
+     * @notice Sender redeems rTokens in exchange for the underlying asset
+     * @param redeemTokens The number of rTokens to redeem into underlying
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeem(uint256 redeemTokens) external returns (bool);
+
+    /**
+     * @notice Sender redeems all rTokens in exchange for the underlying asset
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAll() external returns (bool);
+
+    /**
+     * @notice Sender redeems rTokens in exchange for the underlying asset then immediately transfer them to a differen user
+     * @param redeemTo Destination address to send the redeemed tokens to
+     * @param redeemTokens The number of rTokens to redeem into underlying
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool);
+
+    /**
+     * @notice Sender redeems all rTokens in exchange for the underlying asset then immediately transfer them to a differen user
+     * @param redeemTo Destination address to send the redeemed tokens to
+     * @return uint 0=success, otherwise a failure
+     */
+    function redeemAndTransferAll(address redeemTo) external returns (bool);
+
+    /**
+     * @notice Create a new Hat
+     * @param recipients List of beneficial recipients
+     * @param proportions Relative proportions of benefits received by the recipients
+     * @param doChangeHat Should the hat of the `msg.sender` be switched to the new one
+     */
+    function createHat(
+        address[] calldata recipients,
+        uint32[] calldata proportions,
+        bool doChangeHat) external returns (uint256 hatID);
+
+    /**
+     * @notice Change the hat for `msg.sender`
+     * @param hatID The id of the Hat
+     */
+    function changeHat(uint256 hatID) external;
+
+    /**
+     * @notice pay interest to the owner
+     * @param owner Account owner address
+     *
+     * Anyone can trigger the interest distribution on behalf of the recipient,
+     * due to the fact that the recipient can be a contract code that has not
+     * implemented the interaction with the rToken contract internally`.
+     *
+     * A interest lock-up period may apply, in order to mitigate the "hat
+     * inheritance scam".
+     */
+    function payInterest(address owner) external returns (bool);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Essential info views
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * @notice Get the maximum hatID in the system
+     */
+    function getMaximumHatID() external view returns (uint256 hatID);
+
+    /**
+     * @notice Get the hatID of the owner and the hat structure
+     * @param owner Account owner address
+     * @return hatID Hat ID
+     * @return recipients Hat recipients
+     * @return proportions Hat recipient's relative proportions
+     */
+    function getHatByAddress(address owner) external view
+        returns (
+            uint256 hatID,
+            address[] memory recipients,
+            uint32[] memory proportions);
+
+    /**
+     * @notice Get the hat structure
+     * @param hatID Hat ID
+     * @return recipients Hat recipients
+     * @return proportions Hat recipient's relative proportions
+     */
+    function getHatByID(uint256 hatID) external view
+        returns (
+            address[] memory recipients,
+            uint32[] memory proportions);
+
+    /**
+     * @notice Amount of saving assets given to the recipient along with the
+     *         loans.
+     * @param owner Account owner address
+     */
+    function receivedSavingsOf(address owner) external view returns (uint256 amount);
+
+    /**
+     * @notice Amount of token loaned to the recipient along with the savings
+     *         assets.
+     * @param owner Account owner address
+     * @return amount
+     */
+    function receivedLoanOf(address owner) external view returns (uint256 amount);
+
+    /**
+     * @notice Get the current interest balance of the owner.
+               It is equivalent of: receivedSavings - receivedLoan - freeBalance
+     * @param owner Account owner address
+     * @return amount
+     */
+    function interestPayableOf(address owner) external view returns (uint256 amount);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // statistics views
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * @notice Get the current saving strategy contract
+     * @return Saving strategy address
+     */
+    function getCurrentSavingStrategy() external view returns (address);
+
+    /**
+    * @notice Get saving asset balance for specific saving strategy
+    * @return rAmount Balance in redeemable amount
+    * @return sAmount Balance in native amount of the strategy
+    */
+    function getSavingAssetBalance() external view returns (uint256 nAmount, uint256 sAmount);
+
+    /**
+    * @notice Get global stats
+    * @return global stats
+    */
+    function getGlobalStats() external view returns (GlobalStats memory);
+
+    /**
+    * @notice Get account stats
+    * @param owner Account owner address
+    * @return account stats
+    */
+    function getAccountStats(address owner) external view returns (AccountStats memory);
+
+    ////////////////////////////////////////////////////////////////////////////
+    // admin functions
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+    * @notice Change allocation strategy for the contract instance
+    * @param allocationStrategy Allocation strategy instance
+    */
+    function changeAllocationStrategy(IAllocationStrategy allocationStrategy) external;
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Events
+    ////////////////////////////////////////////////////////////////////////////
+    /**
+     * @notice Event emitted when tokens are minted
+     */
+    event Mint(address indexed minter, uint256 mintAmount);
+
+    /**
+     * @notice Event emitted when tokens are redeemed
+     */
+    event Redeem(address indexed redeemer, address indexed redeemTo, uint256 redeemAmount);
+
+    /**
+     * @notice Event emitted when interest paid
+     */
+    event InterestPaid(address indexed recipient, uint256 interestAmount);
+
+    /**
+     * @notice A new hat is created
+     */
+    event HatCreated(uint256 indexed hatID);
+
+    /**
+     * @notice Hat is changed for the account
+     */
+    event HatChanged(address indexed account, uint256 indexed hatID);
+}
+
+// File: contracts/Storage.sol
+
+pragma solidity ^0.5.8;
+
+
+
+contract Storage {
+
+    struct AccountStats {
+        uint256 cumulativeInterest;
+    }
+
+    struct Hat {
+        address[] recipients;
+        uint32[] proportions;
+    }
+
+    struct Account {
+        uint256 hatID;
+        uint256 rAmount;
+        uint256 rInterest;
+        mapping(address => uint256) lRecipients;
+        uint256 lDebt;
+        uint256 sInternalAmount;
+        AccountStats stats;
+    }
+
+    /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK your deployed proxy contract.*/
+    address private _owner;
+    uint256 private _guardCounter;
+    uint256 public constant SELF_HAT_ID = uint256(int256(-1));
+    uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
+    string public name = "Redeemable DAI (rDAI ethberlin)";
+    string public symbol = "rDAItest";
+    uint256 public decimals = 18;
+    uint256 public totalSupply;
+    IAllocationStrategy private ias;
+    IERC20 private token;
+    uint256 private savingAssetOrignalAmount;
+    uint256 private savingAssetConversionRate = 10**18;
+    mapping(address => mapping(address => uint256)) private transferAllowances;
+    Hat[] private hats;
+    mapping(address => Account) private accounts;
+}
+
+// File: contracts/Proxiable.sol
+
+pragma solidity ^0.5.1;
+
+contract Proxiable {
+    // Code position in storage is keccak256("PROXIABLE") = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7"
+
+    function updateCodeAddress(address newAddress) internal {
+        require(
+            bytes32(
+                    0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7
+                ) ==
+                Proxiable(newAddress).proxiableUUID(),
+            'Not compatible'
+        );
+        assembly {
+            // solium-disable-line
+            sstore(
+                0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7,
+                newAddress
+            )
+        }
+    }
+    function proxiableUUID() public pure returns (bytes32) {
+        return
+            0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7;
+    }
+}
+
+// File: openzeppelin-solidity/contracts/math/SafeMath.sol
+
+pragma solidity ^0.5.0;
+
+/**
+ * @dev Wrappers over Solidity's arithmetic operations with added overflow
+ * checks.
+ *
+ * Arithmetic operations in Solidity wrap on overflow. This can easily result
+ * in bugs, because programmers usually assume that an overflow raises an
+ * error, which is the standard behavior in high level programming languages.
+ * `SafeMath` restores this intuition by reverting the transaction when an
+ * operation overflows.
+ *
+ * Using this library instead of the unchecked operations eliminates an entire
+ * class of bugs, so it's recommended to use it always.
+ */
+library SafeMath {
+    /**
+     * @dev Returns the addition of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `+` operator.
+     *
+     * Requirements:
+     * - Addition cannot overflow.
+     */
+    function add(uint256 a, uint256 b) internal pure returns (uint256) {
+        uint256 c = a + b;
+        require(c >= a, "SafeMath: addition overflow");
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the subtraction of two unsigned integers, reverting on
+     * overflow (when the result is negative).
+     *
+     * Counterpart to Solidity's `-` operator.
+     *
+     * Requirements:
+     * - Subtraction cannot overflow.
+     */
+    function sub(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b <= a, "SafeMath: subtraction overflow");
+        uint256 c = a - b;
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the multiplication of two unsigned integers, reverting on
+     * overflow.
+     *
+     * Counterpart to Solidity's `*` operator.
+     *
+     * Requirements:
+     * - Multiplication cannot overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Gas optimization: this is cheaper than requiring 'a' not being zero, but the
+        // benefit is lost if 'b' is also tested.
+        // See: https://github.com/OpenZeppelin/openzeppelin-solidity/pull/522
+        if (a == 0) {
+            return 0;
+        }
+
+        uint256 c = a * b;
+        require(c / a == b, "SafeMath: multiplication overflow");
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the integer division of two unsigned integers. Reverts on
+     * division by zero. The result is rounded towards zero.
+     *
+     * Counterpart to Solidity's `/` operator. Note: this function uses a
+     * `revert` opcode (which leaves remaining gas untouched) while Solidity
+     * uses an invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     * - The divisor cannot be zero.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        // Solidity only automatically asserts when dividing by 0
+        require(b > 0, "SafeMath: division by zero");
+        uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+
+        return c;
+    }
+
+    /**
+     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),
+     * Reverts when dividing by zero.
+     *
+     * Counterpart to Solidity's `%` operator. This function uses a `revert`
+     * opcode (which leaves remaining gas untouched) while Solidity uses an
+     * invalid opcode to revert (consuming all remaining gas).
+     *
+     * Requirements:
+     * - The divisor cannot be zero.
+     */
+    function mod(uint256 a, uint256 b) internal pure returns (uint256) {
+        require(b != 0, "SafeMath: modulo by zero");
+        return a % b;
+    }
+}
+
+// File: openzeppelin-solidity/contracts/ownership/Ownable.sol
+
+pragma solidity ^0.5.0;
+
+/**
+ * @dev Contract module which provides a basic access control mechanism, where
+ * there is an account (an owner) that can be granted exclusive access to
+ * specific functions.
+ *
+ * This module is used through inheritance. It will make available the modifier
+ * `onlyOwner`, which can be aplied to your functions to restrict their use to
+ * the owner.
+ */
+contract Ownable {
+    address private _owner;
+
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+
+    /**
+     * @dev Initializes the contract setting the deployer as the initial owner.
+     */
+    constructor () internal {
+        _owner = msg.sender;
+        emit OwnershipTransferred(address(0), _owner);
+    }
+
+    /**
+     * @dev Returns the address of the current owner.
+     */
+    function owner() public view returns (address) {
+        return _owner;
+    }
+
+    /**
+     * @dev Throws if called by any account other than the owner.
+     */
+    modifier onlyOwner() {
+        require(isOwner(), "Ownable: caller is not the owner");
+        _;
+    }
+
+    /**
+     * @dev Returns true if the caller is the current owner.
+     */
+    function isOwner() public view returns (bool) {
+        return msg.sender == _owner;
+    }
+
+    /**
+     * @dev Leaves the contract without owner. It will not be possible to call
+     * `onlyOwner` functions anymore. Can only be called by the current owner.
+     *
+     * > Note: Renouncing ownership will leave the contract without an owner,
+     * thereby removing any functionality that is only available to the owner.
+     */
+    function renounceOwnership() public onlyOwner {
+        emit OwnershipTransferred(_owner, address(0));
+        _owner = address(0);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     * Can only be called by the current owner.
+     */
+    function transferOwnership(address newOwner) public onlyOwner {
+        _transferOwnership(newOwner);
+    }
+
+    /**
+     * @dev Transfers ownership of the contract to a new account (`newOwner`).
+     */
+    function _transferOwnership(address newOwner) internal {
+        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        emit OwnershipTransferred(_owner, newOwner);
+        _owner = newOwner;
+    }
+}
+
+// File: openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol
+
+pragma solidity ^0.5.0;
+
+/**
+ * @dev Contract module that helps prevent reentrant calls to a function.
+ *
+ * Inheriting from `ReentrancyGuard` will make the `nonReentrant` modifier
+ * available, which can be aplied to functions to make sure there are no nested
+ * (reentrant) calls to them.
+ *
+ * Note that because there is a single `nonReentrant` guard, functions marked as
+ * `nonReentrant` may not call one another. This can be worked around by making
+ * those functions `private`, and then adding `external` `nonReentrant` entry
+ * points to them.
+ */
+contract ReentrancyGuard {
+    /// @dev counter to allow mutex lock with only one SSTORE operation
+    uint256 private _guardCounter;
+
+    constructor () internal {
+        // The counter starts at one to prevent changing it from zero to a non-zero
+        // value, which is a more expensive operation.
+        _guardCounter = 1;
+    }
+
+    /**
+     * @dev Prevents a contract from calling itself, directly or indirectly.
+     * Calling a `nonReentrant` function from another `nonReentrant`
+     * function is not supported. It is possible to prevent this from happening
+     * by making the `nonReentrant` function external, and make it call a
+     * `private` function that does the actual work.
+     */
+    modifier nonReentrant() {
+        _guardCounter += 1;
+        uint256 localCounter = _guardCounter;
+        _;
+        require(localCounter == _guardCounter, "ReentrancyGuard: reentrant call");
+    }
+}
+
+// File: contracts/RToken.sol
+
+pragma solidity ^0.5.8;
+pragma experimental ABIEncoderV2;
+
+
+
+
+
+
+
 
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
@@ -361,6 +1048,28 @@ contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
 
     /// @dev Hat list
     Hat[] private hats;
+
+    /// @dev Account structure
+    struct Account {
+        //
+        // Essential info
+        //
+        /// @dev ID of the hat selected for the account
+        uint256 hatID;
+        /// @dev Redeemable token balance for the account
+        uint256 rAmount;
+        /// @dev Redeemable token balance portion that is from interest payment
+        uint256 rInterest;
+        /// @dev Mapping of recipients and their amount of debt
+        mapping (address => uint256) lRecipients;
+        /// @dev Loan debt amount for the account
+        uint256 lDebt;
+        /// @dev Saving asset amount internal
+        uint256 sInternalAmount;
+
+        /// @dev Stats
+        AccountStats stats;
+    }
 
     /// @dev Account mapping
     mapping (address => Account) private accounts;
