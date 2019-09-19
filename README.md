@@ -30,7 +30,7 @@ while not losing their earning potentials.
       |    +----------------------------------+              |
       |    |          RToken                  |              |
       |    |----------------------------------|              |
-      |    | - ERC20 compatbile               |              |
+      |    | - ERC20 compatible               |              |
       +--->| - Mint/Redeem/PayInterst         |              |
            | - "Hat"/Beneficiary system       |              |
            | - Changeable allocation strategy +--------------+
