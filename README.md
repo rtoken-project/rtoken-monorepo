@@ -30,7 +30,7 @@ while not losing their earning potentials.
       |    +----------------------------------+              |
       |    |          RToken                  |              |
       |    |----------------------------------|              |
-      |    | - ERC20 compatbile               |              |
+      |    | - ERC20 compatible               |              |
       +--->| - Mint/Redeem/PayInterst         |              |
            | - "Hat"/Beneficiary system       |              |
            | - Changeable allocation strategy +--------------+
@@ -226,7 +226,7 @@ The allocation strategy is defined in the `IAllocationStrategy` contract.
 
 The compound implementation of it is in the `CompoundAllocationStrategy`
 contract. Compound V2 contracts are pulled from the _etherscan_ and stored under
-the `compound/contracts` directory. `CErc20Interface` contract is used by to
+the `compound/contracts` directory. `CErc20Interface` contract is used to
 implement the `CompoundAllocationStrategy`.
 
 ## RToken Account
