@@ -37,7 +37,7 @@ contract IRToken is IERC20 {
     /**
      * @notice Sender supplies assets into the market and receives rTokens in exchange
      * @param mintAmount The amount of the underlying asset to supply
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function mint(uint256 mintAmount) external returns (bool);
 
@@ -45,7 +45,7 @@ contract IRToken is IERC20 {
      * @notice Sender supplies assets into the market and receives rTokens in exchange
      *         Also setting the a selected hat for the account.
      * @param hatID The id of the selected Hat
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function mintWithSelectedHat(uint256 mintAmount, uint256 hatID) external returns (bool);
 
@@ -54,7 +54,7 @@ contract IRToken is IERC20 {
      *         Also setting the a new hat for the account.
      * @param mintAmount The amount of the underlying asset to supply
      * @param proportions Relative proportions of benefits received by the recipients
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function mintWithNewHat(uint256 mintAmount,
         address[] calldata recipients,
@@ -62,24 +62,29 @@ contract IRToken is IERC20 {
 
     /**
      * @notice Moves all tokens from the caller's account to `dst`.
+     * @param dst The destination address.
+     * @return bool true=success, otherwise a failure
      */
     function transferAll(address dst) external returns (bool);
 
     /**
      * @notice Moves all tokens from `src` account to `dst`.
+     * @param src The source address which approved the msg.sender to spend
+     * @param dst The destination address.
+     * @return bool true=success, otherwise a failure
      */
     function transferAllFrom(address src, address dst) external returns (bool);
 
     /**
      * @notice Sender redeems rTokens in exchange for the underlying asset
      * @param redeemTokens The number of rTokens to redeem into underlying
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function redeem(uint256 redeemTokens) external returns (bool);
 
     /**
      * @notice Sender redeems all rTokens in exchange for the underlying asset
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function redeemAll() external returns (bool);
 
@@ -87,14 +92,14 @@ contract IRToken is IERC20 {
      * @notice Sender redeems rTokens in exchange for the underlying asset then immediately transfer them to a differen user
      * @param redeemTo Destination address to send the redeemed tokens to
      * @param redeemTokens The number of rTokens to redeem into underlying
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function redeemAndTransfer(address redeemTo, uint256 redeemTokens) external returns (bool);
 
     /**
      * @notice Sender redeems all rTokens in exchange for the underlying asset then immediately transfer them to a differen user
      * @param redeemTo Destination address to send the redeemed tokens to
-     * @return uint 0=success, otherwise a failure
+     * @return bool true=success, otherwise a failure
      */
     function redeemAndTransferAll(address redeemTo) external returns (bool);
 
@@ -103,6 +108,7 @@ contract IRToken is IERC20 {
      * @param recipients List of beneficial recipients
      * @param proportions Relative proportions of benefits received by the recipients
      * @param doChangeHat Should the hat of the `msg.sender` be switched to the new one
+     * @return uint256 ID of the newly creatd Hat.
      */
     function createHat(
         address[] calldata recipients,
@@ -112,12 +118,14 @@ contract IRToken is IERC20 {
     /**
      * @notice Change the hat for `msg.sender`
      * @param hatID The id of the Hat
+     * @return bool true=success, otherwise a failure
      */
-    function changeHat(uint256 hatID) external;
+    function changeHat(uint256 hatID) external returns (bool);
 
     /**
      * @notice pay interest to the owner
      * @param owner Account owner address
+     * @return bool true=success, otherwise a failure
      *
      * Anyone can trigger the interest distribution on behalf of the recipient,
      * due to the fact that the recipient can be a contract code that has not

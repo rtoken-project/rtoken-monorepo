@@ -226,8 +226,9 @@ contract RToken is IRToken, Ownable, ReentrancyGuard {
     }
 
     /// @dev IRToken.changeHat implementation
-    function changeHat(uint256 hatID) external nonReentrant {
+    function changeHat(uint256 hatID) external nonReentrant returns (bool) {
         changeHatInternal(msg.sender, hatID);
+        return true;
     }
 
     /// @dev IRToken.getMaximumHatID implementation
