@@ -5,6 +5,7 @@ const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CErc20 = artifacts.require("CErc20");
 const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
+const Proxy = artifacts.require("Proxy");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 contract("RToken contract", accounts => {
@@ -50,10 +51,23 @@ contract("RToken contract", accounts => {
                 from: admin
             }
         );
-        rToken = await web3tx(RToken.new, "RToken.new")(
-            compoundAS.address, {
-                from: admin
-            });
+
+        // Deploy the rToken logic/library contract
+        const rTokenLogic = await web3tx(RToken.new, "RToken.new")(
+            {
+              from: admin
+          });
+        // Get the init code for rToken
+        const rTokenConstructCode = rTokenLogic.contract.methods.construct(compoundAS.address).encodeABI();
+
+        // Deploy the Proxy, using the init code for rToken
+        const proxy = await web3tx(Proxy.new, "Proxy.new")(
+          rTokenConstructCode, rTokenLogic.address, {
+            from: admin
+          });
+        // Create the rToken object using the proxy address
+        rToken = await RToken.at(proxy.address);
+
         await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
         SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
@@ -1119,7 +1133,7 @@ contract("RToken contract", accounts => {
         });
     });
 
-    it("#13 redeemAndTransferAll", async () => {
+    it("#14 redeemAndTransferAll", async () => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });

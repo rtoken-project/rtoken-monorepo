@@ -2,17 +2,42 @@ pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
 import {Storage} from "./Storage.sol";
-import {Proxiable} from "./Proxiable.sol";
+import {Structs} from "./Storage.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import {IERC20, IRToken} from "./IRToken.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
+contract Proxiable {
+    // Code position in storage is keccak256("PROXIABLE") = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7"
+
+    function updateCodeAddress(address newAddress) internal {
+        require(
+            bytes32(
+                    0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7
+                ) ==
+                Proxiable(newAddress).proxiableUUID(),
+            'Not compatible'
+        );
+        assembly {
+            // solium-disable-line
+            sstore(
+                0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7,
+                newAddress
+            )
+        }
+    }
+    function proxiableUUID() public pure returns (bytes32) {
+        return
+            0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7;
+    }
+}
+
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
-contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
+contract RToken is Structs, Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
 
     using SafeMath for uint256;
 
@@ -27,7 +52,7 @@ contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    constructor(IAllocationStrategy allocationStrategy) public {
+    function construct(IAllocationStrategy allocationStrategy) public {
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
         // special hat aka. zero hat : hatID = 0

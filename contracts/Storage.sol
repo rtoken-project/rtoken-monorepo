@@ -4,7 +4,7 @@ import {Structs} from "./Structs.sol";
 import {IERC20} from "./IRToken.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
-contract Storage is Structs{
+contract Storage is Structs, IERC20{
 
     /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK your deployed proxy contract.*/
     address private _owner;
