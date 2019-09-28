@@ -1,4 +1,48 @@
 
+// File: contracts/Structs.sol
+
+pragma solidity ^0.5.8;
+
+contract Structs {
+  /**
+   * @notice Global stats
+   */
+   struct GlobalStats {
+      /// @notice Total redeemable tokens supply
+      uint256 totalSupply;
+      /// @notice Total saving assets in redeemable amount
+      uint256 totalSavingsAmount;
+    }
+
+    struct AccountStats {
+        uint256 cumulativeInterest;
+    }
+
+    /**
+     * @notice Hat structure describes who are the recipients of the interest
+     *
+     * To be a valid hat structure:
+     *   - at least one recipient
+     *   - recipients.length == proportions.length
+     *   - each value in proportions should be greater than 0
+     */
+    struct Hat {
+        address[] recipients;
+        uint32[] proportions;
+    }
+
+    /// @dev Account structure
+    struct Account {
+        uint256 hatID;
+        uint256 rAmount;
+        uint256 rInterest;
+        mapping(address => uint256) lRecipients;
+        uint256 lDebt;
+        uint256 sInternalAmount;
+        AccountStats stats;
+    }
+}
+
 // File: openzeppelin-solidity/contracts/token/ERC20/IERC20.sol
 
 pragma solidity ^0.5.0;
@@ -135,31 +179,13 @@ pragma experimental ABIEncoderV2;
 
 
 
+
 /**
  * @notice RToken interface a ERC20 interface and one can mint new tokens by
  *      trasfering underlying token into the contract, configure _hats_ for
  *      addresses and pay earned interest in new _rTokens_.
  */
-contract IRToken is IERC20 {
-
-
-    /**
-     * @notice Global stats
-     */
-    struct GlobalStats {
-        /// @notice Total redeemable tokens supply
-        uint256 totalSupply;
-        /// @notice Total saving assets in redeemable amount
-        uint256 totalSavingsAmount;
-    }
-
-    /**
-     * @notice Stats for accounts
-     */
-    struct AccountStats {
-        /// @notice Cumulative interests paid
-        uint256 cumulativeInterest;
-    }
+contract IRToken is Structs, IERC20 {
 
 
     ////////////////////////////////////////////////////////////////////////////
@@ -384,46 +410,50 @@ contract IRToken is IERC20 {
 // File: contracts/Storage.sol
 
 pragma solidity ^0.5.8;
+pragma experimental ABIEncoderV2;
 
 
 
-contract Storage {
 
-    struct AccountStats {
-        uint256 cumulativeInterest;
-    }
+contract Storage is Structs, IERC20{
 
-    struct Hat {
-        address[] recipients;
-        uint32[] proportions;
-    }
-
-    struct Account {
-        uint256 hatID;
-        uint256 rAmount;
-        uint256 rInterest;
-        mapping(address => uint256) lRecipients;
-        uint256 lDebt;
-        uint256 sInternalAmount;
-        AccountStats stats;
-    }
-
-    /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK your deployed proxy contract.*/
-    address private _owner;
-    uint256 private _guardCounter;
-    uint256 public constant SELF_HAT_ID = uint256(int256(-1));
-    uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
-    string public name = "Redeemable DAI (rDAI ethberlin)";
-    string public symbol = "rDAItest";
-    uint256 public decimals = 18;
+    /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
+    address public _owner;
+    bool public initialized;
+    uint256 public _guardCounter;
+    /**
+     * @notice EIP-20 token name for this token
+     */
+    string public name;
+    /**
+     * @notice EIP-20 token symbol for this token
+     */
+    string public symbol;
+    /**
+     * @notice EIP-20 token decimals for this token
+     */
+    uint256 public decimals;
+    /**
+     * @notice Total number of tokens in circulation
+     */
     uint256 public totalSupply;
-    IAllocationStrategy private ias;
-    IERC20 private token;
-    uint256 private savingAssetOrignalAmount;
-    uint256 private savingAssetConversionRate = 10**18;
-    mapping(address => mapping(address => uint256)) private transferAllowances;
+    /// @dev Current saving strategy
+    IAllocationStrategy public ias;
+    /// @dev Underlying token
+    IERC20 public token;
+    /// @dev Saving assets original amount
+    uint256 public savingAssetOrignalAmount;
+    /// @dev Saving asset original to internal amount conversion rate.
+    ///      - It has 18 decimals
+    ///      - It starts with value 1.
+    ///      - Each strategy switching results a new conversion rate
+    uint256 public savingAssetConversionRate;
+    /// @dev Approved token transfer amounts on behalf of others
+    mapping(address => mapping(address => uint256)) public transferAllowances;
+    /// @dev Hat list
     Hat[] private hats;
-    mapping(address => Account) private accounts;
+    /// @dev Account mapping
+    mapping(address => Account) public accounts;
 }
 
 // File: contracts/Proxiable.sol
@@ -452,6 +482,24 @@ contract Proxiable {
     function proxiableUUID() public pure returns (bytes32) {
         return
             0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7;
+    }
+}
+
+// File: contracts/LibraryLock.sol
+
+pragma solidity ^0.5.8;
+
+
+contract LibraryLock is Storage {
+    // Ensures no one can manipulate the Logic Contract once it is deployed.
+    // PARITY WALLET HACK PREVENTION
+
+    modifier delegatedOnly() {
+        require(initialized == true, "The library is locked. No direct 'call' is allowed");
+        _;
+    }
+    function initialize() internal {
+        initialized = true;
     }
 }
 
@@ -696,25 +744,30 @@ pragma experimental ABIEncoderV2;
 
 
 
+
+
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
-contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
+contract RToken is Structs, Storage, IRToken, Ownable, Proxiable, LibraryLock, ReentrancyGuard {
 
     using SafeMath for uint256;
 
     uint256 public constant SELF_HAT_ID = uint256(int256(-1));
-
-    uint32 constant PROPORTION_BASE = 0xFFFFFFFF;
-
-    //
-    // public structures
-    //
-
+    uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
+    /// @dev Hat list
+    Hat[] private hats;
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    constructor(IAllocationStrategy allocationStrategy) public {
+    function initialize(IAllocationStrategy allocationStrategy) external {
+        require(!initialized, "The library has already been initialized.");
+        initialize();
+        _owner = msg.sender;
+        name = "Redeemable DAI (rDAI ethberlin)";
+        symbol = "rDAItest";
+        decimals = 18;
+        savingAssetConversionRate = 10**18;
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
         // special hat aka. zero hat : hatID = 0
@@ -724,26 +777,6 @@ contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
     //
     // ERC20 Interface
     //
-
-    /**
-     * @notice EIP-20 token name for this token
-     */
-    string public name = "Redeemable DAI (rDAI ethberlin)";
-
-    /**
-     * @notice EIP-20 token symbol for this token
-     */
-    string public symbol = "rDAItest";
-
-    /**
-     * @notice EIP-20 token decimals for this token
-     */
-    uint256 public decimals = 18;
-
-     /**
-      * @notice Total number of tokens in circulation
-      */
-    uint256 public totalSupply;
 
     /**
      * @notice Returns the amount of tokens owned by `account`.
@@ -1022,57 +1055,10 @@ contract RToken is Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
             .div(sOriginalBurned);
     }
 
-    //
-    // internal
-    //
-
-    /// @dev Current saving strategy
-    IAllocationStrategy private ias;
-
-    /// @dev Underlying token
-    IERC20 private token;
-
-    /// @dev Saving assets original amount
-    uint256 private savingAssetOrignalAmount;
-
-    /// @dev Saving asset original to internal amount conversion rate.
-    ///      - It has 18 decimals
-    ///      - It starts with value 1.
-    ///      - Each strategy switching results a new conversion rate
-    uint256 private savingAssetConversionRate = 10 ** 18;
-
-    /// @dev Saving assets exchange rate with
-
-    /// @dev Approved token transfer amounts on behalf of others
-    mapping(address => mapping(address => uint256)) private transferAllowances;
-
-    /// @dev Hat list
-    Hat[] private hats;
-
-    /// @dev Account structure
-    struct Account {
-        //
-        // Essential info
-        //
-        /// @dev ID of the hat selected for the account
-        uint256 hatID;
-        /// @dev Redeemable token balance for the account
-        uint256 rAmount;
-        /// @dev Redeemable token balance portion that is from interest payment
-        uint256 rInterest;
-        /// @dev Mapping of recipients and their amount of debt
-        mapping (address => uint256) lRecipients;
-        /// @dev Loan debt amount for the account
-        uint256 lDebt;
-        /// @dev Saving asset amount internal
-        uint256 sInternalAmount;
-
-        /// @dev Stats
-        AccountStats stats;
+    /// @dev Update the rToken logic contract code
+    function updateCode(address newCode) external onlyOwner delegatedOnly {
+      updateCodeAddress(newCode);
     }
-
-    /// @dev Account mapping
-    mapping (address => Account) private accounts;
 
     /**
      * @dev Transfer `tokens` tokens from `src` to `dst` by `spender`

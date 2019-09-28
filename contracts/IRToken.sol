@@ -13,16 +13,6 @@ import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 contract IRToken is Structs, IERC20 {
 
 
-    /**
-     * @notice Global stats
-     */
-    struct GlobalStats {
-        /// @notice Total redeemable tokens supply
-        uint256 totalSupply;
-        /// @notice Total saving assets in redeemable amount
-        uint256 totalSavingsAmount;
-    }
-
     ////////////////////////////////////////////////////////////////////////////
     // For external transactions
     ////////////////////////////////////////////////////////////////////////////

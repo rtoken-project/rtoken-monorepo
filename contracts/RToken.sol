@@ -6,8 +6,8 @@ import {Structs} from "./Storage.sol";
 import {Proxiable} from "./Proxiable.sol";
 import {LibraryLock} from "./LibraryLock.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
+import {Ownable} from "./Ownable.sol";
+import {ReentrancyGuard} from "./ReentrancyGuard.sol";
 import {IERC20, IRToken} from "./IRToken.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
@@ -25,9 +25,10 @@ contract RToken is Structs, Storage, IRToken, Ownable, Proxiable, LibraryLock, R
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    function initialize(IAllocationStrategy allocationStrategy) public {
+    function initialize(IAllocationStrategy allocationStrategy) external {
         require(!initialized, "The library has already been initialized.");
         initialize();
+        _owner = msg.sender;
         name = "Redeemable DAI (rDAI ethberlin)";
         symbol = "rDAItest";
         decimals = 18;

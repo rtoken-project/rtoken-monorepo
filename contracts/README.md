@@ -154,3 +154,34 @@ pragma experimental ABIEncoderV2;
 ```
 
 This was already present before starting my work.
+
+
+## Upgrade test added & passing :+1:
+
+Test #15 has been added for performing an upgrade. After the upgrade, it simply runs through test #2 again (rToken normal operations with zero hatter). If you want it to run through the entire test suite, simply place the upgrade snippet below in the `beforeEach()`.
+
+```solidity
+// Deploy the new rToken logic/library contract
+const newRTokenLogic = await web3tx(RToken.new, "RToken.new")(
+    {
+      from: admin
+  });
+// Perform the upgrade
+await web3tx(rToken.updateCode, "rToken.updateCode")(newRTokenLogic.address, {
+  from: admin
+});
+```
+
+### Other
+
+`Ownable.sol` and `ReentrancyGuard.sol` each have their own "Private" variable declarations when using the imported contracts from OpenZeppelin. Since all the variables are listed as "Public" in `Storage.sol`, this is actually creating two separate variables, or at least it's unclear which is being used. Regardless, I copied the code from these two contracts to import them locally
+
+```solidity
+import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
+// changed to
+import {Ownable} from "./Ownable.sol";
+import {ReentrancyGuard} from "./ReentrancyGuard.sol";
+```
+
+Does the initialize function need to be set to `delegatedOnly` ?

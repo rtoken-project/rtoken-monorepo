@@ -10,6 +10,7 @@ contract Storage is Structs, IERC20{
     /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
     address public _owner;
     bool public initialized;
+    /// @dev counter to allow mutex lock with only one SSTORE operation
     uint256 public _guardCounter;
     /**
      * @notice EIP-20 token name for this token
