@@ -7,7 +7,7 @@ contract LibraryLock is Storage {
     // PARITY WALLET HACK PREVENTION
 
     modifier delegatedOnly() {
-        require(initialized == true, "The library is locked. No direct 'call' is allowed");
+        require(initialized == true, "The library is locked. No direct 'call' is allowed.");
         _;
     }
     function initialize() internal {

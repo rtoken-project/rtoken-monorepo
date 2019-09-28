@@ -21,6 +21,7 @@ contract("RToken contract", accounts => {
     let cToken;
     let compoundAS;
     let rToken;
+    let rTokenLogic;
     let SELF_HAT_ID;
 
     before(async () => {
@@ -53,7 +54,7 @@ contract("RToken contract", accounts => {
         );
 
         // Deploy the rToken logic/library contract
-        const rTokenLogic = await web3tx(RToken.new, "RToken.new")(
+        rTokenLogic = await web3tx(RToken.new, "RToken.new")(
             {
               from: admin
           });
@@ -1327,5 +1328,73 @@ contract("RToken contract", accounts => {
           from: customer1
       });
       assert.equal(wad4human(await token.balanceOf.call(customer3)), "2.00000");
+    })
+
+    it("#16 proxy security", async () => {
+
+      // Call initialize first time
+      await web3tx(rTokenLogic.initialize, "rTokenLogic.initialize first time")(compoundAS.address, {
+          from: admin
+      })
+
+      // Test original logic contract
+      await expectRevert(web3tx(rTokenLogic.initialize, "rTokenLogic.initialize second time")(compoundAS.address, {
+          from: admin
+      }), "The library has already been initialized.");
+
+      await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from non-owner")(compoundAS.address, {
+          from: customer1
+      }), "Ownable: caller is not the owner");
+
+      // await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from owner")(compoundAS.address, {
+      //   from: admin
+      // }), "The library is locked. No direct 'call' is allowed.");
+
+      // Test original proxy contract
+      await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(compoundAS.address, {
+          from: admin
+      }), "The library has already been initialized.");
+
+      await expectRevert(web3tx(rToken.updateCode, "rToken.updateCode (original)")(compoundAS.address, {
+          from: customer1
+      }), "Ownable: caller is not the owner");
+
+      // Deploy new rToken logic/library contract
+      const newRTokenLogic = await web3tx(RToken.new, "RToken.new")(
+          {
+            from: admin
+        });
+      // Perform the upgrade
+      await web3tx(rToken.updateCode, "rToken.updateCode")(newRTokenLogic.address, {
+        from: admin
+      });
+
+      // Call initialize first time
+      await web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize first time")(compoundAS.address, {
+          from: admin
+      })
+
+      // Test new logic contract
+      await expectRevert(web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize second time")(compoundAS.address, {
+          from: admin
+      }), "The library has already been initialized.");
+
+      await expectRevert(web3tx(newRTokenLogic.updateCode, "rTokenLogic.updateCode from non-owner")(compoundAS.address, {
+          from: customer1
+      }), "Ownable: caller is not the owner");
+
+      // await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from owner")(compoundAS.address, {
+      //   from: admin
+      // }), "The library is locked. No direct 'call' is allowed.");
+
+      // Test new proxy contract
+      await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(compoundAS.address, {
+          from: admin
+      }), "The library has already been initialized.");
+
+      await expectRevert(web3tx(rToken.updateCode, "rToken.updateCode (original)")(compoundAS.address, {
+          from: customer1
+      }), "Ownable: caller is not the owner");
+
     })
 });
