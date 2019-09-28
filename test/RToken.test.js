@@ -58,7 +58,7 @@ contract("RToken contract", accounts => {
               from: admin
           });
         // Get the init code for rToken
-        const rTokenConstructCode = rTokenLogic.contract.methods.construct(compoundAS.address).encodeABI();
+        const rTokenConstructCode = rTokenLogic.contract.methods.initialize(compoundAS.address).encodeABI();
 
         // Deploy the Proxy, using the init code for rToken
         const proxy = await web3tx(Proxy.new, "Proxy.new")(

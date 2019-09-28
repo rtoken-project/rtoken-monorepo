@@ -3,56 +3,35 @@ pragma experimental ABIEncoderV2;
 
 import {Storage} from "./Storage.sol";
 import {Structs} from "./Storage.sol";
+import {Proxiable} from "./Proxiable.sol";
+import {LibraryLock} from "./LibraryLock.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 import {ReentrancyGuard} from "openzeppelin-solidity/contracts/utils/ReentrancyGuard.sol";
 import {IERC20, IRToken} from "./IRToken.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
-contract Proxiable {
-    // Code position in storage is keccak256("PROXIABLE") = "0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7"
-
-    function updateCodeAddress(address newAddress) internal {
-        require(
-            bytes32(
-                    0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7
-                ) ==
-                Proxiable(newAddress).proxiableUUID(),
-            'Not compatible'
-        );
-        assembly {
-            // solium-disable-line
-            sstore(
-                0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7,
-                newAddress
-            )
-        }
-    }
-    function proxiableUUID() public pure returns (bytes32) {
-        return
-            0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7;
-    }
-}
-
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
-contract RToken is Structs, Storage, Proxiable, IRToken, Ownable, ReentrancyGuard {
+contract RToken is Structs, Storage, IRToken, Ownable, Proxiable, LibraryLock, ReentrancyGuard {
 
     using SafeMath for uint256;
 
     uint256 public constant SELF_HAT_ID = uint256(int256(-1));
-
-    uint32 constant PROPORTION_BASE = 0xFFFFFFFF;
-
-    //
-    // public structures
-    //
-
+    uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
+    /// @dev Hat list
+    Hat[] private hats;
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    function construct(IAllocationStrategy allocationStrategy) public {
+    function initialize(IAllocationStrategy allocationStrategy) public {
+        require(!initialized, "The library has already been initialized.");
+        initialize();
+        name = "Redeemable DAI (rDAI ethberlin)";
+        symbol = "rDAItest";
+        decimals = 18;
+        savingAssetConversionRate = 10**18;
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
         // special hat aka. zero hat : hatID = 0
@@ -62,26 +41,6 @@ contract RToken is Structs, Storage, Proxiable, IRToken, Ownable, ReentrancyGuar
     //
     // ERC20 Interface
     //
-
-    /**
-     * @notice EIP-20 token name for this token
-     */
-    string public name = "Redeemable DAI (rDAI ethberlin)";
-
-    /**
-     * @notice EIP-20 token symbol for this token
-     */
-    string public symbol = "rDAItest";
-
-    /**
-     * @notice EIP-20 token decimals for this token
-     */
-    uint256 public decimals = 18;
-
-     /**
-      * @notice Total number of tokens in circulation
-      */
-    uint256 public totalSupply;
 
     /**
      * @notice Returns the amount of tokens owned by `account`.
@@ -360,35 +319,10 @@ contract RToken is Structs, Storage, Proxiable, IRToken, Ownable, ReentrancyGuar
             .div(sOriginalBurned);
     }
 
-    //
-    // internal
-    //
-
-    /// @dev Current saving strategy
-    IAllocationStrategy private ias;
-
-    /// @dev Underlying token
-    IERC20 private token;
-
-    /// @dev Saving assets original amount
-    uint256 private savingAssetOrignalAmount;
-
-    /// @dev Saving asset original to internal amount conversion rate.
-    ///      - It has 18 decimals
-    ///      - It starts with value 1.
-    ///      - Each strategy switching results a new conversion rate
-    uint256 private savingAssetConversionRate = 10 ** 18;
-
-    /// @dev Saving assets exchange rate with
-
-    /// @dev Approved token transfer amounts on behalf of others
-    mapping(address => mapping(address => uint256)) private transferAllowances;
-
-    /// @dev Hat list
-    Hat[] private hats;
-
-    /// @dev Account mapping
-    mapping (address => Account) private accounts;
+    /// @dev Update the rToken logic contract code
+    function updateCode(address newCode) external onlyOwner delegatedOnly {
+      updateCodeAddress(newCode);
+    }
 
     /**
      * @dev Transfer `tokens` tokens from `src` to `dst` by `spender`

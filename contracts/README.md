@@ -35,3 +35,122 @@ Maybe can use [atom solc linter](https://atom.io/packages/atom-solidity-linter)?
 
 Solidity Parser is used in [Truffle Flattener](https://github.com/nomiclabs/truffle-flattener)
 [Prettier plugin](https://www.npmjs.com/package/prettier-plugin-solidity)
+
+
+ ### Notes 2 -
+
+## Changes made
+
+### Variables and storage
+
+Due to the way solidity handles variable declarations, duplicates will be ignored. Thus all variables are placed into the `Storage.sol` contract, which is inherited as the first base contract. This will make variables declared in `Storage.sol` as the "ultimate truth", and any further declaration instances are ignored.
+
+*However*, rather than leave them in place, I decided to remove any obvious duplicate variable declarations, to reduce confusion around multiple declarations. This also will encourage future developers to only place variables in `Storage.sol` and to utilize the rules of variable ordering in proxy contracts.
+
+__Change from Private to Public__: Since the variables are now instantiated in `Storage.sol`, they must be made public to be accessed by `RToken.sol`. One hiccup here is that making `Hat[] private hats` to "public" causes the following error
+
+>TypeError: Internal or recursive type is not allowed for public state variables.
+
+:warning: I have not found a real solution for this yet. The only hot-fix is to include the variable in both `Storage.sol` and `RToken.sol`
+
+__Additional practices__ observed as suggested by OpenZeppelin ([article](https://docs.openzeppelin.com/sdk/2.5/writing-contracts)) and/or EIP 1822.
+
+
+1. __Initializers rather than "constructor"__
+
+  There is no need for a constructor, but rather a function which performs the similar effect as a constructor.
+
+2. __Avoid initial values in field declarations__
+
+  Since we are removing the use of a constructor, we also need to remove variables which are treated as "constructor-like", such as `myBoolean` in this example. If we do not do this, it will be difficult to change it's value in the future.
+
+    ```solidity
+    contract MyContract {
+        bool myBoolean = true;
+
+        constructor(){
+        //...
+        }
+    }
+    ```
+  Instead, the above should be changed to this
+
+    ```solidity
+    contract MyContract {
+        bool myBoolean;
+
+        intilialize(){
+          myBoolean = true;
+        }
+    }
+    ```
+
+  The following variables were impacted:
+
+ `owner`: This can be changed with `transferOwnership()`, so it is not necessary to move this to the `initialize()`.
+
+ `_guardCounter`: It is more likely we would implement a completely different version of ReentrancyGuard, rather than ever need to change this value. In this situation, `_guardCounter` would become deprecated / no longer used. Therefore, this was not moved to `initialize()`.
+
+ `SELF_HAT_ID` and `PROPORTION_BASE`: The compiler does not reserve a storage slot for constants. Therefore, these were not moved to `initialize()`, nor placed in `Storage.sol`. If an upgraded contract is deployed with new constants, the proxy will utilize the new values.
+
+ `name` `symbol` `decimals` `savingAssetConversionRate`: moved to `initialize()`, so they can be changed if needed during a future upgrade.
+
+### Upgradeability
+
+`RToken.sol` inherits `Proxiable.sol` to allow for upgrading
+
+```solidity
+contract RToken is Structs, Storage, IRToken, Ownable, Proxiable, LibraryLock, ReentrancyGuard {
+```
+
+`updateCode()` provides the pathway to perform an upgrade, restricted to only owner.
+
+```solidity
+/// @dev Update the rToken logic contract code
+function updateCode(address newCode) external onlyOwner delegatedOnly {
+  updateCodeAddress(newCode);
+}
+```
+
+### Library Lock
+
+Added to prevent potentially harmful calls made directly to the library/logic contract. For now, the only function which needs the `delegatedOnly` modifier is `updateCode()`.
+
+```solidity
+contract LibraryLock is Storage {
+    // Ensures no one can manipulate the Logic Contract once it is deployed.
+    // PARITY WALLET HACK PREVENTION
+
+    modifier delegatedOnly() {
+        require(initialized == true, "The library is locked. No direct 'call' is allowed");
+        _;
+    }
+    function initialize() internal {
+        initialized = true;
+    }
+}
+```
+
+### Other
+
+__Don't include any `delegatecall` or `selfdestruct`__
+
+  This is important to keep in mind for future upgrades. Never include this functionality, else an attacker can destroy the contracts.
+
+__Compilation warnings__
+
+```solidity
+Warning: Unused local variable.
+        (bool success, bytes memory _ ) = contractLogic.delegatecall(constructData); // solium-disable-line
+                       ^------------^
+```
+This has been a warning on `Proxy.sol` for a while. Will need to defer to Gabriel if this can be fixed.
+
+
+```solidity
+Warning: Experimental features are turned on. Do not use experimental features on live deployments.
+pragma experimental ABIEncoderV2;
+^-------------------------------^
+```
+
+This was already present before starting my work.
