@@ -4,12 +4,6 @@ import {Storage} from "./Storage.sol";
 
 contract ReentrancyGuard is Storage {
 
-    constructor () internal {
-        // The counter starts at one to prevent changing it from zero to a non-zero
-        // value, which is a more expensive operation.
-        _guardCounter = 1;
-    }
-
     /**
      * @dev Prevents a contract from calling itself, directly or indirectly.
      * Calling a `nonReentrant` function from another `nonReentrant`

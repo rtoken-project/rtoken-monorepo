@@ -29,6 +29,7 @@ contract RToken is Structs, Storage, IRToken, Ownable, Proxiable, LibraryLock, R
         require(!initialized, "The library has already been initialized.");
         initialize();
         _owner = msg.sender;
+        _guardCounter = 1;
         name = "Redeemable DAI (rDAI ethberlin)";
         symbol = "rDAItest";
         decimals = 18;
