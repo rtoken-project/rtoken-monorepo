@@ -1,12 +1,11 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
-import {Structs} from "./Structs.sol";
-import {IERC20} from "./IRToken.sol";
-import {IAllocationStrategy} from "./IAllocationStrategy.sol";
+import {RTokenStructs} from './RTokenStructs.sol';
+import {IERC20} from './IRToken.sol';
+import {IAllocationStrategy} from './IAllocationStrategy.sol';
 
-contract Storage is Structs, IERC20{
-
+contract RTokenStorage is RTokenStructs, IERC20 {
     /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/
     address public _owner;
     bool public initialized;

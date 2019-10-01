@@ -1,14 +1,14 @@
 pragma solidity ^0.5.8;
 
-contract Structs {
-  /**
+contract RTokenStructs {
+    /**
    * @notice Global stats
    */
-   struct GlobalStats {
-      /// @notice Total redeemable tokens supply
-      uint256 totalSupply;
-      /// @notice Total saving assets in redeemable amount
-      uint256 totalSavingsAmount;
+    struct GlobalStats {
+        /// @notice Total redeemable tokens supply
+        uint256 totalSupply;
+        /// @notice Total saving assets in redeemable amount
+        uint256 totalSavingsAmount;
     }
 
     struct AccountStats {

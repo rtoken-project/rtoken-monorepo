@@ -1,9 +1,8 @@
 pragma solidity ^0.5.8;
 
-import {Storage} from "./Storage.sol";
+import {RTokenStorage} from './RTokenStorage.sol';
 
-contract ReentrancyGuard is Storage {
-
+contract ReentrancyGuard is RTokenStorage {
     /**
      * @dev Prevents a contract from calling itself, directly or indirectly.
      * Calling a `nonReentrant` function from another `nonReentrant`
@@ -15,6 +14,9 @@ contract ReentrancyGuard is Storage {
         _guardCounter += 1;
         uint256 localCounter = _guardCounter;
         _;
-        require(localCounter == _guardCounter, "ReentrancyGuard: reentrant call");
+        require(
+            localCounter == _guardCounter,
+            'ReentrancyGuard: reentrant call'
+        );
     }
 }
