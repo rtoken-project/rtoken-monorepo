@@ -41,7 +41,7 @@ contract RTokenStorage is RTokenStructs, IERC20 {
     /// @dev Approved token transfer amounts on behalf of others
     mapping(address => mapping(address => uint256)) public transferAllowances;
     /// @dev Hat list
-    Hat[] private hats;
+    Hat[] internal hats;
     /// @dev Account mapping
     mapping(address => Account) public accounts;
 }

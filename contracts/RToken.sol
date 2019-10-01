@@ -27,8 +27,7 @@ contract RToken is
 
     uint256 public constant SELF_HAT_ID = uint256(int256(-1));
     uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
-    /// @dev Hat list
-    Hat[] private hats;
+
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */

@@ -1397,4 +1397,178 @@ contract("RToken contract", accounts => {
       }), "Ownable: caller is not the owner");
 
     })
+
+    it("#17 storage continuity during upgrade", async () => {
+        // Test to ensure storage is not disrupted by performing an upgrade.
+        await web3tx(token.approve, "token.approve 100 by customer1")(
+            rToken.address,
+            toWad(100),
+            {
+                from: customer1
+            }
+        );
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
+            inLogs: [
+                {
+                    name: "Mint"
+                },
+                {
+                    name: "Transfer",
+                    args: {
+                        from: rToken.address,
+                        to: customer1,
+                        value: toWad(100)
+                    }
+                }
+            ]
+        })(toWad(100), {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
+        await expectAccount(customer1, {
+            tokenBalance: "100.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00000",
+            interestPayable: "0.00000"
+        });
+
+        await expectRevert(
+            rToken.transfer(customer2, toWad(100.1), {from: customer1}),
+            "Not enough balance to transfer"
+        );
+        await expectRevert(
+            rToken.transferFrom(customer1, customer2, toWad(1), {from: admin}),
+            "Not enough allowance for transfer"
+        );
+
+        await doBingeBorrowing();
+        await expectAccount(customer1, {
+            tokenBalance: "100.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00100",
+            interestPayable: "0.00100"
+        });
+        assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
+            totalSupply: "100.00000",
+            totalSavingsAmount: "100.00100"
+        });
+
+        await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
+            inLogs: [
+                {
+                    name: "Redeem",
+                    args: {
+                        redeemer: customer1,
+                        redeemTo: customer1,
+                        redeemAmount: toWad(10)
+                    }
+                },
+                {
+                    name: "Transfer",
+                    args: {
+                        from: customer1,
+                        to: rToken.address,
+                        value: toWad(10)
+                    }
+                }
+            ]
+        })(toWad(10), {
+            from: customer1
+        });
+
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "90.00101");
+        await expectAccount(customer1, {
+            tokenBalance: "90.00101",
+            cumulativeInterest: "0.00101",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00101",
+            interestPayable: "0.00000"
+        });
+
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1", {
+            inLogs: [
+                {
+                    name: "InterestPaid"
+                },
+                {
+                    name: "Transfer",
+                    args: {
+                        from: rToken.address,
+                        to: customer1
+                        // value: // who knows
+                    }
+                }
+            ]
+        })(customer1, {from: admin});
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
+        assert.equal(wad4human(await rToken.totalSupply.call()), "90.00102");
+        await expectAccount(customer1, {
+            tokenBalance: "90.00102",
+            cumulativeInterest: "0.00102",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00102",
+            interestPayable: "0.00000"
+        });
+        // Deploy the new rToken logic/library contract
+        const newRTokenLogic = await web3tx(RToken.new, "RToken.new")({
+            from: admin
+        });
+        // Perform the upgrade
+        await web3tx(rToken.updateCode, "rToken.updateCode")(
+            newRTokenLogic.address,
+            {
+                from: admin
+            }
+        );
+        await web3tx(rToken.payInterest, "rToken.payInterest to customer1 again", {
+            inLogs: [
+                {
+                    name: "InterestPaid"
+                }
+            ]
+        })(customer1, {from: admin});
+        await expectAccount(customer1, {
+            tokenBalance: "90.00105",
+            cumulativeInterest: "0.00105",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00105",
+            interestPayable: "0.00000"
+        });
+        assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
+            totalSupply: "90.00105",
+            totalSavingsAmount: "90.00105"
+        });
+
+        await web3tx(
+            rToken.redeemAndTransfer,
+            "rToken.redeem 2 of customer1 to customer3",
+            {
+                inLogs: [
+                    {
+                        name: "Redeem",
+                        args: {
+                            redeemer: customer1,
+                            redeemTo: customer3,
+                            redeemAmount: toWad(2)
+                        }
+                    },
+                    {
+                        name: "Transfer",
+                        args: {
+                            from: customer1,
+                            to: rToken.address,
+                            value: toWad(2)
+                        }
+                    }
+                ]
+            }
+        )(customer3, toWad(2), {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer3)), "2.00000");
+    });
 });
