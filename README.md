@@ -198,11 +198,8 @@ proper allocation strategy.
 The `RToken` contract has an admin role who can:
 
 - Change allocation strategy
-- Configure interest payment rules:
-  - Minimal threshold of "interest amount / loaned tokens"
-  - Minimal period before first interest payment
-  - Minimal gap between interest payments
 - Change hat for any contract address
+- Upgrade code
 
 It is up to the `rToken` instantiator to decide the degree of decentralization
 of this admin. For maximum decentralization, the admin could be a DAO that is

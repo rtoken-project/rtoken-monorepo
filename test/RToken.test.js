@@ -1592,4 +1592,45 @@ contract("RToken contract", accounts => {
         });
         assert.equal(wad4human(await token.balanceOf.call(customer3)), "2.00000");
     });
+
+    it("#18 admin.changeHatFor", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting admin(90%) and customer2(10%)", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), [admin, customer2], [90, 10], {
+            from: customer1
+        });
+
+        assert.deepEqual(parseHatStats(await rToken.getHatStats(1)), {
+            useCount: "1",
+            totalLoans: "100.00000",
+            totalSavings: "100.00000",
+        });
+
+        await expectRevert(web3tx(rToken.changeHatFor, "rToken.changeHatFor by customer1")(
+            cToken.address, 1, {
+                from: customer1
+            }
+        ), "Ownable: caller is not the owner");
+        await web3tx(rToken.changeHatFor, "rToken.changeHatFor by customer1")(
+            cToken.address, 1, {
+                from: admin
+            }
+        );
+        assert.deepEqual(parseHatStats(await rToken.getHatStats(1)), {
+            useCount: "2",
+            totalLoans: "100.00000",
+            totalSavings: "100.00000",
+        });
+
+        await expectRevert(web3tx(rToken.changeHatFor, "rToken.changeHatFor by customer1")(
+            customer3, 1, {
+                from: admin
+            }
+        ), "Admin can only change hat for contract address");
+    });
 });
