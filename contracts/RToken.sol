@@ -27,6 +27,7 @@ contract RToken is
 
     uint256 public constant SELF_HAT_ID = uint256(int256(-1));
     uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
+    uint256 public constant MAX_NUM_HAT_RECIPIENTS = 50;
 
     /**
      * @notice Create rToken linked with cToken at `cToken_`
@@ -464,8 +465,13 @@ contract RToken is
         // EFFECTS & INTERACTIONS
         // (No safe failures beyond this point)
 
+        // check if src & dst have the same hat
+        bool sameHat = accounts[src].hatID == accounts[dst].hatID && accounts[src].hatID != 0;
+
         // apply hat inheritance rule
-        if (accounts[src].hatID != 0 && accounts[dst].hatID == 0) {
+        if ((accounts[src].hatID != 0 &&
+            accounts[dst].hatID == 0 &&
+            accounts[src].hatID != SELF_HAT_ID)) {
             changeHatInternal(dst, accounts[src].hatID);
         }
 
@@ -478,17 +484,15 @@ contract RToken is
         }
 
         // lRecipients adjustments
-        uint256 sInternalAmountCollected = estimateAndRecollectLoans(
-            src,
-            tokens
-        );
-        distributeLoans(dst, tokens, sInternalAmountCollected);
-
-        // inherit hat if the recipient does not have one yet
-        if (accounts[dst].hatID == 0 &&
-            (accounts[src].hatID != 0 &&
-            accounts[src].hatID != SELF_HAT_ID)) {
-            changeHatInternal(dst, accounts[src].hatID);
+        if (!sameHat) {
+            uint256 sInternalAmountCollected = estimateAndRecollectLoans(
+                src,
+                tokens
+            );
+            distributeLoans(dst, tokens, sInternalAmountCollected);
+        } else {
+            // apply same hat optimization
+            sameHatTransfer(src, dst, tokens);
         }
 
         // rInterest adjustment for src
@@ -584,7 +588,7 @@ contract RToken is
     /**
      * @dev Create a new Hat
      * @param recipients List of beneficial recipients
-     * @param proportions Relative proportions of benefits received by the recipients
+*    * @param proportions Relative proportions of benefits received by the recipients
      */
     function createHatInternal(
         address[] memory recipients,
@@ -593,6 +597,7 @@ contract RToken is
         uint256 i;
 
         require(recipients.length > 0, 'Invalid hat: at least one recipient');
+        require(recipients.length <= MAX_NUM_HAT_RECIPIENTS, "Invalild hat: maximum number of recipients reached");
         require(
             recipients.length == proportions.length,
             'Invalid hat: length not matching'
@@ -818,6 +823,33 @@ contract RToken is
 
             _updateLoanStats(owner, owner, account.hatID, false, rAmount, sInternalAmount);
         }
+    }
+
+    /**
+     * @dev Optimized recollect and distribute loan for the same hat
+     * @param src Source address
+     * @param dst Destination address
+     * @param rAmount rToken amount being written of from the recipients
+     */
+    function sameHatTransfer(
+        address src,
+        address dst,
+        uint256 rAmount) internal {
+        // accrue interest so estimate is up to date
+        ias.accrueInterest();
+
+        Account storage srcAccount = accounts[src];
+        Account storage dstAccount = accounts[dst];
+
+        uint256 sInternalAmount = rAmount
+            .mul(savingAssetConversionRate)
+            .div(ias.exchangeRateStored()); // the 1e18 decimals should be cancelled out
+
+        srcAccount.lDebt = gentleSub(srcAccount.lDebt, rAmount);
+        srcAccount.sInternalAmount = gentleSub(srcAccount.sInternalAmount, sInternalAmount);
+
+        dstAccount.lDebt = dstAccount.lDebt.add(rAmount);
+        dstAccount.sInternalAmount = dstAccount.sInternalAmount.add(sInternalAmount);
     }
 
     /**

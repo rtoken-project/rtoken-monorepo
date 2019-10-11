@@ -1633,4 +1633,47 @@ contract("RToken contract", accounts => {
             }
         ), "Admin can only change hat for contract address");
     });
+
+    it.only("#19 Max hat numbers & same hat optimization", async () => {
+        let tx;
+
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+
+        // build a sombrero
+        const sombrero = { addresses: [], proportions: []};
+        for (let i = 0; i < 50; ++i) {
+            sombrero.addresses.push(`0x${i}000000000000000000000000000000000000000`.substr(0, 42));
+            sombrero.proportions.push(1);
+        }
+
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting admin(90%) and customer2(10%)", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), sombrero.addresses, sombrero.proportions, {
+            from: customer1
+        });
+
+        await web3tx(rToken.transfer, "rToken.transfer 10 customer1 -> customer2")(
+            customer2, toWad(10), {
+                from: customer1
+            });
+
+        tx = await web3tx(rToken.transfer, "rToken.transfer 10 customer1 -> customer2 again")(
+            customer2, toWad(10), {
+                from: customer1
+            });
+        assert.isTrue(tx.receipt.gasUsed < 250000, "Same hat optimization was not applied");
+
+        // enlarge the sombrero
+        sombrero.addresses.push("0x1000000000000000000000000000000000000000");
+        sombrero.proportions.push(1);
+        await expectRevert(web3tx(rToken.createHat, "rToken.createHat by bigger sombrero")(
+            sombrero.addresses, sombrero.proportions, {
+                from: admin
+            }
+        ), "Invalild hat: maximum number of recipients reached");
+    });
 });
