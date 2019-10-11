@@ -407,6 +407,12 @@ contract RToken is
         );
     }
 
+    /// @dev IRToken.changeHatFor implementation
+    function changeHatFor(address contractAddress, uint256 hatID) external onlyOwner {
+        require(_isContract(contractAddress), "Admin can only change hat for contract address");
+        changeHatInternal(contractAddress, hatID);
+    }
+
     /// @dev Update the rToken logic contract code
     function updateCode(address newCode) external onlyOwner delegatedOnly {
         updateCodeAddress(newCode);
@@ -863,6 +869,12 @@ contract RToken is
                 hatStats.totalInternalSavings,
                 internalSavingsAmount);
         }
+    }
+
+    function _isContract(address addr) private view returns (bool) {
+      uint size;
+      assembly { size := extcodesize(addr) }
+      return size > 0;
     }
 
     /**

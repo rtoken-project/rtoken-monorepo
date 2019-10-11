@@ -239,10 +239,18 @@ contract IRToken is RTokenStructs, IERC20 {
     // admin functions
     ////////////////////////////////////////////////////////////////////////////
     /**
-    * @notice Change allocation strategy for the contract instance
-    * @param allocationStrategy Allocation strategy instance
-    */
+     * @notice Change allocation strategy for the contract instance
+     * @param allocationStrategy Allocation strategy instance
+     */
     function changeAllocationStrategy(IAllocationStrategy allocationStrategy)
+        external;
+
+    /**
+     * @notice Change hat for the contract address
+     * @param contractAddress contract address
+     * @param hatID Hat ID
+     */
+    function changeHatFor(address contractAddress, uint256 hatID)
         external;
 
     ////////////////////////////////////////////////////////////////////////////
