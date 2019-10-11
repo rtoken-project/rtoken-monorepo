@@ -84,6 +84,14 @@ contract("RToken contract", accounts => {
         return hatObj;
     }
 
+    function parseHatStats({useCount, totalLoans, totalSavings}) {
+        return {
+            useCount,
+            totalLoans: wad4human(totalLoans),
+            totalSavings: wad4human(totalSavings)
+        };
+    }
+
     function parseGlobalStats({totalSupply, totalSavingsAmount}) {
         return {
             totalSupply: wad4human(totalSupply),
@@ -126,25 +134,25 @@ contract("RToken contract", accounts => {
 
         const tokenBalance = wad4human(await rToken.balanceOf.call(account), decimals);
         console.log(`${accountName} tokenBalance ${tokenBalance} expected ${balances.tokenBalance}`);
-        assert.equal(tokenBalance, balances.tokenBalance);
+        assert.equal(tokenBalance, balances.tokenBalance, `${accountName} tokenBalance`);
 
         const receivedLoan = wad4human(await rToken.receivedLoanOf.call(account), decimals);
         console.log(`${accountName} receivedLoan ${receivedLoan} expected ${balances.receivedLoan}`);
-        assert.equal(receivedLoan, balances.receivedLoan);
+        assert.equal(receivedLoan, balances.receivedLoan, `${accountName} receivedLoan`);
 
         const receivedSavings = wad4human(await rToken.receivedSavingsOf.call(account), decimals);
         console.log(`${accountName} receivedSavings ${receivedSavings} expected ${balances.receivedSavings}`);
-        assert.equal(receivedSavings, balances.receivedSavings);
+        assert.equal(receivedSavings, balances.receivedSavings, `${accountName} receivedSavings`);
 
         const interestPayable = wad4human(await rToken.interestPayableOf.call(account), decimals);
         console.log(`${accountName} interestPayable ${interestPayable} expected ${balances.interestPayable}`);
-        assert.equal(interestPayable, balances.interestPayable);
+        assert.equal(interestPayable, balances.interestPayable, `${accountName} interestPayable`);
 
         const accountStats = await rToken.getAccountStats.call(account);
 
         const cumulativeInterest = wad4human(accountStats.cumulativeInterest, decimals);
         console.log(`${accountName} cumulativeInterest ${cumulativeInterest} expected ${balances.cumulativeInterest}`);
-        assert.equal(cumulativeInterest, balances.cumulativeInterest);
+        assert.equal(cumulativeInterest, balances.cumulativeInterest, `${accountName} cumulativeInterest`);
     }
 
     it("#0 initial test condition", async () => {
@@ -229,6 +237,8 @@ contract("RToken contract", accounts => {
             tokenBalance: "100.00000",
             cumulativeInterest: "0.00000",
             receivedLoan: "100.00000",
+            totalLoans: "100.00000",
+            totalSavings: "100.00000",
             receivedSavings: "100.00000",
             interestPayable: "0.00000",
         });
@@ -357,14 +367,19 @@ contract("RToken contract", accounts => {
             proportions: [3865470565, 429496729]
         });
         assert.deepEqual(parseHat(await rToken.getHatByAddress.call(admin)), {
-            hatID: 1,
-            recipients: [admin, customer2],
-            proportions: [3865470565, 429496729]
+            hatID: 0,
+            recipients: [],
+            proportions: []
         });
         assert.deepEqual(parseHat(await rToken.getHatByAddress.call(customer2)), {
-            hatID: 1,
-            recipients: [admin, customer2],
-            proportions: [3865470565, 429496729]
+            hatID: 0,
+            recipients: [],
+            proportions: []
+        });
+        assert.deepEqual(parseHatStats(await rToken.getHatStats(1)), {
+            useCount: "1",
+            totalLoans: "100.00000",
+            totalSavings: "100.00000",
         });
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
@@ -550,6 +565,12 @@ contract("RToken contract", accounts => {
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000",
+        });
+
+        assert.deepEqual(parseHatStats(await rToken.getHatStats(1)), {
+            useCount: "2",
+            totalLoans: "90.00000",
+            totalSavings: "90.00203",
         });
     });
 

@@ -207,7 +207,7 @@ contract IRToken is RTokenStructs, IERC20 {
     function getSavingAssetBalance()
         external
         view
-        returns (uint256 nAmount, uint256 sAmount);
+        returns (uint256 rAmount, uint256 sAmount);
 
     /**
     * @notice Get global stats
@@ -224,6 +224,16 @@ contract IRToken is RTokenStructs, IERC20 {
         external
         view
         returns (AccountStats memory);
+
+    /**
+    * @notice Get hat stats
+    * @param hatID Hat ID
+    * @return hat stats
+    */
+    function getHatStats(uint256 hatID)
+        external
+        view
+        returns (HatStats memory);
 
     ////////////////////////////////////////////////////////////////////////////
     // admin functions
@@ -253,9 +263,20 @@ contract IRToken is RTokenStructs, IERC20 {
     );
 
     /**
+     * @notice Event emitted when loans get transferred
+     */
+    event LoansTransferred(
+        address indexed owner,
+        address indexed recipient,
+        uint256 indexed hatId,
+        bool isDistribution,
+        uint256 redeemableAmount,
+        uint256 savingsAmount);
+
+    /**
      * @notice Event emitted when interest paid
      */
-    event InterestPaid(address indexed recipient, uint256 interestAmount);
+    event InterestPaid(address indexed recipient, uint256 amount);
 
     /**
      * @notice A new hat is created
@@ -265,5 +286,5 @@ contract IRToken is RTokenStructs, IERC20 {
     /**
      * @notice Hat is changed for the account
      */
-    event HatChanged(address indexed account, uint256 indexed hatID);
+    event HatChanged(address indexed account, uint256 indexed oldHatID, uint256 indexed newHatID);
 }

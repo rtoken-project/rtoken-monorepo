@@ -143,13 +143,9 @@ stipulated in order to allow hats to spread to new users:
 
 * All addresses have the _Zero Hat_ by default.
 
-* During the mint process, a user's deposited _DAI_ tokens are loaned to the
-recipients as indicated in the user's hat. If the recipient has the _Zero Hat_,
-the recipient will inherit the minter's hat.
-
 * During the transfer process, _DAI_ tokens are recollected and loaned to the
-new recipients. If the recipient has the _Zero Hat_, the recipient will inherit
-the source's hat.
+new recipients. If the recipient has the _Zero Hat_, and if the source hat is
+not a _Self Hat_, the recipient will inherit the source's hat.
 
 For example: Alice sets UNICEF France as recipients of her generated interest.
 Bob has never used _rDAI_, and thus has a _Zero Hat_. When Alice sends Bob 100
@@ -193,7 +189,9 @@ strategy could cause redeemability to fail if the strategy has heavy losses,
 it is up to the admin to make a sensible choice of what consists of a
 proper allocation strategy.
 
-### 10. Admin & Governance
+### 10. Statistics
+
+### 11. Admin & Governance
 
 **(TODO NOTE! The list is not final and some are to be implemented!)**
 
@@ -355,45 +353,85 @@ for all accounts)
 
 ## Rinkeby
 
-DAI: 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
-cDAI: 0x6d7f0754ffeb405d23c51ce938289d4835be3b14
-DaiCompoundAllocationStrategy (latest):
-
-
-
-[0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
-rDAI (latest):
-
-
-
-[0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
+* DAI: 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
+* cDAI: 0x6d7f0754ffeb405d23c51ce938289d4835be3b14
+* DaiCompoundAllocationStrategy (latest): [0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
+* rDAI (latest): [0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
 
 ## Kovan
 
-DAI: 0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99
-cDAI: 0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496
-DaiCompoundAllocationStrategy (latest):
-
-
-
-[0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
-rDAI (latest):
-
-
-
-[0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
+* DAI: 0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99
+* cDAI: 0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496
+* DaiCompoundAllocationStrategy (latest): [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
+* rDAI (latest): [0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
 
 ## Mainnet
 
-DAI: 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359
-cDAI: 0xf5dce57282a584d2746faf1593d3121fcac444dc
-DaiCompoundAllocationStrategy (ethberlin):
+* DAI: 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359
+* cDAI: 0xf5dce57282a584d2746faf1593d3121fcac444dc
+* DaiCompoundAllocationStrategy (ethberlin): [0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
+* rDAI (ethberlin): [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
 
+# Integration
 
+Here are some documentations on how one can integrate rDai in applications.
 
-[0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
-rDAI (ethberlin):
+## Mint/Redeem Flows
 
+**!TODO! embed plantuml sequence diagrams**
 
+## Stats
 
-[0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
+### On-chain stats:
+
+* How many addresses are using the hat?
+
+  `IRToken.getHatStats(hatID).useCount`
+
+* how much loans distributed through the hat currently?
+
+  `IRToken.getHatStats(hatID).totalLoans`
+
+* how much interest has been accumulated under the hat?
+
+  `IRToken.getHatStats(hatID).totalSavings - getHatStats(hatID).totalLoans`
+
+* how much loans distributed to the account?
+
+  `IRToken.receivedLoanOf(owner)`
+
+* how much savings distributed to the account?
+
+  `IRToken.receivedSavingsOf(owner)`
+
+* how much is cumulative interest generated for the account?
+
+  `IRToken.getAccountStats(owner).cumulativeInterest`
+
+* total supply
+
+  `ERC20.totalSuppl`
+
+* total savings amount
+
+  `IRToken.getGlobalStats().totalSavingsAmount`
+
+### Off-chain stats, that require pre-processing:
+
+These `IRToken` events will help for indexing stats per account/hat:
+
+* Mint
+* Redeem
+* LoansTransferred
+* InterestPaid
+* HatCreated
+* HatChanged
+
+For example for these metrics:
+
+* hats sorting by on-chain stats
+* monthly/daily active hats
+* top interest generating address
+* top beneficiaries
+* global volumes
+* global interest earned by period
