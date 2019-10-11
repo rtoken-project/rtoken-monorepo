@@ -2,8 +2,8 @@ pragma solidity ^0.5.8;
 
 contract RTokenStructs {
     /**
-   * @notice Global stats
-   */
+     * @notice Global stats
+     */
     struct GlobalStats {
         /// @notice Total redeemable tokens supply
         uint256 totalSupply;
@@ -11,8 +11,36 @@ contract RTokenStructs {
         uint256 totalSavingsAmount;
     }
 
+    /**
+     * @notice Account stats
+     */
     struct AccountStats {
+        /// @notice Cumulative interest generated for the account
         uint256 cumulativeInterest;
+    }
+
+    /**
+     * @notice Hat stats
+     */
+    struct HatStats {
+        /// @notice Number of addresses has the hat
+        uint256 useCount;
+        /// @notice Total net loans distributed through the hat
+        uint256 totalLoans;
+        /// @notice Total net savings distributed through the hat
+        uint256 totalSavings;
+    }
+
+    /**
+     * @notice Hat stats stored
+     */
+    struct HatStatsStored {
+        /// @notice Number of addresses has the hat
+        uint256 useCount;
+        /// @notice Total net loans distributed through the hat
+        uint256 totalLoans;
+        /// @notice Total net savings distributed through the hat
+        uint256 totalInternalSavings;
     }
 
     /**
@@ -36,6 +64,5 @@ contract RTokenStructs {
         mapping(address => uint256) lRecipients;
         uint256 lDebt;
         uint256 sInternalAmount;
-        AccountStats stats;
     }
 }
