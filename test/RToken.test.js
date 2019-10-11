@@ -1634,7 +1634,7 @@ contract("RToken contract", accounts => {
         ), "Admin can only change hat for contract address");
     });
 
-    it.only("#19 Max hat numbers & same hat optimization", async () => {
+    it("#19 Max hat numbers & same hat optimization", async () => {
         let tx;
 
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
@@ -1648,7 +1648,7 @@ contract("RToken contract", accounts => {
             sombrero.proportions.push(1);
         }
 
-        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting admin(90%) and customer2(10%)", {
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a sombreror", {
             inLogs: [{
                 name: "Mint"
             }]
@@ -1675,5 +1675,22 @@ contract("RToken contract", accounts => {
                 from: admin
             }
         ), "Invalild hat: maximum number of recipients reached");
+
+        // build a small sombrero
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer3, toWad(100), {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer3")(rToken.address, toWad(100), {
+            from: customer3
+        });
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer3 with a smaller sombrero", {
+            inLogs: [{
+                name: "Mint"
+            }]
+        })(toWad(100), sombrero.addresses.slice(1), sombrero.proportions.slice(1), {
+            from: customer3
+        });
     });
 });
