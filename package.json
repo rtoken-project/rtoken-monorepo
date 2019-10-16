@@ -16,7 +16,8 @@
         "truffle-flattener": "1.4.2",
         "truffle-hdwallet-provider": "1.0.17",
         "eslint": "6.5.0",
-        "npm-run-all": "4.1.5"
+        "npm-run-all": "4.1.5",
+        "solhint": "^2.3.0"
     },
     "scripts": {
         "build": "npm run build:truffle:compile",
@@ -24,7 +25,7 @@
         "test": "truffle test --network development test/all.js",
         "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run test 2>&1'",
         "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
-        "lint": "run-s lint:*",
+        "lint": "run-s lint:* && solhint contracts/**/*.sol",
         "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"
     }
 }
