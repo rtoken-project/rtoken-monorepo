@@ -378,11 +378,11 @@ for all accounts)
 
 **ethberlin edition**
 * DaiCompoundAllocationStrategy: [0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
-* rDAI: [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
+* rDAI Logic: [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
 
 **v1**
 * DaiCompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
-* rDAI: [0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a](https://etherscan.io/address/0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a)
+* rDAI Logic: [0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a](https://etherscan.io/address/0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a)
 
 # Integration
 
