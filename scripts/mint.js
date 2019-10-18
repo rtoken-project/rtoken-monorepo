@@ -1,3 +1,4 @@
+// truffle --network NETWORK mint.js rToken(address) mintAmount(wad)
 module.exports = async function (callback) {
     try {
         global.web3 = web3;

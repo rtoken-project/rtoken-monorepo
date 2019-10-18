@@ -8,6 +8,7 @@ module.exports = async function (callback) {
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
         const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
         const RToken = artifacts.require("RToken");
+        const Proxy = artifacts.require("Proxy");
 
         const cDAI = await require("./get-cdai")(artifacts, network);
 
@@ -17,15 +18,30 @@ module.exports = async function (callback) {
             }
         );
         //const compoundAS = { address: "0xF07d4967ae1F600144b25f40f655f61De2A9c0Ad" };
-        const rToken = await web3tx(RToken.new, `RToken.new allocationStrategy ${compoundAS.address}`)(
-            compoundAS.address,
+        console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
+
+        const rDaiLogic = await web3tx(RToken.new, `RToken.new`)(
             {
                 gas: 5000000,
             }
         );
-        console.log("rDai deployed at: ", rToken.address);
-        console.log("transfer ownership of compoundAS to new rDai", rToken.address);
-        await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
+        console.log("rDaiLogic deployed at: ", rDaiLogic.address);
+
+        const rDaiConstructCode = rDaiLogic.contract.methods.initialize(
+            compoundAS.address,
+            "Redeemable DAI",
+            "rDAI",
+            18).encodeABI();
+        console.log(`rDaiConstructCode rDaiLogic.initialize(${rDaiConstructCode})`);
+        const proxy = await web3tx(Proxy.new, "Proxy.new")(
+            rDaiConstructCode, rDaiLogic.address, {
+                gas: 1000000,
+            }
+        );
+        console.log("proxy deployed at: ", proxy.address);
+
+        console.log("transfer ownership of compoundAS to new rDai(proxy)", proxy.address);
+        await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(proxy.address);
         callback();
     } catch (err) {
         callback(err);

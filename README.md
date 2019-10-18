@@ -350,24 +350,39 @@ for all accounts)
 
 ## Rinkeby
 
-* DAI: 0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa
-* cDAI: 0x6d7f0754ffeb405d23c51ce938289d4835be3b14
-* DaiCompoundAllocationStrategy (latest): [0x152b48c07322d56EcdeAdDF780a2c09b57b11F07](https://rinkeby.etherscan.io/address/0x152b48c07322d56EcdeAdDF780a2c09b57b11F07)
-* rDAI (latest): [0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578](https://rinkeby.etherscan.io/address/0x4f3E18CEAbe50E64B37142c9655b3baB44eFF578)
+* DAI: [0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa](https://rinkeby.etherscan.io/address/0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa)
+* cDAI: [0x6d7f0754ffeb405d23c51ce938289d4835be3b14](https://rinkeby.etherscan.io/address/0x6d7f0754ffeb405d23c51ce938289d4835be3b14)
+* rDai (proxy): [0x6AA5c6aB94403Bdbbf74f21607D46Be631E6CcC5](https://rinkeby.etherscan.io/address/0x6AA5c6aB94403Bdbbf74f21607D46Be631E6CcC5)
+
+**v1**
+
+* DaiCompoundAllocationStrategy: [0xB603cd1bdAcaBd5Ca9341d8a44f6430a5e371b76](https://rinkeby.etherscan.io/address/0xB603cd1bdAcaBd5Ca9341d8a44f6430a5e371b76)
+* rDAI Logic: [0xa401e671eCA4309BDdADA860d5B25C722118b5A1](https://rinkeby.etherscan.io/address/0xa401e671eCA4309BDdADA860d5B25C722118b5A1)
 
 ## Kovan
 
-* DAI: 0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99
-* cDAI: 0x0a1e4d0b5c71b955c0a5993023fc48ba6e380496
-* DaiCompoundAllocationStrategy (latest): [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
-* rDAI (latest): [0xea718e4602125407fafcb721b7d760ad9652dfe7](https://kovan.etherscan.io/address/0xea718e4602125407fafcb721b7d760ad9652dfe7)
+* DAI: [0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99](https://kovan.etherscan.io/address/0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99)
+* cDAI: [0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496](https://kovan.etherscan.io/address/0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496)
+* rDAI (proxy): [0x3183683cEeAb01699722053A2cb6A945cE0D7CeC](https://kovan.etherscan.io/address/0x3183683cEeAb01699722053A2cb6A945cE0D7CeC)
+
+**v1**
+
+* DaiCompoundAllocationStrategy: [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
+* rDAI Logic: [0xE21dAbb0ea711AF1AbeA2191180407277312f0fe](https://kovan.etherscan.io/address/0xE21dAbb0ea711AF1AbeA2191180407277312f0fe)
 
 ## Mainnet
 
-* DAI: 0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359
-* cDAI: 0xf5dce57282a584d2746faf1593d3121fcac444dc
-* DaiCompoundAllocationStrategy (ethberlin): [0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
-* rDAI (ethberlin): [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
+* DAI: [0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359](https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359)
+* cDAI: [0xf5dce57282a584d2746faf1593d3121fcac444dc](https://etherscan.io/address/0xf5dce57282a584d2746faf1593d3121fcac444dc)
+* rDai (proxy): [0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9](https://etherscan.io/address/0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9)
+
+**ethberlin edition**
+* DaiCompoundAllocationStrategy: [0x21F090905D26073cb488440F98CcfbD8bF5aA9b3](https://etherscan.io/address/0x21F090905D26073cb488440F98CcfbD8bF5aA9b3)
+* rDAI: [0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4](https://etherscan.io/address/0x09163bc9da7546ddA9D82Be98FE006a95C87E9B4)
+
+**v1**
+* DaiCompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
+* rDAI: [0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a](https://etherscan.io/address/0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a)
 
 # Integration
 

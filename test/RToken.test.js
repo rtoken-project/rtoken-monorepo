@@ -59,7 +59,11 @@ contract("RToken contract", accounts => {
                 from: admin
             });
         // Get the init code for rToken
-        const rTokenConstructCode = rTokenLogic.contract.methods.initialize(compoundAS.address).encodeABI();
+        const rTokenConstructCode = rTokenLogic.contract.methods.initialize(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18).encodeABI();
 
         // Deploy the Proxy, using the init code for rToken
         const proxy = await web3tx(Proxy.new, "Proxy.new")(
@@ -1354,14 +1358,23 @@ contract("RToken contract", accounts => {
     it("#16 proxy security", async () => {
 
         // Call initialize first time
-        await web3tx(rTokenLogic.initialize, "rTokenLogic.initialize first time")(compoundAS.address, {
-            from: admin
-        });
+        await web3tx(rTokenLogic.initialize, "rTokenLogic.initialize first time")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18, {
+                from: admin
+            });
 
         // Test original logic contract
-        await expectRevert(web3tx(rTokenLogic.initialize, "rTokenLogic.initialize second time")(compoundAS.address, {
-            from: admin
-        }), "The library has already been initialized.");
+        await expectRevert(web3tx(rTokenLogic.initialize, "rTokenLogic.initialize second time")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18,
+            {
+                from: admin
+            }), "The library has already been initialized.");
 
         await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from non-owner")(compoundAS.address, {
             from: customer1
@@ -1372,9 +1385,13 @@ contract("RToken contract", accounts => {
         // }), "The library is locked. No direct 'call' is allowed.");
 
         // Test original proxy contract
-        await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(compoundAS.address, {
-            from: admin
-        }), "The library has already been initialized.");
+        await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18, {
+                from: admin
+            }), "The library has already been initialized.");
 
         await expectRevert(web3tx(rToken.updateCode, "rToken.updateCode (original)")(compoundAS.address, {
             from: customer1
@@ -1391,14 +1408,22 @@ contract("RToken contract", accounts => {
         });
 
         // Call initialize first time
-        await web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize first time")(compoundAS.address, {
-            from: admin
-        });
+        await web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize first time")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18, {
+                from: admin
+            });
 
         // Test new logic contract
-        await expectRevert(web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize second time")(compoundAS.address, {
-            from: admin
-        }), "The library has already been initialized.");
+        await expectRevert(web3tx(newRTokenLogic.initialize, "rTokenLogic.initialize second time")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18, {
+                from: admin
+            }), "The library has already been initialized.");
 
         await expectRevert(web3tx(newRTokenLogic.updateCode, "rTokenLogic.updateCode from non-owner")(compoundAS.address, {
             from: customer1
@@ -1409,9 +1434,13 @@ contract("RToken contract", accounts => {
         // }), "The library is locked. No direct 'call' is allowed.");
 
         // Test new proxy contract
-        await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(compoundAS.address, {
-            from: admin
-        }), "The library has already been initialized.");
+        await expectRevert(web3tx(rToken.initialize, "rToken.initialize (original)")(
+            compoundAS.address,
+            "RToken Test",
+            "RTOKEN",
+            18, {
+                from: admin
+            }), "The library has already been initialized.");
 
         await expectRevert(web3tx(rToken.updateCode, "rToken.updateCode (original)")(compoundAS.address, {
             from: customer1

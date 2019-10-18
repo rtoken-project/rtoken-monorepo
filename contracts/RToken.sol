@@ -32,14 +32,18 @@ contract RToken is
     /**
      * @notice Create rToken linked with cToken at `cToken_`
      */
-    function initialize(IAllocationStrategy allocationStrategy) external {
+    function initialize(
+        IAllocationStrategy allocationStrategy,
+        string calldata name_,
+        string calldata symbol_,
+        uint256 decimals_) external {
         require(!initialized, 'The library has already been initialized.');
         initialize();
         _owner = msg.sender;
         _guardCounter = 1;
-        name = 'Redeemable DAI (rDAI ethberlin)';
-        symbol = 'rDAItest';
-        decimals = 18;
+        name = name_;
+        symbol = symbol_;
+        decimals = decimals_;
         savingAssetConversionRate = 10**18;
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
