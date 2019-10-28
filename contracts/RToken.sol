@@ -114,14 +114,20 @@ contract RToken is
         nonReentrant
         returns (bool)
     {
-        return transferInternal(msg.sender, msg.sender, dst, amount);
+        address src = msg.sender;
+        payInterestInternal(src);
+        transferInternal(src, src, dst, amount);
+        payInterestInternal(dst);
+        return true;
     }
 
     /// @dev IRToken.transferAll implementation
     function transferAll(address dst) external nonReentrant returns (bool) {
         address src = msg.sender;
         payInterestInternal(src);
-        return transferInternal(src, src, dst, accounts[src].rAmount);
+        transferInternal(src, src, dst, accounts[src].rAmount);
+        payInterestInternal(dst);
+        return true;
     }
 
     /// @dev IRToken.transferAllFrom implementation
@@ -131,8 +137,9 @@ contract RToken is
         returns (bool)
     {
         payInterestInternal(src);
+        transferInternal(msg.sender, src, dst, accounts[src].rAmount);
         payInterestInternal(dst);
-        return transferInternal(msg.sender, src, dst, accounts[src].rAmount);
+        return true;
     }
 
     /**
@@ -149,7 +156,10 @@ contract RToken is
         nonReentrant
         returns (bool)
     {
-        return transferInternal(msg.sender, src, dst, amount);
+        payInterestInternal(src);
+        transferInternal(msg.sender, src, dst, amount);
+        payInterestInternal(dst);
+        return true;
     }
 
     //
@@ -159,6 +169,7 @@ contract RToken is
     /// @dev IRToken.mint implementation
     function mint(uint256 mintAmount) external nonReentrant returns (bool) {
         mintInternal(mintAmount);
+        payInterestInternal(msg.sender);
         return true;
     }
 
@@ -170,6 +181,7 @@ contract RToken is
     {
         changeHatInternal(msg.sender, hatID);
         mintInternal(mintAmount);
+        payInterestInternal(msg.sender);
         return true;
     }
 
@@ -183,9 +195,8 @@ contract RToken is
     ) external nonReentrant returns (bool) {
         uint256 hatID = createHatInternal(recipients, proportions);
         changeHatInternal(msg.sender, hatID);
-
         mintInternal(mintAmount);
-
+        payInterestInternal(msg.sender);
         return true;
     }
 
@@ -247,6 +258,7 @@ contract RToken is
     /// @dev IRToken.changeHat implementation
     function changeHat(uint256 hatID) external nonReentrant returns (bool) {
         changeHatInternal(msg.sender, hatID);
+        payInterestInternal(msg.sender);
         return true;
     }
 
@@ -441,11 +453,8 @@ contract RToken is
         address src,
         address dst,
         uint256 tokens
-    ) internal returns (bool) {
+    ) internal {
         require(src != dst, 'src should not equal dst');
-
-        // pay the interest before doing the transfer
-        payInterestInternal(src);
 
         require(
             accounts[src].rAmount >= tokens,
@@ -514,8 +523,6 @@ contract RToken is
 
         /* We emit a Transfer event */
         emit Transfer(src, dst, tokens);
-
-        return true;
     }
 
     /**
