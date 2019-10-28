@@ -9,7 +9,7 @@ const { time, expectRevert } = require("openzeppelin-test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 contract("RToken", accounts => {
-    //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
+    const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     const admin = accounts[0];
     const bingeBorrower = accounts[1];
@@ -1620,7 +1620,7 @@ contract("RToken", accounts => {
 
         // build a sombrero
         const sombrero = { addresses: [], proportions: []};
-        for (let i = 0; i < 50; ++i) {
+        for (let i = 1; i <= 50; ++i) {
             sombrero.addresses.push(`0x${i}000000000000000000000000000000000000000`.substr(0, 42));
             sombrero.proportions.push(1);
         }
@@ -1673,5 +1673,13 @@ contract("RToken", accounts => {
 
     it("#20 Change hat with invalid hat ID should fail", async () => {
         await expectRevert(rToken.changeHat(42), "Invalid hat ID");
+    });
+
+    it("#21 Hat should not have 0x0 recipient", async () => {
+        await expectRevert(rToken.createHat(
+            [ZERO_ADDRESS], [1], true, {
+                from: customer1
+            }
+        ), "Invalid hat: recipient should not be 0x0");
     });
 });

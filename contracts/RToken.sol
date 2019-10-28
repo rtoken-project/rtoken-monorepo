@@ -620,6 +620,7 @@ contract RToken is
                 proportions[i] > 0,
                 'Invalid hat: proportion should be larger than 0'
             );
+            require(recipients[0] != address(0), "Invalid hat: recipient should not be 0x0");
             // don't panic, no safemath, look above comment
             totalProportions += uint256(proportions[i]);
         }
@@ -641,7 +642,7 @@ contract RToken is
      * @param hatID The id of the Hat
      */
     function changeHatInternal(address owner, uint256 hatID) internal {
-        //require(hatID == SELF_HAT_ID || hatID < hats.length, 'Invalid hat ID');
+        require(hatID == SELF_HAT_ID || hatID < hats.length, 'Invalid hat ID');
         Account storage account = accounts[owner];
         uint256 oldHatID = account.hatID;
         HatStatsStored storage oldHatStats = hatStats[oldHatID];
