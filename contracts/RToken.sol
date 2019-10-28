@@ -399,8 +399,8 @@ contract RToken is
         // redeem everything from the old strategy
         uint256 sOriginalBurned = oldIas.redeemUnderlying(totalSupply);
         // invest everything into the new strategy
-        token.transferFrom(msg.sender, address(this), totalSupply);
-        token.approve(address(ias), totalSupply);
+        require(token.transferFrom(msg.sender, address(this), totalSupply), "token transfer failed");
+        require(token.approve(address(ias), totalSupply), "token approve failed");
         uint256 sOriginalCreated = ias.investUnderlying(totalSupply);
         // calculate new saving asset conversion rate
         // if new original saving asset is 2x in amount
@@ -532,8 +532,8 @@ contract RToken is
         Account storage account = accounts[msg.sender];
 
         // create saving assets
-        token.transferFrom(msg.sender, address(this), mintAmount);
-        token.approve(address(ias), mintAmount);
+        require(token.transferFrom(msg.sender, address(this), mintAmount), "token transfer failed");
+        require(token.approve(address(ias), mintAmount), "token approve failed");
         uint256 sOriginalCreated = ias.investUnderlying(mintAmount);
 
         // update global and account r balances
@@ -587,7 +587,7 @@ contract RToken is
         }
 
         // transfer the token back
-        token.transfer(redeemTo, redeemAmount);
+        require(token.transfer(redeemTo, redeemAmount), "token transfer failed");
 
         emit Transfer(msg.sender, address(this), redeemAmount);
         emit Redeem(msg.sender, redeemTo, redeemAmount);
