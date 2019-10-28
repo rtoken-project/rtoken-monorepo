@@ -1,24 +1,23 @@
 pragma solidity ^0.5.8;
 pragma experimental ABIEncoderV2;
 
-import {RTokenStorage} from './RTokenStorage.sol';
-import {RTokenStructs} from './RTokenStructs.sol';
 import {Proxiable} from './Proxiable.sol';
 import {LibraryLock} from './LibraryLock.sol';
 import {SafeMath} from 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import {Ownable} from './Ownable.sol';
 import {ReentrancyGuard} from './ReentrancyGuard.sol';
+import {RTokenStructs} from './RTokenStructs.sol';
+import {RTokenStorage} from './RTokenStorage.sol';
 import {IERC20, IRToken} from './IRToken.sol';
+import {IRTokenAdmin} from "./IRTokenAdmin.sol";
 import {IAllocationStrategy} from './IAllocationStrategy.sol';
 
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
 contract RToken is
-    RTokenStructs,
     RTokenStorage,
     IRToken,
-    Ownable,
+    IRTokenAdmin,
     Proxiable,
     LibraryLock,
     ReentrancyGuard
@@ -410,6 +409,12 @@ contract RToken is
         savingAssetConversionRate = sOriginalCreated.mul(10**18).div(
             sOriginalBurned
         );
+    }
+
+    /// @dev IRToken.changeHatFor implementation
+    function getCurrentAllocationStrategy()
+        external view returns (IAllocationStrategy allocationStrategy) {
+        return ias;
     }
 
     /// @dev IRToken.changeHatFor implementation

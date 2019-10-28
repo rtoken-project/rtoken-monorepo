@@ -3,7 +3,6 @@ pragma experimental ABIEncoderV2;
 
 import {RTokenStructs} from './RTokenStructs.sol';
 import {IERC20} from 'openzeppelin-solidity/contracts/token/ERC20/IERC20.sol';
-import {IAllocationStrategy} from './IAllocationStrategy.sol';
 
 /**
  * @notice RToken interface a ERC20 interface and one can mint new tokens by
@@ -234,24 +233,6 @@ contract IRToken is RTokenStructs, IERC20 {
         external
         view
         returns (HatStats memory);
-
-    ////////////////////////////////////////////////////////////////////////////
-    // admin functions
-    ////////////////////////////////////////////////////////////////////////////
-    /**
-     * @notice Change allocation strategy for the contract instance
-     * @param allocationStrategy Allocation strategy instance
-     */
-    function changeAllocationStrategy(IAllocationStrategy allocationStrategy)
-        external;
-
-    /**
-     * @notice Change hat for the contract address
-     * @param contractAddress contract address
-     * @param hatID Hat ID
-     */
-    function changeHatFor(address contractAddress, uint256 hatID)
-        external;
 
     ////////////////////////////////////////////////////////////////////////////
     // Events
