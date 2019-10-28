@@ -542,7 +542,7 @@ contract RToken is
         account.rAmount = account.rAmount.add(mintAmount);
 
         // update global stats
-        savingAssetOrignalAmount += sOriginalCreated;
+        savingAssetOrignalAmount = savingAssetOrignalAmount.add(sOriginalCreated);
 
         // distribute saving assets as loans to recipients
         uint256 sInternalCreated = sOriginalCreated
@@ -613,16 +613,20 @@ contract RToken is
         );
 
         // normalize the proportions
+        // safemath is not used here, because:
+        // proportions are uint32, there is no overflow concern
         uint256 totalProportions = 0;
         for (i = 0; i < recipients.length; ++i) {
             require(
                 proportions[i] > 0,
                 'Invalid hat: proportion should be larger than 0'
             );
+            // don't panic, no safemath, look above comment
             totalProportions += uint256(proportions[i]);
         }
         for (i = 0; i < proportions.length; ++i) {
             proportions[i] = uint32(
+                // don't panic, no safemath, look above comment
                 (uint256(proportions[i]) * uint256(PROPORTION_BASE)) /
                     totalProportions
             );
@@ -669,7 +673,8 @@ contract RToken is
             .sInternalAmount
             .mul(ias.exchangeRateStored())
             .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
-        if (rGross > (account.lDebt + account.rInterest)) {
+        if (rGross > (account.lDebt.add(account.rInterest))) {
+            // don't panic, the condition guarantees that safemath is not needed
             return rGross - account.lDebt - account.rInterest;
         } else {
             // no interest accumulated yet or even negative interest rate!?
@@ -707,7 +712,7 @@ contract RToken is
                 // calculate the loan amount of the recipient
                 uint256 lDebtRecipient = isLastRecipient
                     ? rLeft
-                    : (rAmount * hat.proportions[i]) / PROPORTION_BASE;
+                    : (rAmount.mul(hat.proportions[i])) / PROPORTION_BASE;
                 // distribute the loan to the recipient
                 account.lRecipients[recipientAddress] = account.lRecipients[recipientAddress]
                     .add(lDebtRecipient);
@@ -719,7 +724,7 @@ contract RToken is
                 // calculate the savings holdings of the recipient
                 uint256 sInternalAmountRecipient = isLastRecipient
                     ? sInternalLeft
-                    : (sInternalAmount * hat.proportions[i]) / PROPORTION_BASE;
+                    : (sInternalAmount.mul(hat.proportions[i])) / PROPORTION_BASE;
                 recipientAccount.sInternalAmount = recipientAccount.sInternalAmount
                     .add(sInternalAmountRecipient);
                 // remaining value adjustments
@@ -803,7 +808,7 @@ contract RToken is
                 // calulate loans to be collected from the recipient
                 uint256 lDebtRecipient = isLastRecipient
                     ? rLeft
-                    : (rAmount * hat.proportions[i]) / PROPORTION_BASE;
+                    : (rAmount.mul(hat.proportions[i])) / PROPORTION_BASE;
                 recipientAccount.lDebt = gentleSub(
                     recipientAccount.lDebt,
                     lDebtRecipient);
@@ -816,7 +821,7 @@ contract RToken is
                 // calculate savings to be collected from the recipient
                 uint256 sInternalAmountRecipient = isLastRecipient
                     ? sInternalLeft
-                    : (sInternalAmount * hat.proportions[i]) / PROPORTION_BASE;
+                    : (sInternalAmount.mul(hat.proportions[i])) / PROPORTION_BASE;
                 recipientAccount.sInternalAmount = gentleSub(
                     recipientAccount.sInternalAmount,
                     sInternalAmountRecipient);
@@ -921,7 +926,7 @@ contract RToken is
     /**
      * @dev Gently subtract b from a without revert
      *
-     * Due to the use of integeral arithmatic, imprecision may cause a tiny
+     * Due to the use of integer arithmatic, imprecision may cause a tiny
      * amount to be off when substracting the otherwise precise proportions.
      */
     function gentleSub(uint256 a, uint256 b) private pure returns (uint256) {
