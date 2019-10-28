@@ -7,7 +7,7 @@ import {RToken} from '../RToken.sol';
  * @dev Test RTokenStorage Layout
  */
 contract RTokenStorageLayoutTester is RToken {
-    function validate() public view {
+    function validate() public pure {
         uint256 slot;
         uint256 offset;
 
