@@ -1,14 +1,14 @@
-const { time, expectRevert } = require("openzeppelin-test-helpers");
 const ERC20Mintable = artifacts.require("ERC20Mintable");
+const CErc20 = artifacts.require("CErc20");
 const ComptrollerMock = artifacts.require("ComptrollerMock");
 const InterestRateModelMock = artifacts.require("InterestRateModelMock");
-const CErc20 = artifacts.require("CErc20");
 const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
 const Proxy = artifacts.require("Proxy");
+const { time, expectRevert } = require("openzeppelin-test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
-contract("RToken contract", accounts => {
+contract("RToken", accounts => {
     //const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
     const admin = accounts[0];
@@ -163,58 +163,6 @@ contract("RToken contract", accounts => {
         assert.equal(wad4human(await rToken.totalSupply.call()), "0.00000");
         assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "0.00000");
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "1000.00000");
-    });
-
-    it("#1 cToken basic operations", async () => {
-        await web3tx(token.approve, "token.approve 100 by customer1")(cToken.address, toWad(100), {
-            from: customer1
-        });
-        await web3tx(cToken.mint, "cToken.mint 100 to customer1", {
-            inLogs: [{
-                name: "Mint"
-            }]
-        })(toWad(100), {
-            from: customer1
-        });
-        assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "1000.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
-
-        // no intrest yet
-        await web3tx(cToken.redeem, "cToken.redeem 100", {
-            inLogs: [{
-                name: "Redeem"
-            }]
-        })(toWad(100), {
-            from: customer1
-        });
-        assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "900.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
-
-        await doBingeBorrowing();
-
-        // interests accumulated
-        await web3tx(cToken.redeem, "cToken.redeem 100", {
-            inLogs: [{
-                name: "Redeem"
-            }]
-        })(toWad(100), {
-            from: customer1
-        });
-        assert.equal(wad4human(await cToken.balanceOf.call(customer1)), "800.00000");
-        const tokenAmount1 = await token.balanceOf.call(customer1);
-        console.log("token redeemed", wad4human(tokenAmount1));
-        assert.isTrue(tokenAmount1.gt(toWad(920)));
-
-        // redeem underlying
-        await web3tx(cToken.redeemUnderlying, "cToken.redeemUnderlying 10", {
-            inLogs: [{
-                name: "Redeem"
-            }]
-        })(toWad(10), {
-            from: customer1
-        });
-        assert.isTrue((await cToken.balanceOf.call(customer1)).gt(toWad(700)));
-        assert.isTrue((await token.balanceOf.call(customer1)).eq(tokenAmount1.add(toWad(10))));
     });
 
     it("#2 rToken normal operations with zero hatter", async () => {
