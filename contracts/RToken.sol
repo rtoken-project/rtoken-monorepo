@@ -168,7 +168,6 @@ contract RToken is
         nonReentrant
         returns (bool)
     {
-        require(hatID == SELF_HAT_ID || hatID < hats.length, 'Invalid hat ID');
         changeHatInternal(msg.sender, hatID);
         mintInternal(mintAmount);
         return true;
@@ -642,6 +641,7 @@ contract RToken is
      * @param hatID The id of the Hat
      */
     function changeHatInternal(address owner, uint256 hatID) internal {
+        //require(hatID == SELF_HAT_ID || hatID < hats.length, 'Invalid hat ID');
         Account storage account = accounts[owner];
         uint256 oldHatID = account.hatID;
         HatStatsStored storage oldHatStats = hatStats[oldHatID];

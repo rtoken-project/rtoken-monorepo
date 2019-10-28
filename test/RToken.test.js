@@ -1670,4 +1670,8 @@ contract("RToken", accounts => {
             from: customer3
         });
     });
+
+    it("#20 Change hat with invalid hat ID should fail", async () => {
+        await expectRevert(rToken.changeHat(42), "Invalid hat ID");
+    });
 });
