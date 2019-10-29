@@ -1,4 +1,4 @@
-pragma solidity ^0.5.8;
+pragma solidity >=0.5.10 <0.6.0;
 
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
