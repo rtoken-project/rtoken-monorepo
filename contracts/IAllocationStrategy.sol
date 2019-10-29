@@ -1,4 +1,8 @@
-pragma solidity >=0.5.10 <0.6.0;
+/**
+ * In order to build a Aragon App, it is required to have a solidity requirement
+ * that is without ABIEncoderV2.
+ */
+pragma solidity >= 0.4.24;
 
 /**
  * @notice Allocation strategy for assets.

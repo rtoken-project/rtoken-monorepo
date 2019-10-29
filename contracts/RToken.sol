@@ -7,6 +7,7 @@ pragma solidity >=0.5.10 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {Proxiable} from './Proxiable.sol';
+import {Ownable} from './Ownable.sol';
 import {LibraryLock} from './LibraryLock.sol';
 import {SafeMath} from 'openzeppelin-solidity/contracts/math/SafeMath.sol';
 import {ReentrancyGuard} from './ReentrancyGuard.sol';
@@ -23,6 +24,7 @@ contract RToken is
     RTokenStorage,
     IRToken,
     IRTokenAdmin,
+    Ownable,
     Proxiable,
     LibraryLock,
     ReentrancyGuard
