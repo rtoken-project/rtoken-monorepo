@@ -48,7 +48,7 @@ contract RToken is
         name = name_;
         symbol = symbol_;
         decimals = decimals_;
-        savingAssetConversionRate = 10**18;
+        savingAssetConversionRate = 1e18;
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
 
@@ -316,10 +316,7 @@ contract RToken is
         returns (uint256 amount)
     {
         Account storage account = accounts[owner];
-        uint256 rGross = account
-            .sInternalAmount
-            .mul(ias.exchangeRateStored())
-            .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
+        uint256 rGross = sInternalToR(account.sInternalAmount);
         return rGross;
     }
 
@@ -352,9 +349,7 @@ contract RToken is
     /// @dev IRToken.getAccountStats implementation!1
     function getGlobalStats() external view returns (GlobalStats memory) {
         uint256 totalSavingsAmount;
-        totalSavingsAmount += savingAssetOrignalAmount
-            .mul(ias.exchangeRateStored())
-            .div(10**18);
+        totalSavingsAmount += sOriginalToR(savingAssetOrignalAmount);
         return
             GlobalStats({
                 totalSupply: totalSupply,
@@ -380,9 +375,8 @@ contract RToken is
         HatStatsStored storage statsStored = hatStats[hatID];
         stats.useCount = statsStored.useCount;
         stats.totalLoans = statsStored.totalLoans;
-        stats.totalSavings = statsStored.totalInternalSavings
-            .mul(ias.exchangeRateStored())
-            .div(savingAssetConversionRate);
+
+        stats.totalSavings = sInternalToR(statsStored.totalInternalSavings);
         return stats;
     }
 
@@ -398,7 +392,7 @@ contract RToken is
         returns (uint256 rAmount, uint256 sAmount)
     {
         sAmount = savingAssetOrignalAmount;
-        rAmount = sAmount.mul(ias.exchangeRateStored()).div(10**18);
+        rAmount = sOriginalToR(sAmount);
     }
 
     /// @dev IRToken.changeAllocationStrategy implementation
@@ -416,15 +410,25 @@ contract RToken is
         // redeem everything from the old strategy
         uint256 sOriginalBurned = oldIas.redeemUnderlying(totalSupply);
         // invest everything into the new strategy
-        require(token.transferFrom(msg.sender, address(this), totalSupply), "token transfer failed");
         require(token.approve(address(ias), totalSupply), "token approve failed");
         uint256 sOriginalCreated = ias.investUnderlying(totalSupply);
+
         // calculate new saving asset conversion rate
-        // if new original saving asset is 2x in amount
-        // then the conversion of internal amount should be also 2x
-        savingAssetConversionRate = sOriginalCreated.mul(10**18).div(
-            sOriginalBurned
-        );
+        //
+        // NOTE:
+        //   - savingAssetConversionRate should be scaled by 1e18
+        //   - to keep internalSavings constant:
+        //     internalSavings == sOriginalBurned * savingAssetConversionRateOld
+        //     internalSavings == sOriginalCreated * savingAssetConversionRateNew
+        //     =>
+        //     savingAssetConversionRateNew = sOriginalBurned
+        //          * savingAssetConversionRateOld
+        //          / sOriginalCreated
+        //
+        uint256 savingAssetConversionRateOld = savingAssetConversionRate;
+        savingAssetConversionRate = sOriginalBurned
+            .mul(savingAssetConversionRateOld)
+            .div(sOriginalCreated);
     }
 
     /// @dev IRToken.changeHatFor implementation
@@ -556,9 +560,7 @@ contract RToken is
         savingAssetOrignalAmount = savingAssetOrignalAmount.add(sOriginalCreated);
 
         // distribute saving assets as loans to recipients
-        uint256 sInternalCreated = sOriginalCreated
-            .mul(savingAssetConversionRate)
-            .div(10**18);
+        uint256 sInternalCreated = sOriginalTosInternal(sOriginalCreated);
         distributeLoans(msg.sender, mintAmount, sInternalCreated);
 
         emit Mint(msg.sender, mintAmount);
@@ -682,10 +684,7 @@ contract RToken is
         view
         returns (uint256)
     {
-        uint256 rGross = account
-            .sInternalAmount
-            .mul(ias.exchangeRateStored())
-            .div(savingAssetConversionRate); // the 1e18 decimals should be cancelled out
+        uint256 rGross = sInternalToR(account.sInternalAmount);
         if (rGross > (account.lDebt.add(account.rInterest))) {
             // don't panic, the condition guarantees that safemath is not needed
             return rGross - account.lDebt - account.rInterest;
@@ -769,9 +768,7 @@ contract RToken is
     {
         // accrue interest so estimate is up to date
         ias.accrueInterest();
-        sInternalAmount = rAmount.mul(savingAssetConversionRate).div(
-            ias.exchangeRateStored()
-        ); // the 1e18 decimals should be cancelled out
+        sInternalAmount = rToSInternal(rAmount);
         recollectLoans(owner, rAmount, sInternalAmount);
     }
 
@@ -788,9 +785,7 @@ contract RToken is
         returns (uint256 sOriginalBurned)
     {
         sOriginalBurned = ias.redeemUnderlying(rAmount);
-        uint256 sInternalBurned = sOriginalBurned
-            .mul(savingAssetConversionRate)
-            .div(10**18);
+        uint256 sInternalBurned = sOriginalTosInternal(sOriginalBurned);
         recollectLoans(owner, rAmount, sInternalBurned);
     }
 
@@ -868,9 +863,7 @@ contract RToken is
         Account storage srcAccount = accounts[src];
         Account storage dstAccount = accounts[dst];
 
-        uint256 sInternalAmount = rAmount
-            .mul(savingAssetConversionRate)
-            .div(ias.exchangeRateStored()); // the 1e18 decimals should be cancelled out
+        uint256 sInternalAmount = rToSInternal(rAmount);
 
         srcAccount.lDebt = gentleSub(srcAccount.lDebt, rAmount);
         srcAccount.sInternalAmount = gentleSub(srcAccount.sInternalAmount, sInternalAmount);
@@ -914,9 +907,7 @@ contract RToken is
         emit LoansTransferred(owner, recipient, hatID,
             true,
             redeemableAmount,
-            internalSavingsAmount
-                .mul(ias.exchangeRateStored())
-                .div(savingAssetConversionRate));
+            sInternalToR(internalSavingsAmount));
 
         if (isDistribution) {
             hatStats.totalLoans = hatStats.totalLoans.add(redeemableAmount);
@@ -945,5 +936,48 @@ contract RToken is
     function gentleSub(uint256 a, uint256 b) private pure returns (uint256) {
         if (a < b) return 0;
         else return a - b;
+    }
+
+    /// @dev convert internal savings amount to redeemable amount
+    function sInternalToR(uint256 sInternalAmount)
+        private view
+        returns (uint256 rAmount) {
+        // - rGross is in underlying(redeemable) asset unit
+        // - Both ias.exchangeRateStored and savingAssetConversionRate are scaled by 1e18
+        //   they should cancel out
+        // - Formula:
+        //   savingsOriginalAmount = sInternalAmount / savingAssetConversionRate
+        //   rGross = savingAssetOrignalAmount * ias.exchangeRateStored
+        //   =>
+        return sInternalAmount
+            .mul(ias.exchangeRateStored())
+            .div(savingAssetConversionRate);
+    }
+
+    /// @dev convert redeemable amount to internal savings amount
+    function rToSInternal(uint256 rAmount)
+        private view
+        returns (uint256 sInternalAmount) {
+        return rAmount
+            .mul(savingAssetConversionRate)
+            .div(ias.exchangeRateStored());
+    }
+
+    /// @dev convert original savings amount to redeemable amount
+    function sOriginalToR(uint sOriginalAmount)
+        private view
+        returns (uint256 sInternalAmount) {
+        return sOriginalAmount
+            .mul(ias.exchangeRateStored())
+            .div(1e18);
+    }
+
+    function sOriginalTosInternal(uint sOriginal)
+        private view
+        returns (uint256 sInternalAmount) {
+        // savingAssetConversionRate is scaled by 1e18
+        return sOriginal
+            .mul(savingAssetConversionRate)
+            .div(1e18);
     }
 }

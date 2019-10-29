@@ -15,8 +15,12 @@ interface IAllocationStrategy {
     function underlying() external view returns (address);
 
     /**
-     * @notice Calculates the exchange rate from the underlying to the saving assets
+     * @notice Calculates the exchange rate from underlying to saving assets
      * @return uint256 Calculated exchange rate scaled by 1e18
+     *
+     * NOTE:
+     *
+     *   underlying = savingAssets × exchangeRate
      */
     function exchangeRateStored() external view returns (uint256);
 

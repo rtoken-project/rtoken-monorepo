@@ -14,7 +14,7 @@ contract InterestRateModelMock is InterestRateModel {
       * @param reserves The total reserves of the underlying asset in the CToken
       * @return Success or failure and the borrow interest rate per block scaled by 10e18
       */
-        function getBorrowRate(uint cash, uint borrows, uint reserves)
+    function getBorrowRate(uint cash, uint borrows, uint reserves)
             external view returns (uint success, uint rate) {
         uint total = cash + borrows + reserves;
         success = 0;
