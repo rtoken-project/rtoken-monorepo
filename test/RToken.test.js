@@ -931,7 +931,7 @@ contract("RToken", accounts => {
             from: customer1
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
-        assert.equal(wad4human(await rToken.totalSupply.call()), "100.00000");
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100.00000");
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
             cumulativeInterest: "0.00000",
@@ -957,6 +957,54 @@ contract("RToken", accounts => {
             receivedLoan: "20.00000",
             receivedSavings: "20.00000",
             interestPayable: "0.00000",
+        });
+
+        await web3tx(rToken.changeHat, "rToken changeHat for customer3 with selfhat")(
+            SELF_HAT_ID, {
+                from: customer3
+            }
+        );
+        await web3tx(rToken.transfer, "rToken.transfer all from customer1 to customer3")(
+            customer3, toWad(20), {
+                from: customer1
+            });
+        await expectAccount(customer1, {
+            tokenBalance: "60.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "60.00000",
+            receivedSavings: "60.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "20.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "20.00000",
+            receivedSavings: "20.00000",
+            interestPayable: "0.00000",
+        });
+
+        await doBingeBorrowing();
+
+        await expectAccount(customer1, {
+            tokenBalance: "60.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "60.00000",
+            receivedSavings: "60.00060",
+            interestPayable: "0.00060",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "20.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "20.00000",
+            receivedSavings: "20.00020",
+            interestPayable: "0.00020",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "20.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "20.00000",
+            receivedSavings: "20.00020",
+            interestPayable: "0.00020",
         });
     });
 
@@ -1653,7 +1701,8 @@ contract("RToken", accounts => {
             customer2, toWad(10), {
                 from: customer1
             });
-        assert.isTrue(tx.receipt.gasUsed < 250000, "Same hat optimization was not applied");
+        console.debug("Same hat transfer tx cost", tx.receipt.gasUsed);
+        assert.isTrue(tx.receipt.gasUsed < 300000, "Same hat optimization was not applied");
 
         // enlarge the sombrero
         sombrero.addresses.push("0x1000000000000000000000000000000000000000");

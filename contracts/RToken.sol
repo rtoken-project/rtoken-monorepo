@@ -492,7 +492,7 @@ contract RToken is
         // (No safe failures beyond this point)
 
         // check if src & dst have the same hat
-        bool sameHat = accounts[src].hatID == accounts[dst].hatID && accounts[src].hatID != 0;
+        bool sameHat = accounts[src].hatID == accounts[dst].hatID;
 
         // apply hat inheritance rule
         if ((accounts[src].hatID != 0 &&
@@ -518,7 +518,7 @@ contract RToken is
             distributeLoans(dst, tokens, sInternalAmountCollected);
         } else {
             // apply same hat optimization
-            sameHatTransfer(src, dst, tokens);
+            sameHatTransfer(src, dst, accounts[src].hatID, tokens);
         }
 
         // rInterest adjustment for src
@@ -856,6 +856,7 @@ contract RToken is
     function sameHatTransfer(
         address src,
         address dst,
+        uint256 hatID,
         uint256 rAmount) internal {
         // accrue interest so estimate is up to date
         ias.accrueInterest();
@@ -867,9 +868,11 @@ contract RToken is
 
         srcAccount.lDebt = gentleSub(srcAccount.lDebt, rAmount);
         srcAccount.sInternalAmount = gentleSub(srcAccount.sInternalAmount, sInternalAmount);
+        _updateLoanStats(src, src, hatID, false, rAmount, sInternalAmount);
 
         dstAccount.lDebt = dstAccount.lDebt.add(rAmount);
         dstAccount.sInternalAmount = dstAccount.sInternalAmount.add(sInternalAmount);
+        _updateLoanStats(dst, dst, hatID, true, rAmount, sInternalAmount);
     }
 
     /**
