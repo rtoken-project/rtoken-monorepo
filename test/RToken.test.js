@@ -182,11 +182,9 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [{
-                name: "Mint"
-            }, {
                 name: "Transfer",
                 args: {
-                    from: rToken.address,
+                    from: ZERO_ADDRESS,
                     to: customer1,
                     value: toWad(100)
                 }
@@ -224,17 +222,10 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
-                name: "Redeem",
-                args: {
-                    redeemer: customer1,
-                    redeemTo: customer1,
-                    redeemAmount: toWad(10),
-                }
-            }, {
                 name: "Transfer",
                 args: {
                     from: customer1,
-                    to: rToken.address,
+                    to: ZERO_ADDRESS,
                     value: toWad(10)
                 }
             }]
@@ -257,7 +248,7 @@ contract("RToken", accounts => {
             }, {
                 name: "Transfer",
                 args: {
-                    from: rToken.address,
+                    from: ZERO_ADDRESS,
                     to: customer1
                     // value: // who knows
                 }
@@ -291,17 +282,10 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.redeemAndTransfer, "rToken.redeem 2 of customer1 to customer3", {
             inLogs: [{
-                name: "Redeem",
-                args: {
-                    redeemer: customer1,
-                    redeemTo: customer3,
-                    redeemAmount: toWad(2),
-                }
-            }, {
                 name: "Transfer",
                 args: {
                     from: customer1,
-                    to: rToken.address,
+                    to: ZERO_ADDRESS,
                     value: toWad(2)
                 }
             }]
@@ -317,7 +301,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting admin(90%) and customer2(10%)", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), [admin, customer2], [90, 10], {
             from: customer1
@@ -392,7 +376,7 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
-                name: "Redeem"
+                name: "Transfer"
             }]
         })(toWad(10), {
             from: customer1
@@ -543,7 +527,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mint, "rToken.mint 10 to customer1", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(10), {
             from: customer1
@@ -558,7 +542,7 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.mint, "rToken.mint 5 to customer1", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(5), {
             from: customer1
@@ -587,7 +571,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithNewHat, "rToken.mint 200 to customer1 with a hat benefiting customer1(10%) and customer2(90%)", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(200), [customer1, customer2], [10, 90], {
             from: customer1
@@ -658,7 +642,7 @@ contract("RToken", accounts => {
         await expectRevert(rToken.redeem(customer2RBalance.add(web3.utils.toBN(0))), "Not enough balance to redeem");
         await web3tx(rToken.redeem, "rToken.redeem maximum to customer2", {
             inLogs: [{
-                name: "Redeem"
+                name: "Transfer"
             }]
         })(customer2RBalance, {
             from: customer2
@@ -925,7 +909,7 @@ contract("RToken", accounts => {
         await expectRevert(rToken.mintWithSelectedHat(toWad(1), 1), "Invalid hat ID");
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1014,7 +998,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1030,7 +1014,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1069,7 +1053,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1085,7 +1069,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer2 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer2
@@ -1098,8 +1082,6 @@ contract("RToken", accounts => {
                 name: "InterestPaid"
             }, {
                 name: "Transfer"
-            }, {
-                name: "Redeem"
             }]
         })({
             from: customer1
@@ -1120,7 +1102,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1172,7 +1154,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer1
@@ -1188,7 +1170,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer2 with the self hat", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), await rToken.SELF_HAT_ID.call(), {
             from: customer2
@@ -1201,8 +1183,6 @@ contract("RToken", accounts => {
                 name: "InterestPaid"
             }, {
                 name: "Transfer"
-            }, {
-                name: "Redeem"
             }]
         })(customer3, {
             from: customer1
@@ -1235,11 +1215,9 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [{
-                name: "Mint"
-            }, {
                 name: "Transfer",
                 args: {
-                    from: rToken.address,
+                    from: ZERO_ADDRESS,
                     to: customer1,
                     value: toWad(100)
                 }
@@ -1275,17 +1253,10 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
-                name: "Redeem",
-                args: {
-                    redeemer: customer1,
-                    redeemTo: customer1,
-                    redeemAmount: toWad(10),
-                }
-            }, {
                 name: "Transfer",
                 args: {
                     from: customer1,
-                    to: rToken.address,
+                    to: ZERO_ADDRESS,
                     value: toWad(10)
                 }
             }]
@@ -1308,7 +1279,7 @@ contract("RToken", accounts => {
             }, {
                 name: "Transfer",
                 args: {
-                    from: rToken.address,
+                    from: ZERO_ADDRESS,
                     to: customer1
                     // value: // who knows
                 }
@@ -1342,17 +1313,10 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.redeemAndTransfer, "rToken.redeem 2 of customer1 to customer3", {
             inLogs: [{
-                name: "Redeem",
-                args: {
-                    redeemer: customer1,
-                    redeemTo: customer3,
-                    redeemAmount: toWad(2),
-                }
-            }, {
                 name: "Transfer",
                 args: {
                     from: customer1,
-                    to: rToken.address,
+                    to: ZERO_ADDRESS,
                     value: toWad(2)
                 }
             }]
@@ -1467,12 +1431,9 @@ contract("RToken", accounts => {
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [
                 {
-                    name: "Mint"
-                },
-                {
                     name: "Transfer",
                     args: {
-                        from: rToken.address,
+                        from: ZERO_ADDRESS,
                         to: customer1,
                         value: toWad(100)
                     }
@@ -1516,18 +1477,10 @@ contract("RToken", accounts => {
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [
                 {
-                    name: "Redeem",
-                    args: {
-                        redeemer: customer1,
-                        redeemTo: customer1,
-                        redeemAmount: toWad(10)
-                    }
-                },
-                {
                     name: "Transfer",
                     args: {
                         from: customer1,
-                        to: rToken.address,
+                        to: ZERO_ADDRESS,
                         value: toWad(10)
                     }
                 }
@@ -1554,7 +1507,7 @@ contract("RToken", accounts => {
                 {
                     name: "Transfer",
                     args: {
-                        from: rToken.address,
+                        from: ZERO_ADDRESS,
                         to: customer1
                         // value: // who knows
                     }
@@ -1606,18 +1559,10 @@ contract("RToken", accounts => {
             {
                 inLogs: [
                     {
-                        name: "Redeem",
-                        args: {
-                            redeemer: customer1,
-                            redeemTo: customer3,
-                            redeemAmount: toWad(2)
-                        }
-                    },
-                    {
                         name: "Transfer",
                         args: {
                             from: customer1,
-                            to: rToken.address,
+                            to: ZERO_ADDRESS,
                             value: toWad(2)
                         }
                     }
@@ -1635,7 +1580,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting admin(90%) and customer2(10%)", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), [admin, customer2], [90, 10], {
             from: customer1
@@ -1686,7 +1631,7 @@ contract("RToken", accounts => {
 
         await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a sombreror", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), sombrero.addresses, sombrero.proportions, {
             from: customer1
@@ -1724,7 +1669,7 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer3 with a smaller sombrero", {
             inLogs: [{
-                name: "Mint"
+                name: "Transfer"
             }]
         })(toWad(100), sombrero.addresses.slice(1), sombrero.proportions.slice(1), {
             from: customer3
@@ -1763,11 +1708,9 @@ contract("RToken", accounts => {
         });
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [{
-                name: "Mint"
-            }, {
                 name: "Transfer",
                 args: {
-                    from: rToken.address,
+                    from: ZERO_ADDRESS,
                     to: customer1,
                     value: toWad(100)
                 }

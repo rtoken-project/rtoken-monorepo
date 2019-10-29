@@ -39,9 +39,8 @@ contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
         require(cToken.mint(investAmount) == 0, "mint failed");
         uint256 cTotalAfter = cToken.totalSupply();
         uint256 cCreatedAmount;
-        if (cTotalAfter > cTotalBefore) {
-            cCreatedAmount = cTotalAfter - cTotalBefore;
-        } // else can there be case that we mint but we get less cTokens!?\
+        require (cTotalAfter >= cTotalBefore, "Compound minted negative amount!?");
+        cCreatedAmount = cTotalAfter - cTotalBefore;
         return cCreatedAmount;
     }
 
@@ -52,9 +51,8 @@ contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
         require(cToken.redeemUnderlying(redeemAmount) == 0, "redeemUnderlying failed");
         uint256 cTotalAfter = cToken.totalSupply();
         uint256 cBurnedAmount;
-        if (cTotalAfter < cTotalBefore) {
-            cBurnedAmount = cTotalBefore - cTotalAfter;
-        } // else can there be case that we end up with more cTokens ?!
+        require(cTotalAfter <= cTotalBefore, "Compound redeemed negative amount!?");
+        cBurnedAmount = cTotalBefore - cTotalAfter;
         token.transfer(msg.sender, redeemAmount);
         return cBurnedAmount;
     }

@@ -243,20 +243,6 @@ contract IRToken is RTokenStructs, IERC20 {
     // Events
     ////////////////////////////////////////////////////////////////////////////
     /**
-     * @notice Event emitted when tokens are minted
-     */
-    event Mint(address indexed minter, uint256 mintAmount);
-
-    /**
-     * @notice Event emitted when tokens are redeemed
-     */
-    event Redeem(
-        address indexed redeemer,
-        address indexed redeemTo,
-        uint256 redeemAmount
-    );
-
-    /**
      * @notice Event emitted when loans get transferred
      */
     event LoansTransferred(

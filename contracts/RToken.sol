@@ -31,7 +31,9 @@ contract RToken is
 {
     using SafeMath for uint256;
 
-    uint256 public constant SELF_HAT_ID = uint256(int256(-1));
+    uint256 public constant INITIAL_SAVING_ASSET_CONVERSION_RATE = 1e18;
+    uint256 public constant MAX_UINT256 = uint256(int256(-1));
+    uint256 public constant SELF_HAT_ID = MAX_UINT256;
     uint32 public constant PROPORTION_BASE = 0xFFFFFFFF;
     uint256 public constant MAX_NUM_HAT_RECIPIENTS = 50;
 
@@ -44,13 +46,13 @@ contract RToken is
         string calldata symbol_,
         uint256 decimals_) external {
         require(!initialized, 'The library has already been initialized.');
-        initialize();
+        LibraryLock.initialize();
         _owner = msg.sender;
         _guardCounter = 1;
         name = name_;
         symbol = symbol_;
         decimals = decimals_;
-        savingAssetConversionRate = 1e18;
+        savingAssetConversionRate = INITIAL_SAVING_ASSET_CONVERSION_RATE;
         ias = allocationStrategy;
         token = IERC20(ias.underlying());
 
@@ -58,7 +60,7 @@ contract RToken is
         hats.push(Hat(new address[](0), new uint32[](0)));
 
         // everyone is using it by default!
-        hatStats[0].useCount = uint256(int256(-1));
+        hatStats[0].useCount = MAX_UINT256;
     }
 
     //
@@ -285,22 +287,21 @@ contract RToken is
         )
     {
         hatID = accounts[owner].hatID;
-        if (hatID != 0 && hatID != SELF_HAT_ID) {
-            Hat memory hat = hats[hatID];
-            recipients = hat.recipients;
-            proportions = hat.proportions;
-        } else {
-            recipients = new address[](0);
-            proportions = new uint32[](0);
-        }
+        (recipients, proportions) = _getHatByID(hatID);
     }
 
     /// @dev IRToken.getHatByID implementation
     function getHatByID(uint256 hatID)
         external
         view
-        returns (address[] memory recipients, uint32[] memory proportions)
-    {
+        returns (address[] memory recipients, uint32[] memory proportions) {
+        (recipients, proportions) = _getHatByID(hatID);
+    }
+
+    function _getHatByID(uint256 hatID)
+        private
+        view
+        returns (address[] memory recipients, uint32[] memory proportions) {
         if (hatID != 0 && hatID != SELF_HAT_ID) {
             Hat memory hat = hats[hatID];
             recipients = hat.recipients;
@@ -475,7 +476,7 @@ contract RToken is
         /* Get the allowance, infinite for the account owner */
         uint256 startingAllowance = 0;
         if (spender == src) {
-            startingAllowance = uint256(-1);
+            startingAllowance = MAX_UINT256;
         } else {
             startingAllowance = transferAllowances[src][spender];
         }
@@ -507,7 +508,7 @@ contract RToken is
         accounts[dst].rAmount = dstTokensNew;
 
         /* Eat some of the allowance (if necessary) */
-        if (startingAllowance != uint256(-1)) {
+        if (startingAllowance != MAX_UINT256) {
             transferAllowances[src][spender] = allowanceNew;
         }
 
@@ -565,8 +566,7 @@ contract RToken is
         uint256 sInternalCreated = sOriginalTosInternal(sOriginalCreated);
         distributeLoans(msg.sender, mintAmount, sInternalCreated);
 
-        emit Mint(msg.sender, mintAmount);
-        emit Transfer(address(this), msg.sender, mintAmount);
+        emit Transfer(address(0), msg.sender, mintAmount);
     }
 
     /**
@@ -605,8 +605,7 @@ contract RToken is
         // transfer the token back
         require(token.transfer(redeemTo, redeemAmount), "token transfer failed");
 
-        emit Transfer(msg.sender, address(this), redeemAmount);
-        emit Redeem(msg.sender, redeemTo, redeemAmount);
+        emit Transfer(msg.sender, address(0), redeemAmount);
     }
 
     /**
@@ -663,15 +662,13 @@ contract RToken is
         uint256 oldHatID = account.hatID;
         HatStatsStored storage oldHatStats = hatStats[oldHatID];
         HatStatsStored storage newHatStats = hatStats[hatID];
+        account.hatID = hatID;
         if (account.rAmount > 0) {
             uint256 sInternalAmountCollected = estimateAndRecollectLoans(
                 owner,
                 account.rAmount
             );
-            account.hatID = hatID;
             distributeLoans(owner, account.rAmount, sInternalAmountCollected);
-        } else {
-            account.hatID = hatID;
         }
         oldHatStats.useCount -= 1;
         newHatStats.useCount += 1;
@@ -896,7 +893,7 @@ contract RToken is
             account.rAmount = account.rAmount.add(interestAmount);
             totalSupply = totalSupply.add(interestAmount);
             emit InterestPaid(owner, interestAmount);
-            emit Transfer(address(this), owner, interestAmount);
+            emit Transfer(address(0), owner, interestAmount);
         }
     }
 
@@ -974,7 +971,7 @@ contract RToken is
         returns (uint256 sInternalAmount) {
         return sOriginalAmount
             .mul(ias.exchangeRateStored())
-            .div(1e18);
+            .div(ias.EXCHANGE_RATE_SCALE());
     }
 
     function sOriginalTosInternal(uint sOriginal)
@@ -983,6 +980,6 @@ contract RToken is
         // savingAssetConversionRate is scaled by 1e18
         return sOriginal
             .mul(savingAssetConversionRate)
-            .div(1e18);
+            .div(ias.EXCHANGE_RATE_SCALE());
     }
 }

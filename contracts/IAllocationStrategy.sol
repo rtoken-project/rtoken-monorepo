@@ -10,7 +10,9 @@ pragma solidity >= 0.4.24;
  *           usually lending contracts, in return it gets new assets aka. saving assets.
  *         - Sainv assets can be redeemed back to the underlying assets plus interest any time.
  */
-interface IAllocationStrategy {
+contract IAllocationStrategy {
+
+    uint256 public constant EXCHANGE_RATE_SCALE = 1e18;
 
     /**
      * @notice Underlying asset for the strategy
