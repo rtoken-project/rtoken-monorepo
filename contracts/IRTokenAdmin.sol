@@ -4,7 +4,7 @@
  */
 pragma solidity >= 0.4.24;
 
-import {IAllocationStrategy} from './IAllocationStrategy.sol';
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
 /**
  * IRTokenAdmin interface

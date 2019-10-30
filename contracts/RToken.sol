@@ -6,16 +6,16 @@
 pragma solidity >=0.5.10 <0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {Proxiable} from './Proxiable.sol';
-import {Ownable} from './Ownable.sol';
-import {LibraryLock} from './LibraryLock.sol';
-import {SafeMath} from 'openzeppelin-solidity/contracts/math/SafeMath.sol';
-import {ReentrancyGuard} from './ReentrancyGuard.sol';
-import {RTokenStructs} from './RTokenStructs.sol';
-import {RTokenStorage} from './RTokenStorage.sol';
-import {IERC20, IRToken} from './IRToken.sol';
+import {Proxiable} from "./Proxiable.sol";
+import {Ownable} from "./Ownable.sol";
+import {LibraryLock} from "./LibraryLock.sol";
+import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
+import {ReentrancyGuard} from "./ReentrancyGuard.sol";
+import {RTokenStructs} from "./RTokenStructs.sol";
+import {RTokenStorage} from "./RTokenStorage.sol";
+import {IERC20, IRToken} from "./IRToken.sol";
 import {IRTokenAdmin} from "./IRTokenAdmin.sol";
-import {IAllocationStrategy} from './IAllocationStrategy.sol';
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
@@ -27,8 +27,7 @@ contract RToken is
     Ownable,
     Proxiable,
     LibraryLock,
-    ReentrancyGuard
-{
+    ReentrancyGuard {
     using SafeMath for uint256;
 
     uint256 public constant INITIAL_SAVING_ASSET_CONVERSION_RATE = 1e18;
@@ -45,7 +44,7 @@ contract RToken is
         string calldata name_,
         string calldata symbol_,
         uint256 decimals_) external {
-        require(!initialized, 'The library has already been initialized.');
+        require(!initialized, "The library has already been initialized.");
         LibraryLock.initialize();
         _owner = msg.sender;
         _guardCounter = 1;
@@ -406,7 +405,7 @@ contract RToken is
     {
         require(
             allocationStrategy.underlying() == address(token),
-            'New strategy should have the same underlying asset'
+            "New strategy should have the same underlying asset"
         );
         IAllocationStrategy oldIas = ias;
         ias = allocationStrategy;
@@ -466,11 +465,11 @@ contract RToken is
         address dst,
         uint256 tokens
     ) internal {
-        require(src != dst, 'src should not equal dst');
+        require(src != dst, "src should not equal dst");
 
         require(
             accounts[src].rAmount >= tokens,
-            'Not enough balance to transfer'
+            "Not enough balance to transfer"
         );
 
         /* Get the allowance, infinite for the account owner */
@@ -482,7 +481,7 @@ contract RToken is
         }
         require(
             startingAllowance >= tokens,
-            'Not enough allowance for transfer'
+            "Not enough allowance for transfer"
         );
 
         /* Do the calculations, checking for {under,over}flow */
@@ -545,7 +544,7 @@ contract RToken is
     function mintInternal(uint256 mintAmount) internal {
         require(
             token.allowance(msg.sender, address(this)) >= mintAmount,
-            'Not enough allowance'
+            "Not enough allowance"
         );
 
         Account storage account = accounts[msg.sender];
@@ -577,10 +576,10 @@ contract RToken is
      */
     function redeemInternal(address redeemTo, uint256 redeemAmount) internal {
         Account storage account = accounts[msg.sender];
-        require(redeemAmount > 0, 'Redeem amount cannot be zero');
+        require(redeemAmount > 0, "Redeem amount cannot be zero");
         require(
             redeemAmount <= account.rAmount,
-            'Not enough balance to redeem'
+            "Not enough balance to redeem"
         );
 
         uint256 sOriginalBurned = redeemAndRecollectLoans(
@@ -619,11 +618,11 @@ contract RToken is
     ) internal returns (uint256 hatID) {
         uint256 i;
 
-        require(recipients.length > 0, 'Invalid hat: at least one recipient');
+        require(recipients.length > 0, "Invalid hat: at least one recipient");
         require(recipients.length <= MAX_NUM_HAT_RECIPIENTS, "Invalild hat: maximum number of recipients reached");
         require(
             recipients.length == proportions.length,
-            'Invalid hat: length not matching'
+            "Invalid hat: length not matching"
         );
 
         // normalize the proportions
@@ -633,7 +632,7 @@ contract RToken is
         for (i = 0; i < recipients.length; ++i) {
             require(
                 proportions[i] > 0,
-                'Invalid hat: proportion should be larger than 0'
+                "Invalid hat: proportion should be larger than 0"
             );
             require(recipients[0] != address(0), "Invalid hat: recipient should not be 0x0");
             // don't panic, no safemath, look above comment
@@ -657,7 +656,7 @@ contract RToken is
      * @param hatID The id of the Hat
      */
     function changeHatInternal(address owner, uint256 hatID) internal {
-        require(hatID == SELF_HAT_ID || hatID < hats.length, 'Invalid hat ID');
+        require(hatID == SELF_HAT_ID || hatID < hats.length, "Invalid hat ID");
         Account storage account = accounts[owner];
         uint256 oldHatID = account.hatID;
         HatStatsStored storage oldHatStats = hatStats[oldHatID];

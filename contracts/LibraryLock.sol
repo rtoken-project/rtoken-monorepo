@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import {RTokenStorage} from './RTokenStorage.sol';
+import {RTokenStorage} from "./RTokenStorage.sol";
 
 contract LibraryLock is RTokenStorage {
     // Ensures no one can manipulate the Logic Contract once it is deployed.

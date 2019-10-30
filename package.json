@@ -4,7 +4,7 @@
     "description": "RToken Ethereum contracts",
     "license": "MIT",
     "dependencies": {
-        "openzeppelin-solidity": "2.3.0",
+        "openzeppelin-solidity": "2.4.0",
         "truffle-contract": "4.0.31"
     },
     "devDependencies": {
@@ -12,6 +12,7 @@
         "dotenv": "8.2.0",
         "openzeppelin-test-helpers": "0.5.1",
         "sol-proxy": "0.1.2",
+        "solhint": "2.3.0",
         "truffle": "5.0.42",
         "truffle-flattener": "1.4.2",
         "@truffle/hdwallet-provider": "1.0.23",
@@ -25,6 +26,7 @@
         "dev": "nodemon -e sol,js -i build -x 'npm run lint && npm run test 2>&1'",
         "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
         "lint": "run-s lint:*",
-        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'"
+        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+        "lint:sol": "solhint contracts/*.sol && echo '✔  Your .sol files look good.'"
     }
 }

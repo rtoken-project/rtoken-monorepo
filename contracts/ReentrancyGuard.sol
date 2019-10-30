@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import {RTokenStorage} from './RTokenStorage.sol';
+import {RTokenStorage} from "./RTokenStorage.sol";
 
 contract ReentrancyGuard is RTokenStorage {
     /**
@@ -16,7 +16,7 @@ contract ReentrancyGuard is RTokenStorage {
         _;
         require(
             localCounter == _guardCounter,
-            'ReentrancyGuard: reentrant call'
+            "ReentrancyGuard: reentrant call"
         );
     }
 }

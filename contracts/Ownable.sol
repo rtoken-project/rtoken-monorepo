@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import {RTokenStorage} from './RTokenStorage.sol';
+import {RTokenStorage} from "./RTokenStorage.sol";
 
 contract Ownable is RTokenStorage {
     event OwnershipTransferred(
@@ -27,7 +27,7 @@ contract Ownable is RTokenStorage {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(isOwner(), 'Ownable: caller is not the owner');
+        require(isOwner(), "Ownable: caller is not the owner");
         _;
     }
 
@@ -64,7 +64,7 @@ contract Ownable is RTokenStorage {
     function _transferOwnership(address newOwner) internal {
         require(
             newOwner != address(0),
-            'Ownable: new owner is the zero address'
+            "Ownable: new owner is the zero address"
         );
         emit OwnershipTransferred(_owner, newOwner);
         _owner = newOwner;

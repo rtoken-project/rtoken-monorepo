@@ -9,7 +9,7 @@ contract Proxiable {
                     0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7
                 ) ==
                 Proxiable(newAddress).proxiableUUID(),
-            'Not compatible'
+            "Not compatible"
         );
         assembly {
             // solium-disable-line

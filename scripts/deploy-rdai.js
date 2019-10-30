@@ -20,7 +20,7 @@ module.exports = async function (callback) {
         //const compoundAS = { address: "0xF07d4967ae1F600144b25f40f655f61De2A9c0Ad" };
         console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
 
-        const rDaiLogic = await web3tx(RToken.new, `RToken.new`)(
+        const rDaiLogic = await web3tx(RToken.new, "RToken.new")(
             {
                 gas: 5000000,
             }
