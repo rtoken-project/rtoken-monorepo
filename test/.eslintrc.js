@@ -2,6 +2,7 @@ module.exports = {
     "globals": {
         "web3": true,
         "artifacts": true,
+        "describe": true,
         "contract": true,
         "before": true,
         "beforeEach": true,
