@@ -765,7 +765,7 @@ contract RToken is
         returns (uint256 sInternalAmount)
     {
         // accrue interest so estimate is up to date
-        ias.accrueInterest();
+        require(ias.accrueInterest(), "accrueInterest failed");
         sInternalAmount = rToSInternal(rAmount);
         recollectLoans(owner, rAmount, sInternalAmount);
     }
@@ -857,7 +857,7 @@ contract RToken is
         uint256 hatID,
         uint256 rAmount) internal {
         // accrue interest so estimate is up to date
-        ias.accrueInterest();
+        require(ias.accrueInterest(), "accrueInterest failed");
 
         Account storage srcAccount = accounts[src];
         Account storage dstAccount = accounts[dst];
@@ -881,7 +881,7 @@ contract RToken is
         Account storage account = accounts[owner];
         AccountStats storage stats = accountStats[owner];
 
-        ias.accrueInterest();
+        require(ias.accrueInterest(), "accrueInterest failed");
         uint256 interestAmount = getInterestPayableOf(account);
 
         if (interestAmount > 0) {
