@@ -907,7 +907,7 @@ contract RToken is
         HatStatsStored storage hatStats = hatStats[hatID];
 
         emit LoansTransferred(owner, recipient, hatID,
-            true,
+            isDistribution,
             redeemableAmount,
             sInternalToR(internalSavingsAmount));
 
