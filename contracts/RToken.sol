@@ -634,7 +634,7 @@ contract RToken is
                 proportions[i] > 0,
                 "Invalid hat: proportion should be larger than 0"
             );
-            require(recipients[0] != address(0), "Invalid hat: recipient should not be 0x0");
+            require(recipients[i] != address(0), "Invalid hat: recipient should not be 0x0");
             // don't panic, no safemath, look above comment
             totalProportions += uint256(proportions[i]);
         }
