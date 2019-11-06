@@ -30,6 +30,8 @@ contract RToken is
     ReentrancyGuard {
     using SafeMath for uint256;
 
+
+    uint256 public constant ALLOCATION_STRATEGY_EXCHANGE_RATE_SCALE = 1e18;
     uint256 public constant INITIAL_SAVING_ASSET_CONVERSION_RATE = 1e18;
     uint256 public constant MAX_UINT256 = uint256(int256(-1));
     uint256 public constant SELF_HAT_ID = MAX_UINT256;
@@ -61,7 +63,7 @@ contract RToken is
         // everyone is using it by default!
         hatStats[0].useCount = MAX_UINT256;
 
-        emit AllocationStrategyChanged(ias, savingAssetConversionRate);
+        emit AllocationStrategyChanged(address(ias), savingAssetConversionRate);
     }
 
     //
@@ -411,11 +413,12 @@ contract RToken is
     }
 
     /// @dev IRToken.changeAllocationStrategy implementation
-    function changeAllocationStrategy(IAllocationStrategy allocationStrategy)
+    function changeAllocationStrategy(address allocationStrategy_)
         external
         nonReentrant
         onlyOwner
     {
+        IAllocationStrategy allocationStrategy = IAllocationStrategy(allocationStrategy_);
         require(
             allocationStrategy.underlying() == address(token),
             "New strategy should have the same underlying asset"
@@ -445,13 +448,13 @@ contract RToken is
             .mul(savingAssetConversionRateOld)
             .div(sOriginalCreated);
 
-        emit AllocationStrategyChanged(ias, savingAssetConversionRate);
+        emit AllocationStrategyChanged(allocationStrategy_, savingAssetConversionRate);
     }
 
     /// @dev IRToken.changeHatFor implementation
     function getCurrentAllocationStrategy()
-        external view returns (IAllocationStrategy allocationStrategy) {
-        return ias;
+        external view returns (address allocationStrategy) {
+        return address(ias);
     }
 
     /// @dev IRToken.changeHatFor implementation
@@ -463,6 +466,7 @@ contract RToken is
     /// @dev Update the rToken logic contract code
     function updateCode(address newCode) external onlyOwner delegatedOnly {
         updateCodeAddress(newCode);
+        emit CodeUpdated(newCode);
     }
 
     /**
@@ -985,7 +989,7 @@ contract RToken is
         returns (uint256 sInternalAmount) {
         return sOriginalAmount
             .mul(ias.exchangeRateStored())
-            .div(ias.EXCHANGE_RATE_SCALE());
+            .div(ALLOCATION_STRATEGY_EXCHANGE_RATE_SCALE);
     }
 
     // @dev convert from original savings amount to internal savings amount
@@ -995,6 +999,6 @@ contract RToken is
         // savingAssetConversionRate is scaled by 1e18
         return sOriginalAmount
             .mul(savingAssetConversionRate)
-            .div(ias.EXCHANGE_RATE_SCALE());
+            .div(ALLOCATION_STRATEGY_EXCHANGE_RATE_SCALE);
     }
 }

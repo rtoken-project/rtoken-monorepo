@@ -1,8 +1,4 @@
-/**
- * In order to build a Aragon App, it is required to have a solidity requirement
- * that is without ABIEncoderV2.
- */
-pragma solidity >= 0.4.24;
+pragma solidity ^0.5.8;
 
 /**
  * @notice Allocation strategy for assets.
@@ -10,9 +6,7 @@ pragma solidity >= 0.4.24;
  *           usually lending contracts, in return it gets new assets aka. saving assets.
  *         - Sainv assets can be redeemed back to the underlying assets plus interest any time.
  */
-contract IAllocationStrategy {
-
-    uint256 public constant EXCHANGE_RATE_SCALE = 1e18;
+interface IAllocationStrategy {
 
     /**
      * @notice Underlying asset for the strategy

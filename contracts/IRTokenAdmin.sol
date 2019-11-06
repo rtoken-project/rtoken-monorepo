@@ -4,12 +4,15 @@
  */
 pragma solidity >= 0.4.24;
 
-import {IAllocationStrategy} from "./IAllocationStrategy.sol";
-
 /**
  * IRTokenAdmin interface
  */
 interface IRTokenAdmin {
+
+    /**
+     * @notice Get current owner
+     */
+    function owner() external view returns (address);
 
     /**
      * @notice Transfers ownership of the contract to a new account (`newOwner`).
@@ -22,13 +25,13 @@ interface IRTokenAdmin {
     * @notice Get the current allocation strategy
     */
     function getCurrentAllocationStrategy()
-        external view returns (IAllocationStrategy allocationStrategy);
+        external view returns (address allocationStrategy);
 
     /**
     * @notice Change allocation strategy for the contract instance
     * @param allocationStrategy Allocation strategy instance
     */
-    function changeAllocationStrategy(IAllocationStrategy allocationStrategy)
+    function changeAllocationStrategy(address allocationStrategy)
         external;
 
     /**
@@ -40,9 +43,19 @@ interface IRTokenAdmin {
         external;
 
     /**
+     * @notice Update the rToken logic contract code
+     */
+    function updateCode(address newCode) external;
+
+    /**
+     * @notice Code updated event
+     */
+    event CodeUpdated(address newCode);
+
+    /**
      * @notice Allocation strategy changed event
      * @param strategy New strategy address
      * @param conversionRate New saving asset conversion rate
      */
-    event AllocationStrategyChanged(IAllocationStrategy strategy, uint256 conversionRate);
+    event AllocationStrategyChanged(address strategy, uint256 conversionRate);
 }

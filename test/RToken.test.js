@@ -1204,8 +1204,16 @@ contract("RToken", accounts => {
             {
                 from: admin
             });
+
         // Perform the upgrade
-        await web3tx(rToken.updateCode, "rToken.updateCode")(newRTokenLogic.address, {
+        await web3tx(rToken.updateCode, "rToken.updateCode", {
+            inLogs: [{
+                name: "CodeUpdated",
+                args: {
+                    newCode: newRTokenLogic.address
+                }
+            }]
+        })(newRTokenLogic.address, {
             from: admin
         });
 
