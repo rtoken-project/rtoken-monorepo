@@ -562,7 +562,7 @@ contract RToken is
         savingAssetOrignalAmount = savingAssetOrignalAmount.add(sOriginalCreated);
 
         // distribute saving assets as loans to recipients
-        uint256 sInternalCreated = sOriginalTosInternal(sOriginalCreated);
+        uint256 sInternalCreated = sOriginalToSInternal(sOriginalCreated);
         distributeLoans(msg.sender, mintAmount, sInternalCreated);
 
         emit Transfer(address(0), msg.sender, mintAmount);
@@ -783,7 +783,7 @@ contract RToken is
         returns (uint256 sOriginalBurned)
     {
         sOriginalBurned = ias.redeemUnderlying(rAmount);
-        uint256 sInternalBurned = sOriginalTosInternal(sOriginalBurned);
+        uint256 sInternalBurned = sOriginalToSInternal(sOriginalBurned);
         recollectLoans(owner, rAmount, sInternalBurned);
     }
 
@@ -902,23 +902,23 @@ contract RToken is
         uint256 hatID,
         bool isDistribution,
         uint256 redeemableAmount,
-        uint256 internalSavingsAmount) private {
+        uint256 sInternalAmount) private {
         HatStatsStored storage hatStats = hatStats[hatID];
 
         emit LoansTransferred(owner, recipient, hatID,
             isDistribution,
             redeemableAmount,
-            sInternalToR(internalSavingsAmount));
+            sInternalAmount);
 
         if (isDistribution) {
             hatStats.totalLoans = hatStats.totalLoans.add(redeemableAmount);
             hatStats.totalInternalSavings = hatStats.totalInternalSavings
-                .add(internalSavingsAmount);
+                .add(sInternalAmount);
         } else {
             hatStats.totalLoans = gentleSub(hatStats.totalLoans, redeemableAmount);
             hatStats.totalInternalSavings = gentleSub(
                 hatStats.totalInternalSavings,
-                internalSavingsAmount);
+                sInternalAmount);
         }
     }
 
@@ -973,11 +973,12 @@ contract RToken is
             .div(ias.EXCHANGE_RATE_SCALE());
     }
 
-    function sOriginalTosInternal(uint sOriginal)
+    // @dev convert from original savings amount to internal savings amount
+    function sOriginalToSInternal(uint sOriginalAmount)
         private view
         returns (uint256 sInternalAmount) {
         // savingAssetConversionRate is scaled by 1e18
-        return sOriginal
+        return sOriginalAmount
             .mul(savingAssetConversionRate)
             .div(ias.EXCHANGE_RATE_SCALE());
     }

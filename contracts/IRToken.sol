@@ -251,7 +251,7 @@ contract IRToken is RTokenStructs, IERC20 {
         uint256 indexed hatId,
         bool isDistribution,
         uint256 redeemableAmount,
-        uint256 savingsAmount);
+        uint256 internalSavingsAmount);
 
     /**
      * @notice Event emitted when interest paid
