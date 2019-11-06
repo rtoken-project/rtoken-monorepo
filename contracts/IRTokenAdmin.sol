@@ -32,10 +32,17 @@ interface IRTokenAdmin {
         external;
 
     /**
-    * @notice Change hat for the contract address
-    * @param contractAddress contract address
-    * @param hatID Hat ID
-    */
+     * @notice Change hat for the contract address
+     * @param contractAddress contract address
+     * @param hatID Hat ID
+     */
     function changeHatFor(address contractAddress, uint256 hatID)
         external;
+
+    /**
+     * @notice Allocation strategy changed event
+     * @param strategy New strategy address
+     * @param conversionRate New saving asset conversion rate
+     */
+    event AllocationStrategyChanged(IAllocationStrategy strategy, uint256 conversionRate);
 }

@@ -60,7 +60,7 @@ contract RTokenStorage is RTokenStructs, IERC20 {
     /// @dev Account mapping
     mapping(address => Account) public accounts;
     /// @dev AccountStats mapping
-    mapping(address => AccountStats) public accountStats;
+    mapping(address => AccountStatsStored) public accountStats;
     /// @dev HatStats mapping
     mapping(uint256 => HatStatsStored) public hatStats;
 }

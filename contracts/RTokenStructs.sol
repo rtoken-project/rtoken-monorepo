@@ -11,18 +11,39 @@ contract RTokenStructs {
         uint256 totalSavingsAmount;
     }
 
+
     /**
-     * @notice Account stats
+     * @notice Account stats stored
      */
-    struct AccountStats {
+    struct AccountStatsView {
+        /// @notice Current hat ID
+        uint256 hatID;
+        /// @notice Current redeemable amount
+        uint256 rAmount;
+        /// @notice Interest portion of the rAmount
+        uint256 rInterest;
+        /// @notice Current loan debt amount
+        uint256 lDebt;
+        /// @notice Current internal savings amount
+        uint256 sInternalAmount;
+        /// @notice Interest payable
+        uint256 rInterestPayable;
         /// @notice Cumulative interest generated for the account
         uint256 cumulativeInterest;
     }
 
     /**
-     * @notice Hat stats
+     * @notice Account stats stored
      */
-    struct HatStats {
+    struct AccountStatsStored {
+        /// @notice Cumulative interest generated for the account
+        uint256 cumulativeInterest;
+    }
+
+    /**
+     * @notice Hat stats view
+     */
+    struct HatStatsView {
         /// @notice Number of addresses has the hat
         uint256 useCount;
         /// @notice Total net loans distributed through the hat

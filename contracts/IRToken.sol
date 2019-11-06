@@ -206,12 +206,12 @@ contract IRToken is RTokenStructs, IERC20 {
     /**
     * @notice Get saving asset balance for specific saving strategy
     * @return rAmount Balance in redeemable amount
-    * @return sAmount Balance in native amount of the strategy
+    * @return sOriginalAmount Balance in native amount of the strategy
     */
     function getSavingAssetBalance()
         external
         view
-        returns (uint256 rAmount, uint256 sAmount);
+        returns (uint256 rAmount, uint256 sOriginalAmount);
 
     /**
     * @notice Get global stats
@@ -227,7 +227,7 @@ contract IRToken is RTokenStructs, IERC20 {
     function getAccountStats(address owner)
         external
         view
-        returns (AccountStats memory);
+        returns (AccountStatsView memory);
 
     /**
     * @notice Get hat stats
@@ -237,7 +237,7 @@ contract IRToken is RTokenStructs, IERC20 {
     function getHatStats(uint256 hatID)
         external
         view
-        returns (HatStats memory);
+        returns (HatStatsView memory);
 
     ////////////////////////////////////////////////////////////////////////////
     // Events

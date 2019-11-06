@@ -1691,11 +1691,13 @@ contract("RToken", accounts => {
     it("#22 Change allocation strategy multiple times", async () => {
         let cToken2, compoundAS2, cToken3, compoundAS3;
         {
+            // from 0.1 to 0.01
             const result = await createCompoundAllocationStrategy(toWad(.01));
             cToken2 = result.cToken;
             compoundAS2 = result.compoundAS;
         }
         {
+            // from 0.01 to 10
             const result = await createCompoundAllocationStrategy(toWad(10));
             cToken3 = result.cToken;
             compoundAS3 = result.compoundAS;
@@ -1706,18 +1708,10 @@ contract("RToken", accounts => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
-        await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
-            inLogs: [{
-                name: "Transfer",
-                args: {
-                    from: ZERO_ADDRESS,
-                    to: customer1,
-                    value: toWad(100)
-                }
-            }]
-        })(toWad(100), {
-            from: customer1
-        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer1")(
+            toWad(100), {
+                from: customer1
+            });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
         assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "100.00000");
         assert.equal(wad4human(await cToken.balanceOf.call(compoundAS.address)), "1000.00000");
@@ -1725,7 +1719,15 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
 
         await web3tx(rToken.changeAllocationStrategy,
-            "change allocation strategy")(
+            "change allocation strategy", {
+                inLogs: [{
+                    name: "AllocationStrategyChanged",
+                    args: {
+                        strategy: compoundAS2.address,
+                        conversionRate: toWad(0.1)
+                    }
+                }]
+            })(
             compoundAS2.address, {
                 from: admin
             });
@@ -1738,7 +1740,15 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
 
         await web3tx(rToken.changeAllocationStrategy,
-            "change allocation strategy")(
+            "change allocation strategy", {
+                inLogs: [{
+                    name: "AllocationStrategyChanged",
+                    args: {
+                        strategy: compoundAS3.address,
+                        conversionRate: toWad(100)
+                    }
+                }]
+            })(
             compoundAS3.address, {
                 from: admin
             });

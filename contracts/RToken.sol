@@ -60,6 +60,8 @@ contract RToken is
 
         // everyone is using it by default!
         hatStats[0].useCount = MAX_UINT256;
+
+        emit AllocationStrategyChanged(ias, savingAssetConversionRate);
     }
 
     //
@@ -363,9 +365,20 @@ contract RToken is
     function getAccountStats(address owner)
         external
         view
-        returns (AccountStats memory)
+        returns (AccountStatsView memory stats)
     {
-        AccountStats storage stats = accountStats[owner];
+        Account storage account = accounts[owner];
+        stats.hatID = account.hatID;
+        stats.rAmount = account.rAmount;
+        stats.rInterest = account.rInterest;
+        stats.lDebt = account.lDebt;
+        stats.sInternalAmount = account.sInternalAmount;
+
+        stats.rInterestPayable = getInterestPayableOf(account);
+
+        AccountStatsStored storage statsStored = accountStats[owner];
+        stats.cumulativeInterest = statsStored.cumulativeInterest;
+
         return stats;
     }
 
@@ -373,7 +386,7 @@ contract RToken is
     function getHatStats(uint256 hatID)
         external
         view
-        returns (HatStats memory stats) {
+        returns (HatStatsView memory stats) {
         HatStatsStored storage statsStored = hatStats[hatID];
         stats.useCount = statsStored.useCount;
         stats.totalLoans = statsStored.totalLoans;
@@ -391,10 +404,10 @@ contract RToken is
     function getSavingAssetBalance()
         external
         view
-        returns (uint256 rAmount, uint256 sAmount)
+        returns (uint256 rAmount, uint256 sOriginalAmount)
     {
-        sAmount = savingAssetOrignalAmount;
-        rAmount = sOriginalToR(sAmount);
+        sOriginalAmount = savingAssetOrignalAmount;
+        rAmount = sOriginalToR(sOriginalAmount);
     }
 
     /// @dev IRToken.changeAllocationStrategy implementation
@@ -431,6 +444,8 @@ contract RToken is
         savingAssetConversionRate = sOriginalBurned
             .mul(savingAssetConversionRateOld)
             .div(sOriginalCreated);
+
+        emit AllocationStrategyChanged(ias, savingAssetConversionRate);
     }
 
     /// @dev IRToken.changeHatFor implementation
@@ -879,7 +894,7 @@ contract RToken is
      */
     function payInterestInternal(address owner) internal {
         Account storage account = accounts[owner];
-        AccountStats storage stats = accountStats[owner];
+        AccountStatsStored storage stats = accountStats[owner];
 
         require(ias.accrueInterest(), "accrueInterest failed");
         uint256 interestAmount = getInterestPayableOf(account);
