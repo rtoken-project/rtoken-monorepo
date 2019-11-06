@@ -10,10 +10,12 @@ module.exports = async function (callback) {
         const RToken = artifacts.require("RToken");
         const Proxy = artifacts.require("Proxy");
 
-        const cDAI = await require("./get-cdai")(artifacts, network);
+        const addresses = await require("./addresses")[network];
 
-        const compoundAS = await web3tx(CompoundAllocationStrategy.new, `CompoundAllocationStrategy.new cDAI ${cDAI.address}`)(
-            cDAI.address, {
+        const compoundAS = await web3tx(
+            CompoundAllocationStrategy.new,
+            `CompoundAllocationStrategy.new cDAI ${addresses}`)(
+            addresses.cDAI, {
                 gas: 1000000,
             }
         );
