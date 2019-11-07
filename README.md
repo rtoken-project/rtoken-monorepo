@@ -348,6 +348,14 @@ for all accounts)
 
 # Deployed Contracts
 
+For testnets, the logic contracts are continuously updated. To fetch logic contract address using web3, use:
+
+
+```
+web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7")
+```
+
+
 ## Rinkeby
 
 * DAI: [0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa](https://rinkeby.etherscan.io/address/0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa)
@@ -357,7 +365,6 @@ for all accounts)
 **v1**
 
 * DaiCompoundAllocationStrategy: [0xB603cd1bdAcaBd5Ca9341d8a44f6430a5e371b76](https://rinkeby.etherscan.io/address/0xB603cd1bdAcaBd5Ca9341d8a44f6430a5e371b76)
-* rDAI Logic: [0xa401e671eCA4309BDdADA860d5B25C722118b5A1](https://rinkeby.etherscan.io/address/0xa401e671eCA4309BDdADA860d5B25C722118b5A1)
 
 ## Kovan
 
@@ -368,7 +375,6 @@ for all accounts)
 **v1**
 
 * DaiCompoundAllocationStrategy: [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
-* rDAI Logic: [0xE21dAbb0ea711AF1AbeA2191180407277312f0fe](https://kovan.etherscan.io/address/0xE21dAbb0ea711AF1AbeA2191180407277312f0fe)
 
 ## Mainnet
 
@@ -383,6 +389,10 @@ for all accounts)
 **v1**
 * DaiCompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
 * rDAI Logic: [0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a](https://etherscan.io/address/0x2a3ba5E280F70A6C4C6FE4fA7b4d09D496f3296a)
+
+**v1**
+
+* rDAI Logic: [0x293908E6352b11a91bC08eeb335644C485D21170](https://etherscan.io/address/0x293908E6352b11a91bC08eeb335644C485D21170)
 
 # Integration
 
