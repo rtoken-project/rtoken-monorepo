@@ -325,8 +325,6 @@ contract.
 
 ## RToken Allocation Strategy Switching
 
-**(TODO! NOTE! This feature is still under development!)**
-
 `RToken` has one saving strategy at a time, and all underlying assets are
 transferred to and converted to saving assets that are expected to be liquid
 and growing in value measured in underlying tokens.
@@ -397,6 +395,20 @@ Here are some documentations on how one can integrate rDai in applications.
 ## Mint/Redeem Flows
 
 **!TODO! embed plantuml sequence diagrams**
+
+**Some useful notes**
+
+1. how does it really work?!
+
+Every address, including contract address, is associated with one and only one hat.
+
+When an account mints, the account's DAI is transferred to the rDAI contract and an equivalent amount of rDAI is minted. The account gets to keep that amount rDAI always, and can redeem them any time. Those DAI  are invested in to some allocation strategy, namely compound. The generated interest are assigned to the recipients defined by the hat. And recipient can withdraw those interest in forms of rDAI and can withdraw them whenever they want. Note that the recipient can be the account itself, hence the special case we call zero hat(default hat for all accounts but subject to hat inheritance rules) or self hat (a deliberate choice that make the account immune of hat inheritance rules)
+
+2. how do we really mint?!
+
+- First, find out the rDAI proxy contract down below this document,
+- DAI.ERC20.approve (`spender` = rDAI proxy address, `amount` = max uint256 usually), allowing rDAI contract to use your DAI balances up to `amount`,
+- use one of the mint functions: rDAI.mint|mintWithSelectedHat|mintWithNewHat, find out more at https://github.com/rtoken-project/rtoken-contracts/blob/master/contracts/IRToken.sol
 
 ## Stats
 
