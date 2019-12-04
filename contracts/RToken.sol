@@ -680,13 +680,15 @@ contract RToken is
         uint256 oldHatID = account.hatID;
         HatStatsStored storage oldHatStats = hatStats[oldHatID];
         HatStatsStored storage newHatStats = hatStats[hatID];
-        account.hatID = hatID;
         if (account.rAmount > 0) {
             uint256 sInternalAmountCollected = estimateAndRecollectLoans(
                 owner,
                 account.rAmount
             );
+            account.hatID = hatID;
             distributeLoans(owner, account.rAmount, sInternalAmountCollected);
+        } else {
+            account.hatID = hatID;
         }
         oldHatStats.useCount -= 1;
         newHatStats.useCount += 1;
