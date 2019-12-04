@@ -1813,4 +1813,45 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
     });
+    it("#23 rToken change hat test w/ 2 recipients", async () => {
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        await web3tx(rToken.mintWithNewHat, "rToken.mint 100 to customer1 with a hat benefiting customer2(100%)")(
+            toWad(100), [customer2], [100], {
+                from: customer1
+            });
+        await expectAccount(customer2, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00000",
+            interestPayable: "0.00000",
+        });
+        await web3tx(rToken.createHat, "rToken.createHat for customer1 with a hat benefiting customer3(100%)")(
+            [customer3, customer4], [90,10], true, {
+                from: customer1
+            });
+        await expectAccount(customer2, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "90.00000",
+            receivedSavings: "90.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer4, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "10.00000",
+            receivedSavings: "10.00000",
+            interestPayable: "0.00000",
+        });
+    });
 });
