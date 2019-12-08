@@ -27,7 +27,7 @@ require("dotenv").config();
 
 module.exports = {
 
-    plugins: ["truffle-security"],
+    plugins: ["truffle-security", "solidity-coverage"],
 
     /**
      * Networks define how you connect to your ethereum client and let you set the
@@ -97,7 +97,13 @@ module.exports = {
             timeoutBlocks: 50, // # of blocks before a deployment times out  (minimum/default: 50)
             skipDryRun: false // Skip dry run before migrations? (default: false for public nets )
         },
-
+        coverage: {
+            host: "localhost",
+            network_id: "*",
+            port: 8555,         // <-- If you change this, also set the port option in .solcover.js.
+            gas: 0xfffffffffff, // <-- Use this high gas value
+            gasPrice: 0x01      // <-- Use this low gas price
+        },
         // Another network with more advanced options...
         // advanced: {
         // port: 8777,             // Custom port

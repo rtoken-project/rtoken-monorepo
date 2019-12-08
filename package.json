@@ -13,6 +13,7 @@
         "openzeppelin-test-helpers": "0.5.1",
         "sol-proxy": "0.1.2",
         "solhint": "2.3.0",
+        "solidity-coverage": "0.7.0-beta.2",
         "truffle": "5.0.42",
         "truffle-flattener": "1.4.2",
         "@truffle/hdwallet-provider": "1.0.23",
