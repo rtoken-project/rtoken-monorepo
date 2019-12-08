@@ -114,6 +114,13 @@ contract("RToken", accounts => {
         };
     }
 
+    function parseSavingAssetBalance({rAmount, sOriginalAmount}) {
+        return {
+            rAmount: wad4human(rAmount),
+            sOriginalAmount: wad4human(sOriginalAmount)
+        };
+    }
+
     async function doBingeBorrowing(nBlocks = 100) {
         // this process should generate 0.0001% * nBlocks amount of tokens worth of interest
         // when nBlocks = 100, it is 0.001
@@ -1852,6 +1859,150 @@ contract("RToken", accounts => {
             receivedLoan: "10.00000",
             receivedSavings: "10.00000",
             interestPayable: "0.00000",
+        });
+    });
+
+    it("#24 complex functional test", async () => {
+        // Check that the current saving/allocation strategy is the Compound Allocation Strategy
+        assert.equal(await rToken.getCurrentSavingStrategy(), compoundAS.address);
+        assert.equal(await rToken.getCurrentAllocationStrategy(), compoundAS.address);
+        // Create hat
+        await web3tx(rToken.createHat, "rToken.createHat for customer1 benefiting admin and customer3 10/90")(
+            [admin, customer3], [10, 90], true, {
+                from: customer1
+            }
+        );
+        // Check that the largest hat ID is as created so far
+        assert.equal(await rToken.getMaximumHatID(), 1);
+        await web3tx(token.approve, "token.approve 1000 by customer1")(rToken.address, toWad(1000), {
+            from: customer1
+        });
+        // customer1 mints with hat ID 1
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 1000 to customer1 with the first hat", {
+            inLogs: [{
+                name: "Transfer"
+            }]
+        })(toWad(1000), 1, {
+            from: customer1
+        });
+        await expectAccount(admin, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "1000.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "900.00000",
+            receivedSavings: "900.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer4, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        // Accumulate interest
+        await doBingeBorrowing(142);
+        await expectAccount(admin, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "100.00000",
+            receivedSavings: "100.00014",
+            interestPayable: "0.00014",
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "1000.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "900.00000",
+            receivedSavings: "900.00128",
+            interestPayable: "0.00128",
+        });
+        await expectAccount(customer4, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        // owner changeHat to different recipient
+        await web3tx(rToken.createHat, "rToken.createHat for customer1 benefiting customer2 and customer4 49/51")(
+            [customer2, customer4], [49, 51], true, {
+                from: customer1
+            }
+        );
+        // Accumulate interest
+        await doBingeBorrowing(298);
+        await expectAccount(admin, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00014",
+            interestPayable: "0.00014",
+        });
+        await expectAccount(customer1, {
+            tokenBalance: "1000.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00000",
+            interestPayable: "0.00000",
+        });
+        await expectAccount(customer2, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "490.00000",
+            receivedSavings: "490.00293",
+            interestPayable: "0.00293",
+        });
+        await expectAccount(customer3, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00129",
+            interestPayable: "0.00129",
+        });
+        await expectAccount(customer4, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00000",
+            receivedLoan: "510.00000",
+            receivedSavings: "510.00305",
+            interestPayable: "0.00304",
+        });
+        assert.deepEqual(parseSavingAssetBalance(await rToken.getSavingAssetBalance.call()), {
+            rAmount: "1000.00740",
+            sOriginalAmount: "10000.00000"
         });
     });
 });
