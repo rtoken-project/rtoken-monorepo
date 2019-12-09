@@ -43,9 +43,9 @@ contract RToken is
      */
     function initialize(
         IAllocationStrategy allocationStrategy,
-        string calldata name_,
-        string calldata symbol_,
-        uint256 decimals_) external {
+        string memory name_,
+        string memory symbol_,
+        uint256 decimals_) public {
         require(!initialized, "The library has already been initialized.");
         LibraryLock.initialize();
         _owner = msg.sender;

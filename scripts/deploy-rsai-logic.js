@@ -6,13 +6,13 @@ module.exports = async function (callback) {
         console.log("Current network:", network);
 
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
-        const RToken = artifacts.require("rDAI");
-        const rDaiLogic = await web3tx(RToken.new, "RToken.new")(
+        const rSAI = artifacts.require("rSAI");
+        const rSAILogic = await web3tx(rSAI.new, "rSAI.new")(
             {
                 gas: 5000000,
             }
         );
-        console.log("rDaiLogic deployed at: ", rDaiLogic.address);
+        console.log("rSAILogic deployed at: ", rSAILogic.address);
 
         callback();
     } catch (err) {
