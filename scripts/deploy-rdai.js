@@ -14,7 +14,7 @@ module.exports = async function (callback) {
 
         const compoundAS = await web3tx(
             CompoundAllocationStrategy.new,
-            `CompoundAllocationStrategy.new cDAI ${addresses}`)(
+            `CompoundAllocationStrategy.new cDAI ${addresses.cDAI}`)(
             addresses.cDAI, {
                 gas: 1000000,
             }
