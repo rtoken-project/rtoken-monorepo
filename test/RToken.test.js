@@ -1820,6 +1820,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
     });
+
     it("#23 rToken change hat test w/ 2 recipients", async () => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
