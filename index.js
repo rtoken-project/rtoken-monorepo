@@ -1,4 +1,4 @@
-const TruffleContract = require("truffle-contract");
+const TruffleContract = require("@truffle/contract");
 
 module.exports = {
     load: (provider) => {
