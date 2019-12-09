@@ -26,6 +26,7 @@
         "test": "run-s lint:* test:*",
         "test:contracts": "truffle test --network development test/all.js",
         "test:package": "npm run build && mocha test/package.test.js",
+        "coverage:contracts": "truffle run coverage",
         "dev": "nodemon -e sol,js -i build -x 'npm run test 2>&1'",
         "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
         "lint": "run-s lint:*",
