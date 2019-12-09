@@ -187,6 +187,7 @@ contract("RToken", accounts => {
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
+        await expectRevert(rToken.mint(toWad(100.1), { from: customer1 }), "Not enough allowance");
         await web3tx(rToken.mint, "rToken.mint 100 to customer1", {
             inLogs: [{
                 name: "Transfer",
@@ -211,6 +212,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
 
+        await expectRevert(rToken.transfer(customer1, toWad(1), { from: customer1 }), "src should not equal dst");
         await expectRevert(rToken.transfer(customer2, toWad(100.1), { from: customer1 }), "Not enough balance to transfer");
         await expectRevert(rToken.transferFrom(customer1, customer2, toWad(1), { from: admin }), "Not enough allowance for transfer");
 
@@ -227,6 +229,8 @@ contract("RToken", accounts => {
             totalSavingsAmount: "100.00100"
         });
 
+        await expectRevert(rToken.redeem("0", { from: customer1 }), "Redeem amount cannot be zero");
+    
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
                 name: "Transfer",
@@ -240,12 +244,12 @@ contract("RToken", accounts => {
             from: customer1
         });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
-        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "90.00101");
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "90.00102");
         await expectAccount(customer1, {
-            tokenBalance: "90.00101",
-            cumulativeInterest: "0.00101",
+            tokenBalance: "90.00102",
+            cumulativeInterest: "0.00102",
             receivedLoan: "90.00000",
-            receivedSavings: "90.00101",
+            receivedSavings: "90.00102",
             interestPayable: "0.00000",
         });
 
@@ -262,12 +266,12 @@ contract("RToken", accounts => {
             }]
         })(customer1, { from : admin });
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "910.00000");
-        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "90.00102");
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "90.00103");
         await expectAccount(customer1, {
-            tokenBalance: "90.00102",
-            cumulativeInterest: "0.00102",
+            tokenBalance: "90.00103",
+            cumulativeInterest: "0.00103",
             receivedLoan: "90.00000",
-            receivedSavings: "90.00102",
+            receivedSavings: "90.00103",
             interestPayable: "0.00000",
         });
         await web3tx(rToken.payInterest, "rToken.payInterest to customer1 again", {
@@ -276,15 +280,15 @@ contract("RToken", accounts => {
             }]
         })(customer1, { from : admin });
         await expectAccount(customer1, {
-            tokenBalance: "90.00103",
-            cumulativeInterest: "0.00103",
+            tokenBalance: "90.00104",
+            cumulativeInterest: "0.00104",
             receivedLoan: "90.00000",
-            receivedSavings: "90.00103",
+            receivedSavings: "90.00104",
             interestPayable: "0.00000",
         });
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
-            totalSupply: "90.00103",
-            totalSavingsAmount: "90.00103"
+            totalSupply: "90.00104",
+            totalSavingsAmount: "90.00104"
         });
 
         await web3tx(rToken.redeemAndTransfer, "rToken.redeem 2 of customer1 to customer3", {
@@ -669,8 +673,14 @@ contract("RToken", accounts => {
             recipients: [admin, customer3],
             proportions: [429496729, 3865470565]
         });
+
         await web3tx(rToken.createHat, "rToken.createHat for customer2 benefiting admin and customer4 20/80")(
             [admin, customer4], [20, 80], true, {
+                from: customer2
+            }
+        );
+        await web3tx(rToken.createHat, "rToken.createHat but not using it")(
+            [admin, customer4], [50, 50], false, {
                 from: customer2
             }
         );
@@ -678,6 +688,10 @@ contract("RToken", accounts => {
             hatID: 2,
             recipients: [admin, customer4],
             proportions: [858993459, 3435973836]
+        });
+        assert.deepEqual(parseHat(await rToken.getHatByID.call(3)), {
+            recipients: [admin, customer4],
+            proportions: [2147483647, 2147483647]
         });
 
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(200), {
@@ -1342,6 +1356,13 @@ contract("RToken", accounts => {
     });
 
     it("#16 proxy security", async () => {
+        // admin
+        assert.equal(await rToken.owner.call(), admin);
+        await expectRevert(rToken.transferOwnership(customer1, { from: customer1 }), "Ownable: caller is not the owner");
+        await web3tx(rToken.transferOwnership, "change owner to customer1")(customer1, { from: admin });
+        assert.equal(await rToken.owner.call(), customer1);
+        await expectRevert(rToken.transferOwnership(customer1, { from: admin }), "Ownable: caller is not the owner");
+        await web3tx(rToken.transferOwnership, "change owner to admin")(admin, { from: customer1 });
 
         // Call initialize first time
         await web3tx(rTokenLogic.initialize, "rTokenLogic.initialize first time")(
@@ -1365,6 +1386,8 @@ contract("RToken", accounts => {
         await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from non-owner")(compoundAS.address, {
             from: customer1
         }), "Ownable: caller is not the owner");
+        await web3tx(rTokenLogic.renounceOwnership, "rTokenLogic renounceOwnership")({ from: admin });
+        await expectRevert(rTokenLogic.transferOwnership(customer1, { from: admin }), "Ownable: caller is not the owner");
 
         // await expectRevert(web3tx(rTokenLogic.updateCode, "rTokenLogic.updateCode from owner")(compoundAS.address, {
         //   from: admin
@@ -1695,12 +1718,30 @@ contract("RToken", accounts => {
         await expectRevert(rToken.changeHat(42), "Invalid hat ID");
     });
 
-    it("#21 Hat should not have 0x0 recipient", async () => {
+    it("#21 Invalid hats", async () => {
+        await expectRevert(rToken.createHat(
+            [], [], true, {
+                from: customer1
+            }
+
+        ), "Invalid hat: at least one recipient");
+        await expectRevert(rToken.createHat(
+            [customer1], [10, 20], true, {
+                from: customer1
+            }
+
+        ), "Invalid hat: length not matching");
         await expectRevert(rToken.createHat(
             [ZERO_ADDRESS], [1], true, {
                 from: customer1
             }
         ), "Invalid hat: recipient should not be 0x0");
+        await expectRevert(rToken.createHat(
+            [customer1], [0], true, {
+                from: customer1
+            }
+
+        ), "Invalid hat: proportion should be larger than 0");
     });
 
     it("#22 Change allocation strategy multiple times", async () => {
