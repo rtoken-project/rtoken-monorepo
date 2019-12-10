@@ -4,13 +4,13 @@
     "description": "RToken Ethereum contracts",
     "license": "MIT",
     "dependencies": {
-        "openzeppelin-solidity": "2.4.0",
+        "@openzeppelin/contracts": "2.4.0",
         "@truffle/contract": "4.1.1"
     },
     "devDependencies": {
         "@decentral.ee/web3-test-helpers": "0.2.1",
         "dotenv": "8.2.0",
-        "openzeppelin-test-helpers": "0.5.1",
+        "@openzeppelin/test-helpers": "0.5.4",
         "sol-proxy": "0.1.2",
         "solhint": "2.3.0",
         "solidity-coverage": "0.7.0-beta.2",
@@ -24,8 +24,8 @@
         "build": "run-s build:*",
         "build:truffle-compile": "rm -f build/contracts/*;truffle compile",
         "test": "run-s lint:* test:*",
-        "test:contracts": "truffle test --network development test/all.js",
-        "test:package": "npm run build && mocha test/package.test.js",
+        "test:contracts": "truffle test test/all.js",
+        "test:package": "mocha test/package.test.js",
         "coverage:contracts": "truffle run coverage",
         "dev": "nodemon -e sol,js -i build -x 'npm run test 2>&1'",
         "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
