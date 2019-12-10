@@ -7,7 +7,7 @@ pragma solidity >=0.5.10 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {RTokenStructs} from "./RTokenStructs.sol";
-import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @notice RToken interface a ERC20 interface and one can mint new tokens by

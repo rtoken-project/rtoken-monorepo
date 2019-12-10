@@ -2,7 +2,7 @@ const ERC20Mintable = artifacts.require("ERC20Mintable");
 const CErc20 = artifacts.require("CErc20");
 const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const ComptrollerMock = artifacts.require("ComptrollerMock");
-const { time } = require("openzeppelin-test-helpers");
+const { time } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 // testing the baseline behavior of CToken contract
