@@ -2,6 +2,7 @@
 
 <p align="center">
     <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/rtoken-project/rtoken-contracts/Node CI">
+    <img alt="npm" src="https://img.shields.io/npm/v/@rtoken/contracts">
     <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
 </p>
 
