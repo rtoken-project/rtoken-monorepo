@@ -27,7 +27,11 @@ require("dotenv").config();
 
 module.exports = {
 
-    plugins: ["truffle-security", "solidity-coverage"],
+    plugins: [
+        "truffle-security",
+        "solidity-coverage",
+        "truffle-plugin-verify"
+    ],
 
     /**
      * Networks define how you connect to your ethereum client and let you set the
@@ -145,5 +149,9 @@ module.exports = {
                 // evmVersion: "petersburg" use default
             }
         }
+    },
+
+    api_keys: {
+        etherscan: process.env.ETHERSCAN_API_KEY
     }
 };

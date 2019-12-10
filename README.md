@@ -372,12 +372,12 @@ web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f50479
 
 * DAI: [0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa](https://kovan.etherscan.io/address/0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa)
 * cDAI [0xe7bc397dbd069fc7d0109c0636d06888bb50668c](https://kovan.etherscan.io/address/0xe7bc397dbd069fc7d0109c0636d06888bb50668c)
-* rDAI (proxy): [0x472a8546FF4563904af0eb3d1c850d178cc5a5Bc](https://kovan.etherscan.io/address/0x472a8546FF4563904af0eb3d1c850d178cc5a5Bc)
+* rDAI (proxy): [0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB](https://kovan.etherscan.io/address/0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB)
 
 **v1**
 
-* DaiCompoundAllocationStrategy: [0x13408d39919418356840C0852A40493779427178](https://kovan.etherscan.io/address/0x13408d39919418356840C0852A40493779427178)
-* rDAI Logic: [0xc11Db8fbfe36837d80A3B6dEF98863bcbC1D8277](https://kovan.etherscan.io/address/0xc11Db8fbfe36837d80A3B6dEF98863bcbC1D8277)
+* DaiCompoundAllocationStrategy: [0x2F3633118bc278d22Af58474c0a047dFC85aB31D](https://kovan.etherscan.io/address/0x2F3633118bc278d22Af58474c0a047dFC85aB31D)
+* rDAI Logic: [0x68ae797C49b9E101C6b56FC76379affA1c181CA7](https://kovan.etherscan.io/address/0x68ae797C49b9E101C6b56FC76379affA1c181CA7)
 
 ## Mainnet
 
