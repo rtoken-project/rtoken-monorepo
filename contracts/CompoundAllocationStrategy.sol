@@ -1,8 +1,8 @@
 pragma solidity >=0.5.10 <0.6.0;
 
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
-import {IERC20} from "openzeppelin-solidity/contracts/token/ERC20/IERC20.sol";
+import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {CErc20Interface} from "../compound/contracts/CErc20Interface.sol";
 
 contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {

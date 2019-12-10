@@ -5,7 +5,7 @@ const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
 const Proxy = artifacts.require("Proxy");
-const { time, expectRevert } = require("openzeppelin-test-helpers");
+const { time, expectRevert } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 contract("RToken", accounts => {
@@ -230,7 +230,7 @@ contract("RToken", accounts => {
         });
 
         await expectRevert(rToken.redeem("0", { from: customer1 }), "Redeem amount cannot be zero");
-    
+
         await web3tx(rToken.redeem, "rToken.redeem 10 to customer1", {
             inLogs: [{
                 name: "Transfer",
