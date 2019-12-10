@@ -1,5 +1,5 @@
 {
-    "name": "@decentral.ee/rtoken-contracts",
+    "name": "@rtoken/contracts",
     "version": "1.0.1",
     "description": "RToken Ethereum contracts",
     "license": "MIT",
