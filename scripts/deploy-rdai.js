@@ -7,7 +7,7 @@ module.exports = async function (callback) {
 
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
         const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
-        const RToken = artifacts.require("RToken");
+        const rDAI = artifacts.require("rDAI");
         const Proxy = artifacts.require("Proxy");
 
         const addresses = await require("./addresses")[network];
@@ -22,18 +22,14 @@ module.exports = async function (callback) {
         //const compoundAS = { address: "0xF07d4967ae1F600144b25f40f655f61De2A9c0Ad" };
         console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
 
-        const rDaiLogic = await web3tx(RToken.new, "RToken.new")(
+        const rDaiLogic = await web3tx(rDAI.new, "rDAI.new")(
             {
                 gas: 5000000,
             }
         );
         console.log("rDaiLogic deployed at: ", rDaiLogic.address);
 
-        const rDaiConstructCode = rDaiLogic.contract.methods.initialize(
-            compoundAS.address,
-            "Redeemable DAI",
-            "rDAI",
-            18).encodeABI();
+        const rDaiConstructCode = rDaiLogic.contract.methods.initialize(compoundAS.address).encodeABI();
         console.log(`rDaiConstructCode rDaiLogic.initialize(${rDaiConstructCode})`);
         const proxy = await web3tx(Proxy.new, "Proxy.new")(
             rDaiConstructCode, rDaiLogic.address, {

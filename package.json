@@ -5,7 +5,8 @@
     "license": "MIT",
     "dependencies": {
         "@openzeppelin/contracts": "2.4.0",
-        "@truffle/contract": "4.1.1"
+        "@truffle/contract": "4.1.1",
+        "truffle-plugin-verify": "^0.3.5"
     },
     "devDependencies": {
         "@decentral.ee/web3-test-helpers": "0.2.1",

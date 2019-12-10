@@ -29,7 +29,8 @@ module.exports = {
 
     plugins: [
         //"truffle-security",
-        "solidity-coverage"
+        "solidity-coverage",
+        "truffle-plugin-verify"
     ],
 
     /**
@@ -148,5 +149,9 @@ module.exports = {
                 // evmVersion: "petersburg" use default
             }
         }
+    },
+
+    api_keys: {
+        etherscan: process.env.ETHERSCAN_API_KEY
     }
 };
