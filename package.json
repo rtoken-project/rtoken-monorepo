@@ -6,10 +6,10 @@
     "dependencies": {
         "@openzeppelin/contracts": "2.4.0",
         "@truffle/contract": "4.1.1",
-        "truffle-plugin-verify": "^0.3.5"
+        "truffle-plugin-verify": "^0.3.6"
     },
     "devDependencies": {
-        "@decentral.ee/web3-test-helpers": "0.2.1",
+        "@decentral.ee/web3-test-helpers": "0.2.2",
         "dotenv": "8.2.0",
         "@openzeppelin/test-helpers": "0.5.4",
         "sol-proxy": "0.1.2",
