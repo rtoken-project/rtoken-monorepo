@@ -2047,4 +2047,68 @@ contract("RToken", accounts => {
             sOriginalAmount: "10000.00000"
         });
     });
+
+    it("#25 Change allocation strategy multiple times", async () => {
+        let compoundAS2;
+        {
+            const result = await createCompoundAllocationStrategy(toWad(1));
+            compoundAS2 = result.compoundAS;
+        }
+        // Deploy the rToken logic/library contract
+        rTokenLogic = await web3tx(RToken.new, "RToken.new")(
+            {
+                from: admin
+            });
+        // Get the init code for rToken
+        const rTokenConstructCode = rTokenLogic.contract.methods.initialize(
+            compoundAS2.address,
+            "RToken Test2",
+            "RTOKEN2",
+            18).encodeABI();
+
+        // Deploy the Proxy, using the init code for rToken
+        const proxy = await web3tx(Proxy.new, "Proxy.new")(
+            rTokenConstructCode, rTokenLogic.address, {
+                from: admin
+            });
+        // Create the rToken object using the proxy address
+        rToken = await RToken.at(proxy.address);
+
+        await web3tx(compoundAS2.transferOwnership, "compoundAS2.transferOwnership")(rToken.address);
+        SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
+        // Create hat
+        await web3tx(rToken.createHat, "rToken.createHat for customer1 benefiting admin and customer3 10/90")(
+            [admin, customer3], [10, 90], true, {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
+            from: customer1
+        });
+        // customer1 mints with hat ID 1
+        await web3tx(rToken.mintWithSelectedHat, "rToken.mintWithSelectedHat 100 to customer1 with the first hat", {
+            inLogs: [{
+                name: "Transfer"
+            }]
+        })(toWad(100), 1, {
+            from: customer1
+        });
+        await web3tx(rToken.redeemAndTransfer, "rToken.redeem 100 of customer1 to customer3", {
+            inLogs: [{
+                name: "Transfer",
+                args: {
+                    from: customer1,
+                    to: ZERO_ADDRESS,
+                    value: toWad(100)
+                }
+            }]
+        })(customer3, toWad(100), {
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer3)), "100.00000");
+        assert.deepEqual(parseSavingAssetBalance(await rToken.getSavingAssetBalance.call()), {
+            rAmount: "0.00000",
+            sOriginalAmount: "0.00000"
+        });
+    });
 });
