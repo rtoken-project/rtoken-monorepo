@@ -2049,10 +2049,9 @@ contract("RToken", accounts => {
     });
 
     it("#25 Change allocation strategy multiple times", async () => {
-        let cToken2, compoundAS2;
+        let compoundAS2;
         {
             const result = await createCompoundAllocationStrategy(toWad(1));
-            cToken2 = result.cToken;
             compoundAS2 = result.compoundAS;
         }
         // Deploy the rToken logic/library contract
