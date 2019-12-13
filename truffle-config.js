@@ -28,8 +28,8 @@ require("dotenv").config();
 module.exports = {
 
     plugins: [
-      //"truffle-security",
-      "solidity-coverage"
+        //"truffle-security",
+        "solidity-coverage"
     ],
 
     /**
