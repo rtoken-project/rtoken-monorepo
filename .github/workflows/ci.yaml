@@ -35,9 +35,6 @@ jobs:
 
   coverage:
 
-    # only deploy for master branch push
-    if: github.event_name  == 'push'
-
     runs-on: ubuntu-latest
 
     steps:
@@ -55,6 +52,8 @@ jobs:
         npm run test-coverage
 
     - name: Coveralls
+      # only report coverage for master branch push
+      if: github.event_name  == 'push'
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
