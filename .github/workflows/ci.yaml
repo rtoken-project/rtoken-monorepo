@@ -1,6 +1,12 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 jobs:
 
@@ -29,13 +35,16 @@ jobs:
 
   coverage:
 
+    # only deploy for master branch push
+    if: github.event_name  == 'push'
+
     runs-on: ubuntu-latest
 
     steps:
 
     - uses: actions/checkout@v1
 
-    - name: Use Node.js ${{ matrix.node-version }}
+    - name: Use Node.js 10.x
       uses: actions/setup-node@v1
       with:
         node-version: 10.x
