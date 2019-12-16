@@ -363,71 +363,64 @@ for all accounts)
 
 # Deployed Contracts
 
-For testnets, the logic contracts are continuously updated. To fetch logic contract address using web3, use:
+For testnets, the logic contracts are continuously updated. To fetch the latest logic contract address using web3, use:
 
 
 ```
 web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7")
 ```
 
-## Rinkeby
-
-**Warning** We have deprecated rinkeby testnet support on rinkeby testnet.
-
 ## Kovan
 
-### DAI
+### rDAI
 
-* DAI: [0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa](https://kovan.etherscan.io/address/0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa)
-* cDAI [0xe7bc397dbd069fc7d0109c0636d06888bb50668c](https://kovan.etherscan.io/address/0xe7bc397dbd069fc7d0109c0636d06888bb50668c)
+| Contract | Info | Address |
+|---------------------|------------------|--------------------------------------------------------------------------------------------------------------------------------------|
+| rDAI proxy | Use this address in your dapp! | [0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB](https://kovan.etherscan.io/address/0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB) |
+| rToken logic | Version 1.0 | [0xad8b329a5dcb89627605792cc6c02f8a73a7d454](https://kovan.etherscan.io/address/0xad8b329a5dcb89627605792cc6c02f8a73a7d454) |
+| Allocation Strategy | Compound | [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3) |
+| Underlying token | DAI | [0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa](https://kovan.etherscan.io/address/0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa) |
+| Allocation token | cDAI | [0xe7bc397dbd069fc7d0109c0636d06888bb50668c](https://kovan.etherscan.io/address/0xe7bc397dbd069fc7d0109c0636d06888bb50668c) |
 
-* rDAI (proxy): [0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB](https://kovan.etherscan.io/address/0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB)
+### rSAI
 
-**rDAI v1**
+We do not recommend it, however if you wish to use rSAI, here are the contracts.
 
-* CompoundAllocationStrategy: [0x2F3633118bc278d22Af58474c0a047dFC85aB31D](https://kovan.etherscan.io/address/0x2F3633118bc278d22Af58474c0a047dFC85aB31D)
-* rDAI Logic: [0x68ae797c49b9e101c6b56fc76379affa1c181ca7](https://kovan.etherscan.io/address/0x68ae797c49b9e101c6b56fc76379affa1c181ca7#code)
+| Contract | Info | Address |
+|---------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| rSAI proxy | Use this address in your dapp | [0x3183683cEeAb01699722053A2cb6A945cE0D7CeC](https://kovan.etherscan.io/address/0x3183683cEeAb01699722053A2cb6A945cE0D7CeC) |
+| rToken logic | Version 1.0 | [0xad8b329a5dcb89627605792cc6c02f8a73a7d454](https://kovan.etherscan.io/address/0xad8b329a5dcb89627605792cc6c02f8a73a7d454) |
+| Allocation Strategy | Compound | [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3) |
+| Underlying token | SAI | [0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99](https://kovan.etherscan.io/address/0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99) |
+| Allocation token | cSAI | [0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496](https://kovan.etherscan.io/address/0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496) |
 
-### SAI
+## Rinkeby
 
-**WARNING: compound has rolled out their new cSAI on kovan, but old one we use here still works**
-* SAI: [0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99](https://kovan.etherscan.io/address/0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99)
-* cSAI: [0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496](https://kovan.etherscan.io/address/0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496)
-
-* rSAI (proxy): [0x3183683cEeAb01699722053A2cb6A945cE0D7CeC](https://kovan.etherscan.io/address/0x3183683cEeAb01699722053A2cb6A945cE0D7CeC)
-
-**rSAI v1**
-
-* CompoundAllocationStrategy: [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
-* rSAI Logic: [0xad8b329a5dcb89627605792cc6c02f8a73a7d454](https://kovan.etherscan.io/address/0xad8b329a5dcb89627605792cc6c02f8a73a7d454)
+Testing on rinkeby has been deprecated.
 
 ## Mainnet
 
-### DAI
+### rDAI
 
-* DAI: [0x6B175474E89094C44Da98b954EedeAC495271d0F](https://etherscan.io/address/0x6B175474E89094C44Da98b954EedeAC495271d0F)
-* cDAI: [0x5d3a536e4d6dbd6114cc1ead35777bab948e3643](https://etherscan.io/address/0x5d3a536e4d6dbd6114cc1ead35777bab948e3643)
+| Contract | Info | Address |
+|---------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| rDAI proxy | Use this address in your dapp | [0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0](https://etherscan.io/address/0x261b45d85ccfeabb11f022eba346ee8d1cd488c0) |
+| rToken logic | Version 1.0 | [0x806a196872Beff0CDE5663cbc1d8962309444932](https://etherscan.io/address/0x806a196872beff0cde5663cbc1d8962309444932) |
+| Allocation Strategy | Compound | [0xd0810DeE68dD9aEAfc2dBC2A6f53C3809A2E6578](https://etherscan.io/address/0xd0810dee68dd9aeafc2dbc2a6f53c3809a2e6578) |
+| Underlying token | DAI | [0x6B175474E89094C44Da98b954EedeAC495271d0F](https://etherscan.io/address/0x6B175474E89094C44Da98b954EedeAC495271d0F) |
+| Allocation token | cDAI | [0x5d3a536e4d6dbd6114cc1ead35777bab948e3643](https://etherscan.io/address/0x5d3a536e4d6dbd6114cc1ead35777bab948e3643) |
 
-* rDAI (proxy): [0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0](https://etherscan.io/address/0x261b45d85ccfeabb11f022eba346ee8d1cd488c0)
+### :warning: rSAI :warning:
 
-**rDAI v1**
+**Warning** Support for rSAI will discontinue soon. Please redeem your tokens and mint new rDAI.
 
-* CompoundAllocationStrategy: [0xd0810DeE68dD9aEAfc2dBC2A6f53C3809A2E6578](https://etherscan.io/address/0xd0810dee68dd9aeafc2dbc2a6f53c3809a2e6578)
-* rDAI Logic: [0x806a196872Beff0CDE5663cbc1d8962309444932](https://etherscan.io/address/0x806a196872beff0cde5663cbc1d8962309444932)
-
-### SAI
-
-**Warning** SAI support is ending, redeem ASAP!
-
-* SAI: [0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359](https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359)
-* cSAI: [0xf5dce57282a584d2746faf1593d3121fcac444dc](https://etherscan.io/address/0xf5dce57282a584d2746faf1593d3121fcac444dc)
-
-* rSAI (proxy): [0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9](https://etherscan.io/address/0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9)
-
-**rSAI v1**
-
-* CompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
-* rSAI Logic: [0x6c92065e35c77a87324f7828c2dca2e2944dce4c](https://etherscan.io/address/0x6c92065e35c77a87324f7828c2dca2e2944dce4c)
+| Contract | Info | Address |
+|---------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| rSAI proxy | Use this address in your dapp | [0x3183683cEeAb01699722053A2cb6A945cE0D7CeC](https://kovan.etherscan.io/address/0x3183683cEeAb01699722053A2cb6A945cE0D7CeC) |
+| rToken logic | Version 1.0 | [0xad8b329a5dcb89627605792cc6c02f8a73a7d454](https://kovan.etherscan.io/address/0xad8b329a5dcb89627605792cc6c02f8a73a7d454) |
+| Allocation Strategy | Compound | [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3) |
+| Underlying token | SAI | [0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99](https://kovan.etherscan.io/address/0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99) |
+| Allocation token | cSAI | [0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496](https://kovan.etherscan.io/address/0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496) |
 
 # Integration
 
