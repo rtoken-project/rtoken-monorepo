@@ -4,8 +4,8 @@ module.exports = async function (callback) {
     try {
         global.web3 = web3;
         const proxyAddress = process.argv[6];
-        const logicAddress = await web3.eth.getStorageAt(proxyAddress, PROXIABLE_UUID);
-        console.log(`PROXIABLE contract ${proxyAddress} has its logic address at ${logicAddress}`);
+        const logicAddress = (await web3.eth.getStorageAt(proxyAddress, PROXIABLE_UUID)).substr(-40, 40);
+        console.log(`PROXIABLE contract ${proxyAddress} has its logic address at 0x${logicAddress}`);
         callback();
     } catch (err) {
         callback(err);

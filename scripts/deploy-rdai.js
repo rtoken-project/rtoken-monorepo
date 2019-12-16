@@ -1,38 +1,65 @@
+const { promisify } = require("util");
+const readline = require("readline");
+
+// promisify the readline
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+// Prepare readline.question for promisification
+rl.question[promisify.custom] = (question) => {
+    return new Promise((resolve) => {
+        rl.question(question, resolve);
+    });
+};
+
 module.exports = async function (callback) {
     try {
         global.web3 = web3;
+
 
         let network = await web3.eth.net.getNetworkType();
         console.log("Current network:", network);
 
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
         const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
-        const rDAI = artifacts.require("rDAI");
+        const RDAI = artifacts.require("rDAI");
         const Proxy = artifacts.require("Proxy");
 
         const addresses = await require("./addresses")[network];
 
-        const compoundAS = await web3tx(
-            CompoundAllocationStrategy.new,
-            `CompoundAllocationStrategy.new cDAI ${addresses.cDAI}`)(
-            addresses.cDAI, {
-                gas: 1000000,
-            }
-        );
-        //const compoundAS = { address: "0xF07d4967ae1F600144b25f40f655f61De2A9c0Ad" };
-        console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
+        let compoundASAddress = await promisify(rl.question)("Specify a deployed CompoundAllocationStrategy (deploy a new one if blank): ");
+        let compoundAS;
+        if (!compoundASAddress) {
+            compoundAS = await web3tx(
+                CompoundAllocationStrategy.new,
+                `CompoundAllocationStrategy.new cDAI ${addresses.cDAI}`)(
+                addresses.cDAI, {
+                    gas: 1000000,
+                }
+            );
+            console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
+        } else {
+            compoundAS = await CompoundAllocationStrategy.at(compoundASAddress);
+        }
 
-        const rDaiLogic = await web3tx(rDAI.new, "rDAI.new")(
-            {
-                gas: 5000000,
-            }
-        );
-        console.log("rDaiLogic deployed at: ", rDaiLogic.address);
+        let rDAIAddress = await promisify(rl.question)("Specify a deployed rDAI (deploy a new one if blank): ");
+        let rDAI;
+        if (!rDAIAddress) {
+            rDAI = await web3tx(RDAI.new, "rDAI.new")(
+                {
+                    gas: 5000000,
+                }
+            );
+            console.log("rDAI deployed at: ", rDAI.address);
+        } else {
+            rDAI = await RDAI.at(rDAIAddress);
+        }
 
-        const rDaiConstructCode = rDaiLogic.contract.methods.initialize(compoundAS.address).encodeABI();
-        console.log(`rDaiConstructCode rDaiLogic.initialize(${rDaiConstructCode})`);
+        const rDaiConstructCode = rDAI.contract.methods.initialize(compoundAS.address).encodeABI();
+        console.log(`rDaiConstructCode rDAI.initialize(${rDaiConstructCode})`);
         const proxy = await web3tx(Proxy.new, "Proxy.new")(
-            rDaiConstructCode, rDaiLogic.address, {
+            rDaiConstructCode, rDAI.address, {
                 gas: 1000000,
             }
         );

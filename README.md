@@ -376,16 +376,30 @@ web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f50479
 
 ## Kovan
 
-**Warning** We have deprecated SAI support on kovan testnet.
+### DAI
 
 * DAI: [0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa](https://kovan.etherscan.io/address/0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa)
 * cDAI [0xe7bc397dbd069fc7d0109c0636d06888bb50668c](https://kovan.etherscan.io/address/0xe7bc397dbd069fc7d0109c0636d06888bb50668c)
+
 * rDAI (proxy): [0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB](https://kovan.etherscan.io/address/0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB)
 
-**v1**
+**rDAI v1**
 
-* DaiCompoundAllocationStrategy: [0x2F3633118bc278d22Af58474c0a047dFC85aB31D](https://kovan.etherscan.io/address/0x2F3633118bc278d22Af58474c0a047dFC85aB31D)
-* rDAI Logic: [0x68ae797C49b9E101C6b56FC76379affA1c181CA7](https://kovan.etherscan.io/address/0x68ae797C49b9E101C6b56FC76379affA1c181CA7)
+* CompoundAllocationStrategy: [0x2F3633118bc278d22Af58474c0a047dFC85aB31D](https://kovan.etherscan.io/address/0x2F3633118bc278d22Af58474c0a047dFC85aB31D)
+* rDAI Logic: [0x68ae797c49b9e101c6b56fc76379affa1c181ca7](https://kovan.etherscan.io/address/0x68ae797c49b9e101c6b56fc76379affa1c181ca7#code)
+
+### SAI
+
+**WARNING: compound has rolled out their new cSAI on kovan, but old one we use here still works**
+* SAI: [0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99](https://kovan.etherscan.io/address/0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99)
+* cSAI: [0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496](https://kovan.etherscan.io/address/0x0A1e4D0B5c71B955c0a5993023fc48bA6E380496)
+
+* rSAI (proxy): [0x3183683cEeAb01699722053A2cb6A945cE0D7CeC](https://kovan.etherscan.io/address/0x3183683cEeAb01699722053A2cb6A945cE0D7CeC)
+
+**rSAI v1**
+
+* CompoundAllocationStrategy: [0xb4377efc05bd28be8e6510629538e54eba2d74e3](https://kovan.etherscan.io/address/0xb4377efc05bd28be8e6510629538e54eba2d74e3)
+* rSAI Logic: [0xad8b329a5dcb89627605792cc6c02f8a73a7d454](https://kovan.etherscan.io/address/0xad8b329a5dcb89627605792cc6c02f8a73a7d454)
 
 ## Mainnet
 
@@ -394,17 +408,26 @@ web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f50479
 * DAI: [0x6B175474E89094C44Da98b954EedeAC495271d0F](https://etherscan.io/address/0x6B175474E89094C44Da98b954EedeAC495271d0F)
 * cDAI: [0x5d3a536e4d6dbd6114cc1ead35777bab948e3643](https://etherscan.io/address/0x5d3a536e4d6dbd6114cc1ead35777bab948e3643)
 
+* rDAI (proxy): [0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0](https://etherscan.io/address/0x261b45d85ccfeabb11f022eba346ee8d1cd488c0)
+
+**rDAI v1**
+
+* CompoundAllocationStrategy: [0xd0810DeE68dD9aEAfc2dBC2A6f53C3809A2E6578](https://etherscan.io/address/0xd0810dee68dd9aeafc2dbc2a6f53c3809a2e6578)
+* rDAI Logic: [0x806a196872Beff0CDE5663cbc1d8962309444932](https://etherscan.io/address/0x806a196872beff0cde5663cbc1d8962309444932)
+
 ### SAI
 
 **Warning** SAI support is ending, redeem ASAP!
 
 * SAI: [0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359](https://etherscan.io/address/0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359)
 * cSAI: [0xf5dce57282a584d2746faf1593d3121fcac444dc](https://etherscan.io/address/0xf5dce57282a584d2746faf1593d3121fcac444dc)
-* rSai (proxy): [0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9](https://etherscan.io/address/0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9)
 
-**v1**
-* SaiCompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
-* rSAI Logic: [0x293908E6352b11a91bC08eeb335644C485D21170](https://etherscan.io/address/0x293908E6352b11a91bC08eeb335644C485D21170)
+* rSAI (proxy): [0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9](https://etherscan.io/address/0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9)
+
+**rSAI v1**
+
+* CompoundAllocationStrategy: [0x594e15580468d21D447299F2033Bd203036475FA](https://etherscan.io/address/0x594e15580468d21D447299F2033Bd203036475FA)
+* rSAI Logic: [0x6c92065e35c77a87324f7828c2dca2e2944dce4c](https://etherscan.io/address/0x6c92065e35c77a87324f7828c2dca2e2944dce4c)
 
 # Integration
 
