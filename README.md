@@ -363,11 +363,13 @@ for all accounts)
 
 # Deployed Contracts
 
-For testnets, the logic contracts are continuously updated. To fetch the latest logic contract address using web3, use:
+*Note:* The rToken logic contract addresses listed here may be outdated. We will do our best to ensure they are up-to-date upon performing an upgrade.
+
+To check the rToken logic contract address yourself, you can use the following method:
 
 
-```
-web3.eth.getStorageAt(RDAI_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7")
+```js
+web3.eth.getStorageAt(RTOKEN_PROXY_ADDRESS,"0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7")
 ```
 
 ## Kovan
