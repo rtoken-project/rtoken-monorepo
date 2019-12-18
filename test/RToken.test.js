@@ -1775,12 +1775,12 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
 
         await web3tx(rToken.changeAllocationStrategy,
-            "change allocation strategy", {
+            "change allocation strategy 1st time", {
                 inLogs: [{
                     name: "AllocationStrategyChanged",
                     args: {
                         strategy: compoundAS2.address,
-                        conversionRate: toWad(0.1)
+                        conversionRate: "99999999999999995"
                     }
                 }]
             })(
@@ -1796,12 +1796,12 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
 
         await web3tx(rToken.changeAllocationStrategy,
-            "change allocation strategy", {
+            "change allocation strategy 2nd time", {
                 inLogs: [{
                     name: "AllocationStrategyChanged",
                     args: {
                         strategy: compoundAS3.address,
-                        conversionRate: toWad(100)
+                        conversionRate: "99999999999999995000"
                     }
                 }]
             })(
