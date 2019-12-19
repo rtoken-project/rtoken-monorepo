@@ -426,10 +426,11 @@ contract RToken is
         IAllocationStrategy oldIas = ias;
         ias = allocationStrategy;
         // redeem everything from the old strategy
-        uint256 sOriginalBurned = oldIas.redeemUnderlying(totalSupply);
+        (uint256 sOriginalBurned, ) = oldIas.redeemAll();
+        uint256 totalAmount = token.balanceOf(address(this));
         // invest everything into the new strategy
-        require(token.approve(address(ias), totalSupply), "token approve failed");
-        uint256 sOriginalCreated = ias.investUnderlying(totalSupply);
+        require(token.approve(address(ias), totalAmount), "token approve failed");
+        uint256 sOriginalCreated = ias.investUnderlying(totalAmount);
 
         // calculate new saving asset conversion rate
         //

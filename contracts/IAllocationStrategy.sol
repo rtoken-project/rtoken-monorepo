@@ -4,7 +4,7 @@ pragma solidity ^0.5.8;
  * @notice Allocation strategy for assets.
  *         - It invests the underlying assets into some yield generating contracts,
  *           usually lending contracts, in return it gets new assets aka. saving assets.
- *         - Sainv assets can be redeemed back to the underlying assets plus interest any time.
+ *         - Savings assets can be redeemed back to the underlying assets plus interest any time.
  */
 interface IAllocationStrategy {
 
@@ -47,5 +47,13 @@ interface IAllocationStrategy {
      * @return uint256 Amount of saving assets burned
      */
     function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+
+    /**
+     * @notice Owner redeems all saving assets
+     * @dev Interst shall be accrued
+     * @return uint256 savingsAmount Amount of savings redeemed
+     * @return uint256 underlyingAmount Amount of underlying redeemed
+     */
+    function redeemAll() external returns (uint256 savingsAmount, uint256 underlyingAmount);
 
 }
