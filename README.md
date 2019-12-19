@@ -2,7 +2,7 @@
 
 <p align="center">
     <a href="https://github.com/rtoken-project/rtoken-contracts/actions">
-        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/rtoken-project/rtoken-contracts/Node CI">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/rtoken-project/rtoken-contracts/CD">
     </a>
     <a href="https://coveralls.io/github/rtoken-project/rtoken-contracts">
         <img alt="Coveralls github branch" src="https://img.shields.io/coveralls/github/rtoken-project/rtoken-contracts/master">
