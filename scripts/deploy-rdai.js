@@ -26,7 +26,7 @@ module.exports = async function (callback) {
         const RDAI = artifacts.require("rDAI");
         const Proxy = artifacts.require("Proxy");
 
-        const addresses = await require("./addresses")[network];
+        const addresses = require("./addresses")[network];
 
         let compoundASAddress = await promisify(rl.question)("Specify a deployed CompoundAllocationStrategy (deploy a new one if blank): ");
         let compoundAS;
@@ -34,9 +34,7 @@ module.exports = async function (callback) {
             compoundAS = await web3tx(
                 CompoundAllocationStrategy.new,
                 `CompoundAllocationStrategy.new cDAI ${addresses.cDAI}`)(
-                addresses.cDAI, {
-                    gas: 1000000,
-                }
+                addresses.cDAI
             );
             console.log("compoundAllocationStrategy deployed at: ", compoundAS.address);
         } else {
@@ -46,11 +44,7 @@ module.exports = async function (callback) {
         let rDAIAddress = await promisify(rl.question)("Specify a deployed rDAI (deploy a new one if blank): ");
         let rDAI;
         if (!rDAIAddress) {
-            rDAI = await web3tx(RDAI.new, "rDAI.new")(
-                {
-                    gas: 5000000,
-                }
-            );
+            rDAI = await web3tx(RDAI.new, "rDAI.new")();
             console.log("rDAI deployed at: ", rDAI.address);
         } else {
             rDAI = await RDAI.at(rDAIAddress);
@@ -59,9 +53,7 @@ module.exports = async function (callback) {
         const rDaiConstructCode = rDAI.contract.methods.initialize(compoundAS.address).encodeABI();
         console.log(`rDaiConstructCode rDAI.initialize(${rDaiConstructCode})`);
         const proxy = await web3tx(Proxy.new, "Proxy.new")(
-            rDaiConstructCode, rDAI.address, {
-                gas: 1000000,
-            }
+            rDaiConstructCode, rDAI.address
         );
         console.log("proxy deployed at: ", proxy.address);
 

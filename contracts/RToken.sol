@@ -432,6 +432,17 @@ contract RToken is
         require(token.approve(address(ias), totalAmount), "token approve failed");
         uint256 sOriginalCreated = ias.investUnderlying(totalAmount);
 
+        // give back the ownership of the old allocation strategy to the admin
+        // unless we are simply switching to the same allocaiton Strategy
+        //
+        //  - But why would we switch to the same allocation strategy?
+        //  - This is a special case where one could pick up the unsoliciated
+        //    savings from the allocation srategy contract as extra "interest"
+        //    for all rToken holders.
+        if (address(ias) != address(oldIas)) {
+            Ownable(address(oldIas)).transferOwnership(address(owner()));
+        }
+
         // calculate new saving asset conversion rate
         //
         // NOTE:
