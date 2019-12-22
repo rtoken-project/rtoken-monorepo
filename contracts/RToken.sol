@@ -426,10 +426,22 @@ contract RToken is
         IAllocationStrategy oldIas = ias;
         ias = allocationStrategy;
         // redeem everything from the old strategy
-        uint256 sOriginalBurned = oldIas.redeemUnderlying(totalSupply);
+        (uint256 sOriginalBurned, ) = oldIas.redeemAll();
+        uint256 totalAmount = token.balanceOf(address(this));
         // invest everything into the new strategy
-        require(token.approve(address(ias), totalSupply), "token approve failed");
-        uint256 sOriginalCreated = ias.investUnderlying(totalSupply);
+        require(token.approve(address(ias), totalAmount), "token approve failed");
+        uint256 sOriginalCreated = ias.investUnderlying(totalAmount);
+
+        // give back the ownership of the old allocation strategy to the admin
+        // unless we are simply switching to the same allocaiton Strategy
+        //
+        //  - But why would we switch to the same allocation strategy?
+        //  - This is a special case where one could pick up the unsoliciated
+        //    savings from the allocation srategy contract as extra "interest"
+        //    for all rToken holders.
+        if (address(ias) != address(oldIas)) {
+            Ownable(address(oldIas)).transferOwnership(address(owner()));
+        }
 
         // calculate new saving asset conversion rate
         //

@@ -7,11 +7,7 @@ module.exports = async function (callback) {
 
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
         const rSAI = artifacts.require("rSAI");
-        const rSAILogic = await web3tx(rSAI.new, "rSAI.new")(
-            {
-                gas: 5000000,
-            }
-        );
+        const rSAILogic = await web3tx(rSAI.new, "rSAI.new")();
         console.log("rSAILogic deployed at: ", rSAILogic.address);
 
         callback();

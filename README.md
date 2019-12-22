@@ -408,8 +408,8 @@ Testing on rinkeby has been deprecated.
 | Contract | Info | Address |
 |---------------------|-------------------------------|-----------------------------------------------------------------------------------------------------------------------|
 | rDAI proxy | Use this address in your dapp | [0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0](https://etherscan.io/address/0x261b45d85ccfeabb11f022eba346ee8d1cd488c0) |
-| rToken logic | Version 1.0.1-rc2 | [0x806a196872Beff0CDE5663cbc1d8962309444932](https://etherscan.io/address/0x806a196872beff0cde5663cbc1d8962309444932) |
-| Allocation Strategy | Compound | [0xd0810DeE68dD9aEAfc2dBC2A6f53C3809A2E6578](https://etherscan.io/address/0xd0810dee68dd9aeafc2dbc2a6f53c3809a2e6578) |
+| rToken logic | Version 1.0.1-rc2 | [0x56b481bA9f338144Fa40C84fb0F4C87B9f4d6dFE](https://etherscan.io/address/0x56b481bA9f338144Fa40C84fb0F4C87B9f4d6dFE) |
+| Allocation Strategy | Compound | [0xbB16307aaed1e070B3C4465d4FDa5E518bDc2433](https://etherscan.io/address/0xbB16307aaed1e070B3C4465d4FDa5E518bDc2433) |
 | Underlying token | DAI | [0x6B175474E89094C44Da98b954EedeAC495271d0F](https://etherscan.io/address/0x6B175474E89094C44Da98b954EedeAC495271d0F) |
 | Allocation token | cDAI | [0x5d3a536e4d6dbd6114cc1ead35777bab948e3643](https://etherscan.io/address/0x5d3a536e4d6dbd6114cc1ead35777bab948e3643) |
 

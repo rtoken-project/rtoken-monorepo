@@ -48,13 +48,22 @@ contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
     function redeemUnderlying(uint256 redeemAmount) external onlyOwner returns (uint256) {
         uint256 cTotalBefore = cToken.totalSupply();
         // TODO should we handle redeem failure?
-        require(cToken.redeemUnderlying(redeemAmount) == 0, "redeemUnderlying failed");
+        require(cToken.redeemUnderlying(redeemAmount) == 0, "cToken.redeemUnderlying failed");
         uint256 cTotalAfter = cToken.totalSupply();
         uint256 cBurnedAmount;
         require(cTotalAfter <= cTotalBefore, "Compound redeemed negative amount!?");
         cBurnedAmount = cTotalBefore - cTotalAfter;
         token.transfer(msg.sender, redeemAmount);
         return cBurnedAmount;
+    }
+
+    /// @dev ISavingStrategy.redeemAll implementation
+    function redeemAll() external onlyOwner
+        returns (uint256 savingsAmount, uint256 underlyingAmount) {
+        savingsAmount = cToken.balanceOf(address(this));
+        require(cToken.redeem(savingsAmount) == 0, "cToken.redeem failed");
+        underlyingAmount = token.balanceOf(address(this));
+        token.transfer(msg.sender, underlyingAmount);
     }
 
 }

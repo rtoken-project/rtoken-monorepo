@@ -1747,32 +1747,91 @@ contract("RToken", accounts => {
     it("#22 Change allocation strategy multiple times", async () => {
         let cToken2, compoundAS2, cToken3, compoundAS3;
         {
-            // from 0.1 to 0.01
-            const result = await createCompoundAllocationStrategy(toWad(.01));
+        // from 0.1 (AS1) to 0.01 (AS2)
+            const result = await createCompoundAllocationStrategy(toWad(".01"));
             cToken2 = result.cToken;
             compoundAS2 = result.compoundAS;
         }
         {
-            // from 0.01 to 10
-            const result = await createCompoundAllocationStrategy(toWad(10));
+        // from 0.01 (AS2) to 10 (AS3)
+            const result = await createCompoundAllocationStrategy(toWad("10"));
             cToken3 = result.cToken;
             compoundAS3 = result.compoundAS;
         }
         await web3tx(compoundAS2.transferOwnership, "compoundAS2.transferOwnership")(rToken.address);
         await web3tx(compoundAS3.transferOwnership, "compoundAS3.transferOwnership")(rToken.address);
 
+        // create some reserve in the cToken pool for lending
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer2, toWad(100), {
+                from: customer1
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer2")(cToken.address, toWad(100), {
+            from: customer2
+        });
+        await web3tx(cToken.mint, "cToken.mint 100 to customer2")(toWad(100), {
+            from: customer2
+        });
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "100.00000");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(compoundAS.address)), "0.00000");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(customer2)), "100.00000");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .toString(), toWad(1000));
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "0.00000");
+
+        // mint 100 rToken
         await web3tx(token.approve, "token.approve 100 by customer1")(rToken.address, toWad(100), {
             from: customer1
         });
         await web3tx(rToken.mint, "rToken.mint 100 to customer1")(
-            toWad(100), {
+            toWad("100"), {
                 from: customer1
             });
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
-        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "100.00000");
-        assert.equal(wad4human(await cToken.balanceOf.call(compoundAS.address)), "1000.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "200.00000");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(compoundAS.address)), "100.00000");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(customer2)), "100.00000");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .toString(), toWad(1000));
         assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100.00000");
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
+
+        await doBingeBorrowing();
+
+        // trivial case: transfer the the same allocation strategy
+        assert.equal((await rToken.savingAssetConversionRate.call()).toString(), toWad(1).toString());
+        await web3tx(rToken.changeAllocationStrategy,
+            "change to the same allocation strategy", {
+                inLogs: [{
+                    name: "AllocationStrategyChanged",
+                    args: {
+                        strategy: compoundAS.address,
+                        conversionRate: toWad(1)
+                    }
+                }]
+            })(
+            compoundAS.address, {
+                from: admin
+            });
+        assert.equal((await rToken.savingAssetConversionRate.call()).toString(), toWad(1).toString());
+        assert.equal(wad4human(await token.balanceOf.call(bingeBorrower)), "10.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "190.00000");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(compoundAS.address)), "100.00051");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(customer2)), "100.00051");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(bingeBorrower))
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .toString(), toWad(1000));
+        assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100.00000");
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00051");
 
         await web3tx(rToken.changeAllocationStrategy,
             "change allocation strategy 1st time", {
@@ -1780,20 +1839,28 @@ contract("RToken", accounts => {
                     name: "AllocationStrategyChanged",
                     args: {
                         strategy: compoundAS2.address,
-                        conversionRate: "99999999999999995"
+                        conversionRate: toWad(".099999490001595991")
                     }
                 }]
             })(
             compoundAS2.address, {
                 from: admin
             });
-        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "0.00000");
-        assert.equal(wad4human(await cToken.balanceOf.call(compoundAS.address)), "0.00000");
-        assert.equal(wad4human(await token.balanceOf.call(cToken2.address)), "100.00000");
-        assert.equal(wad4human(await cToken2.balanceOf.call(compoundAS2.address)), "10000.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
+        assert.equal(wad4human(await token.balanceOf.call(bingeBorrower)), "10.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "89.99949");
+        assert.equal((await cToken.balanceOfUnderlying.call(compoundAS.address)).toString(), "0");
+        assert.equal(wad4human(await cToken.balanceOfUnderlying.call(customer2)), "100.00051");
+        assert.equal(wad4human(await token.balanceOf.call(cToken2.address)), "100.00051");
+        assert.equal(wad4human(await cToken2.balanceOfUnderlying.call(compoundAS2.address)), "100.00051");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(bingeBorrower))
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .add(await token.balanceOf.call(cToken2.address))
+            .toString(), toWad(1000));
         assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100.00000");
-        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00051");
 
         await web3tx(rToken.changeAllocationStrategy,
             "change allocation strategy 2nd time", {
@@ -1801,30 +1868,62 @@ contract("RToken", accounts => {
                     name: "AllocationStrategyChanged",
                     args: {
                         strategy: compoundAS3.address,
-                        conversionRate: "99999999999999995000"
+                        conversionRate: toWad("99.999490001595991007")
                     }
                 }]
             })(
             compoundAS3.address, {
                 from: admin
             });
-        assert.equal(wad4human(await token.balanceOf.call(cToken2.address)), "0.00000");
-        assert.equal(wad4human(await cToken2.balanceOf.call(compoundAS2.address)), "0.00000");
-        assert.equal(wad4human(await token.balanceOf.call(cToken3.address)), "100.00000");
-        assert.equal(wad4human(await cToken3.balanceOf.call(compoundAS3.address)), "10.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "900.00000");
+        assert.equal(wad4human(await token.balanceOf.call(bingeBorrower)), "10.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "89.99949");
+        assert.equal(wad4human(await token.balanceOf.call(cToken3.address)), "100.00051");
+        assert.equal((await cToken.balanceOfUnderlying.call(compoundAS.address)).toString(), "0");
+        assert.equal((await cToken2.balanceOfUnderlying.call(compoundAS2.address)).toString(), "0");
+        assert.equal(wad4human(await cToken3.balanceOfUnderlying.call(compoundAS3.address)), "100.00051");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(bingeBorrower))
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .add(await token.balanceOf.call(cToken3.address))
+            .toString(), toWad(1000));
         assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "100.00000");
-        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00000");
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "100.00051");
 
-        await web3tx(rToken.redeem, "rToken.redeem 10 to customer1")(
-            toWad(100), {
+
+        // create some reserve in the cToken3 pool for lending in order to make redeemAll solvent
+        await web3tx(token.transfer, "token.transfer 100 from customer 1 to customer 2")(
+            customer2, toWad(100), {
                 from: customer1
-            });
-        assert.equal(wad4human(await token.balanceOf.call(cToken3.address)), "0.00000");
-        assert.equal(wad4human(await cToken3.balanceOf.call(compoundAS3.address)), "0.00000");
-        assert.equal(wad4human(await token.balanceOf.call(customer1)), "1000.00000");
+            }
+        );
+        await web3tx(token.approve, "token.approve 100 by customer2")(rToken.address, toWad(100), {
+            from: customer2
+        });
+        await web3tx(rToken.mint, "rToken.mint 100 to customer2")(toWad(100), {
+            from: customer2
+        });
+        await web3tx(rToken.redeemAll, "rToken.redeemAll to customer1")({
+            from: customer1
+        });
+        assert.equal(wad4human(await token.balanceOf.call(bingeBorrower)), "10.00000");
+        assert.equal(wad4human(await token.balanceOf.call(cToken.address)), "89.99949");
+        assert.equal(wad4human(await token.balanceOf.call(cToken3.address)), "100.00000");
+        assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00051");
+        assert.equal((await cToken.balanceOfUnderlying.call(compoundAS.address)).toString(), "0");
+        assert.equal((await cToken2.balanceOfUnderlying.call(compoundAS2.address)).toString(), "0");
+        assert.equal(wad4human(await cToken3.balanceOfUnderlying.call(compoundAS3.address)), "100.00000");
+        assert.equal(toWad(0)
+            .add(await token.balanceOf.call(bingeBorrower))
+            .add(await token.balanceOf.call(customer1))
+            .add(await token.balanceOf.call(cToken.address))
+            .add(await token.balanceOf.call(cToken3.address))
+            .toString(), toWad(1000));
         assert.equal(wad4human(await rToken.balanceOf.call(customer1)), "0.00000");
+        assert.equal(wad4human(await rToken.balanceOf.call(customer2)), "100.00000");
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "0.00000");
+        assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer2)), "100.00000");
     });
 
     it("#23 rToken change hat test", async () => {
