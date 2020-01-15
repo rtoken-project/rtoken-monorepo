@@ -1,5 +1,4 @@
 const { promisify } = require("util");
-const readline = require("readline");
 const rl = require("./rl");
 
 module.exports = async function (callback) {
