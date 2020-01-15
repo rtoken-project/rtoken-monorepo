@@ -1,4 +1,5 @@
-const addresses = require("./addresses");
+const { wad4human } = require("@decentral.ee/web3-test-helpers");
+
 const SECONDS_PER_DAY = 3600 * 24;
 const AVG_SECONDS_PER_BLOCK = 13;
 const AVG_NUM_BLOCKS_PER_DAY = Math.floor(SECONDS_PER_DAY / AVG_SECONDS_PER_BLOCK);
@@ -13,43 +14,46 @@ const RTOKENS = {
         address: "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0",
         creationBlockNumber: 9117143,
     }
+};
+
+let IAllocationStrategy, IRToken, rtoken;
+
+async function getData(blockNumber) {
+    const block = await web3.eth.getBlock(blockNumber);
+    const allocaionStrategy = await IAllocationStrategy.at(
+        await rtoken.getCurrentSavingStrategy.call(blockNumber)
+    );
+    const savingAssetBalance = await rtoken.getSavingAssetBalance.call(blockNumber);
+    const totalSupply = await rtoken.totalSupply.call(blockNumber);
+    const timestamp = block.timestamp;
+    const savingExchangeRate = await allocaionStrategy.exchangeRateStored.call(blockNumber);
+    const savingsValue = new web3.utils.BN(savingAssetBalance.sOriginalAmount).mul(new web3.utils.BN(savingExchangeRate)).div(new web3.utils.BN("1"+"0".repeat(18)));
+    return {
+        block,
+        timestamp,
+        totalSupply,
+        savingsValue,
+        surplus: savingsValue.sub(totalSupply),
+        allocaionStrategyAddress: allocaionStrategy.address,
+    };
+}
+
+async function printData(data) {
+    console.log(`${new Date(data.timestamp * 1000).toISOString()}, ${data.block.number}, ${data.timestamp}, ${wad4human(data.totalSupply)}, ${wad4human(data.savingsValue)}, ${wad4human(data.surplus)}, ${data.allocaionStrategyAddress}`);
 }
 
 module.exports = async function (callback) {
     try {
         global.web3 = web3;
-        const { wad4human } = require("@decentral.ee/web3-test-helpers");
 
         const cmd = process.argv[process.argv.length - 2];
         const token = process.argv[process.argv.length - 1];
 
-        const IAllocationStrategy = artifacts.require("IAllocationStrategy");
-        const IRToken = artifacts.require("IRToken");
         const RTokenData = RTOKENS[token];
-        const rtoken = await IRToken.at(RTokenData.address);
 
-        async function getData(blockNumber) {
-            const block = await web3.eth.getBlock(blockNumber);
-            const allocaionStrategy = await IAllocationStrategy.at(
-                await rtoken.getCurrentSavingStrategy.call(blockNumber)
-            );
-            const savingAssetBalance = await rtoken.getSavingAssetBalance.call(blockNumber);
-            const totalSupply = await rtoken.totalSupply.call(blockNumber);
-            const timestamp = block.timestamp;
-            const savingExchangeRate = await allocaionStrategy.exchangeRateStored.call(blockNumber);
-            const savingsValue = new web3.utils.BN(savingAssetBalance.sOriginalAmount).mul(new web3.utils.BN(savingExchangeRate)).div(new web3.utils.BN("1"+"0".repeat(18)));
-            return {
-                block,
-                timestamp,
-                totalSupply,
-                savingsValue,
-                surplus: savingsValue.sub(totalSupply),
-                allocaionStrategyAddress: allocaionStrategy.address,
-            };
-        }
-        async function printData(data) {
-            console.log(`${new Date(data.timestamp * 1000).toISOString()}, ${data.block.number}, ${data.timestamp}, ${wad4human(data.totalSupply)}, ${wad4human(data.savingsValue)}, ${wad4human(data.surplus)}, ${data.allocaionStrategyAddress}`);
-        }
+        IAllocationStrategy = artifacts.require("IAllocationStrategy");
+        IRToken = artifacts.require("IRToken");
+        rtoken = await IRToken.at(RTokenData.address);
 
         const currentBlock = await web3.eth.getBlock("latest");
 
