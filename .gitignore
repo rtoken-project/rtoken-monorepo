@@ -4,5 +4,6 @@
 /coverage.json
 /coverage
 /.env
+/data
 *.ignore.*
 yarn.lock
