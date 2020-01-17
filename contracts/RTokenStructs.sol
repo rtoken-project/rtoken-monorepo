@@ -78,12 +78,28 @@ contract RTokenStructs {
     }
 
     /// @dev Account structure
+    ///
+    // * Definitions:
+    //   - rGross/receivedSavings = sInternalToR(sInternalAmount)
+    //   - interestPayable = rGross - lDebt - rInterest
+    //   - realtimeBalance = rAmount + interestPayable
+    // * Invariants:
+    //   - rAmount = lDebt + rInterest
     struct Account {
+        /// @notice Current selected hat ID of the account
         uint256 hatID;
+        /// @notice Current balance of the account (non realtime)
         uint256 rAmount;
+        /// @notice Interest rate portion of the rAmount
         uint256 rInterest;
+        /// @notice Debt in redeemable amount lent to recipients
         mapping(address => uint256) lRecipients;
+        /// @notice Received loan.
+        ///         Debt in redeemable amount owed to the lenders distributed
+        ///         through one or more hats.
         uint256 lDebt;
+        /// @notice Savings internal accounting amount.
+        ///         Debt is sold to buy savings
         uint256 sInternalAmount;
     }
 }
