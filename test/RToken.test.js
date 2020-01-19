@@ -180,6 +180,16 @@ contract("RToken", accounts => {
         console.log(`${accountName} rInterest ${wad4human(accountStats.rInterest)}`);
         console.log(`${accountName} sInternalAmount ${wad4human(accountStats.sInternalAmount)}`);
 
+        assert.equal(
+            wad4human(
+                web3.utils.toBN(accountStats.rAmount),
+                12),
+            wad4human(
+                web3.utils.toBN(accountStats.lRecipientsSum)
+                    .add(web3.utils.toBN(accountStats.rInterest)),
+                12),
+            "account invariant: rAmount = lRecipientsSum + rInterest");
+
         assert.deepEqual({
             tokenBalance,
             receivedLoan,
@@ -189,7 +199,7 @@ contract("RToken", accounts => {
         }, balances, `expectAccount ${accountName}`);
     }
 
-    async function validateInvariants() {
+    async function validateGlobalInvariants() {
         const accounts = [admin, customer1, customer2, customer3, customer4];
         let totalSupplyByAccounts = toWad(0);
         let totalSavingsAmountByAccounts = toWad(0);
@@ -217,7 +227,7 @@ contract("RToken", accounts => {
         }, {
             totalSupply: globalStats.totalSupply.toString(),
             totalSavingsAmount: wad4human(globalStats.totalSavingsAmount, 12)
-        }, "accountStats vs globalStats");
+        }, "invariants: accountStats vs globalStats");
 
         const nHats = parseInt((await rToken.getMaximumHatID.call()).toString()) + 1;
         let totalReceivedLoansByHats = toWad(0);
@@ -237,7 +247,7 @@ contract("RToken", accounts => {
         }, {
             totalReceivedLoans: totalReceivedLoansByHats.toString(),
             totalSavings: wad4human(totalSavingsByHats, 6),
-        }, "accountStats vs hatStats");
+        }, "invariants: accountStats vs hatStats");
     }
 
     it("#0 initial test condition", async () => {
@@ -417,7 +427,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "88.00110",
             totalSavingsAmount: "88.00110"
@@ -732,7 +742,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "90.00113",
             totalSavingsAmount: "90.00206"
@@ -781,7 +791,7 @@ contract("RToken", accounts => {
             interestPayable: "0.01000",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#5 redeem all including paid interest from single hat", async () => {
@@ -869,7 +879,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "100.00002",
             totalSavingsAmount: "100.00012"
@@ -1028,7 +1038,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00040",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#7 redeem all including paid interest from zero hatter", async () => {
@@ -1175,7 +1185,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "300.00189",
             totalSavingsAmount: "300.00258"
@@ -1275,7 +1285,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00020",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#10 CompoundAs ownership protection", async () => {
@@ -1313,7 +1323,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#12 redeem all including paid interest from multiple hats", async () => {
@@ -1471,7 +1481,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "100.00000",
             totalSavingsAmount: "100.00035"
@@ -1531,7 +1541,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#14 redeemAndTransferAll", async () => {
@@ -1568,7 +1578,7 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await token.balanceOf.call(customer1)), "800.00000");
         assert.equal(wad4human(await token.balanceOf.call(customer3)), "100.00051");
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#15 upgrade contract", async () => {
@@ -2321,7 +2331,7 @@ contract("RToken", accounts => {
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer1)), "0.00000");
         assert.equal(wad4human(await rToken.receivedSavingsOf.call(customer2)), "100.00000");
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#23 change hat test", async () => {
@@ -2358,7 +2368,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#23 change hat test w/ 2 recipients", async () => {
@@ -2402,7 +2412,7 @@ contract("RToken", accounts => {
             interestPayable: "0.00000",
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#24 complex functional test", async () => {
@@ -2548,7 +2558,7 @@ contract("RToken", accounts => {
             sOriginalAmount: "10000.00000"
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#25 change allocation strategy multiple times", async () => {
@@ -2614,7 +2624,7 @@ contract("RToken", accounts => {
             sOriginalAmount: "0.00000"
         });
 
-        await validateInvariants();
+        await validateGlobalInvariants();
     });
 
     it("#27 normal operations with self-recipient hatter", async () => {
@@ -2675,7 +2685,7 @@ contract("RToken", accounts => {
         });
 
         // Validate global stats
-        await validateInvariants();
+        await validateGlobalInvariants();
         assert.deepEqual(parseGlobalStats(await rToken.getGlobalStats.call()), {
             totalSupply: "100.00000",
             totalSavingsAmount: "100.00000"

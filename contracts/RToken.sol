@@ -381,6 +381,21 @@ contract RToken is
         AccountStatsStored storage statsStored = accountStats[owner];
         stats.cumulativeInterest = statsStored.cumulativeInterest;
 
+        Hat storage hat = hats[account.hatID == SELF_HAT_ID
+            ? 0
+            : account.hatID];
+        if (account.hatID == 0 || account.hatID == SELF_HAT_ID) {
+            // Self-hat has storage optimization for lRecipients.
+            // We use the account invariant to calculate lRecipientsSum instead,
+            // so it does look like a tautology indeed.
+            // Check RTokenStructs documentation for more info.
+            stats.lRecipientsSum = gentleSub(stats.rAmount, stats.rInterest);
+        } else {
+            for (uint256 i = 0; i < hat.proportions.length; ++i) {
+                stats.lRecipientsSum += account.lRecipients[hat.recipients[i]];
+            }
+        }
+
         return stats;
     }
 
