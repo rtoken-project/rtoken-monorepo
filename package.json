@@ -7,20 +7,21 @@
         "@openzeppelin/contracts": "2.4.0"
     },
     "peerDependencies": {
-        "@truffle/contract": "^4.1.2"
+        "@truffle/contract": "^4.1.5"
     },
     "devDependencies": {
-        "@decentral.ee/web3-test-helpers": "0.2.3",
+        "@truffle/contract": "^4.1.5",
+        "@decentral.ee/web3-test-helpers": "0.2.4",
         "dotenv": "8.2.0",
         "@openzeppelin/test-helpers": "0.5.4",
         "sol-proxy": "0.1.2",
         "solhint": "2.3.0",
-        "solidity-coverage": "0.7.0-beta.2",
-        "truffle": "5.1.4",
+        "solidity-coverage": "0.7.1",
+        "truffle": "5.1.9",
         "truffle-flattener": "1.4.2",
-        "truffle-plugin-verify": "0.3.6",
-        "@truffle/hdwallet-provider": "1.0.27",
-        "eslint": "6.7.2",
+        "truffle-plugin-verify": "0.3.8",
+        "@truffle/hdwallet-provider": "1.0.29",
+        "eslint": "6.8.0",
         "npm-run-all": "4.1.5"
     },
     "scripts": {
