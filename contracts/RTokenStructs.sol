@@ -1,6 +1,10 @@
 pragma solidity >=0.5.10 <0.6.0;
 
+/**
+ * @notice RToken storage structures
+ */
 contract RTokenStructs {
+
     /**
      * @notice Global stats
      */
@@ -10,7 +14,6 @@ contract RTokenStructs {
         /// @notice Total saving assets in redeemable amount
         uint256 totalSavingsAmount;
     }
-
 
     /**
      * @notice Account stats stored
@@ -22,7 +25,7 @@ contract RTokenStructs {
         uint256 rAmount;
         /// @notice Interest portion of the rAmount
         uint256 rInterest;
-        /// @notice Current loan debt amount
+        /// @notice Current loaned debt amount
         uint256 lDebt;
         /// @notice Current internal savings amount
         uint256 sInternalAmount;
@@ -30,6 +33,8 @@ contract RTokenStructs {
         uint256 rInterestPayable;
         /// @notice Cumulative interest generated for the account
         uint256 cumulativeInterest;
+        /// @notice Loans lent to the recipients
+        uint256 lRecipientsSum;
     }
 
     /**
@@ -79,11 +84,47 @@ contract RTokenStructs {
 
     /// @dev Account structure
     struct Account {
+        /// @notice Current selected hat ID of the account
         uint256 hatID;
+        /// @notice Current balance of the account (non realtime)
         uint256 rAmount;
+        /// @notice Interest rate portion of the rAmount
         uint256 rInterest;
+        /// @notice Debt in redeemable amount lent to recipients
+        //          In case of self-hat, external debt is optimized to not to
+        //          be stored in lRecipients
         mapping(address => uint256) lRecipients;
+        /// @notice Received loan.
+        ///         Debt in redeemable amount owed to the lenders distributed
+        ///         through one or more hats.
         uint256 lDebt;
+        /// @notice Savings internal accounting amount.
+        ///         Debt is sold to buy savings
         uint256 sInternalAmount;
     }
+
+    /**
+     * Additional Definitions:
+     *
+     *   - rGross = sInternalToR(sInternalAmount)
+     *   - lRecipientsSum = sum(lRecipients)
+     *   - interestPayable = rGross - lDebt - rInterest
+     *   - realtimeBalance = rAmount + interestPayable
+     *
+     *   - rAmount aka. tokenBalance
+     *   - rGross aka. receivedSavings
+     *   - lDebt aka. receivedLoan
+     *
+     * Account Invariants:
+     *
+     *   - rAmount = lRecipientsSum + rInterest [with rounding errors]
+     *
+     * Global Invariants:
+     *
+     * - globalStats.totalSupply = sum(account.tokenBalance)
+     * - globalStats.totalSavingsAmount = sum(account.receivedSavings) [with rounding errors]
+     * - sum(hatStats.totalLoans) = sum(account.receivedLoan)
+     * - sum(hatStats.totalSavings) = sum(account.receivedSavings + cumulativeInterest - rInterest) [with rounding errors]
+     *
+     */
 }
