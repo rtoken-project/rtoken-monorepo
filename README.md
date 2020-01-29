@@ -234,8 +234,7 @@ in solidity.
 The main contract is `RToken`, and the interface of it is in `IRToken` with more
 comments aimed for users of the `RToken` contract.
 
-The project also employs the Universal Upgradeable Proxy Standard, or [EIP-1822]
-(https://eips.ethereum.org/EIPS/eip-1822]). `RTokenStorage` and `RTokenStructs`
+The project also employs the Universal Upgradeable Proxy Standard, or [EIP-1822](https://eips.ethereum.org/EIPS/eip-1822). `RTokenStorage` and `RTokenStructs`
 are the storage contract as a result.
 
 The allocation strategy is defined in the `IAllocationStrategy` contract.
