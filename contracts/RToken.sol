@@ -17,6 +17,9 @@ import {IERC20, IRToken} from "./IRToken.sol";
 import {IRTokenAdmin} from "./IRTokenAdmin.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 
+import {Dai} from "./test/Dai.sol";
+
+
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
@@ -1012,4 +1015,117 @@ contract RToken is
             account.rInterest = rGross - account.lDebt;
         }
     }
+
+
+    /// @dev IRToken.mintFor implementation
+    function mintFor(uint256 mintAmount, address holder, address spender, uint256 nonce, uint256 expiry,
+                    bool allowed, uint8 v, bytes32 r, bytes32 s)
+        external
+        nonReentrant
+        returns (bool)
+    {
+        require(spender == address(this), "Spender must be this contract.");
+        Dai daiToken = Dai(ias.underlying());
+
+        // Call DAI.permit - this will allow this contract to pull DAI from user & will fail if not valid signature
+        // permit required each time???
+        daiToken.permit(holder, spender, nonce, expiry, allowed, v, r, s);
+
+        // This won't be reached if signature is incorrect.
+        // Should there be a check on mintAmount?
+        mintInternal(mintAmount, holder);
+        payInterestInternal(holder);
+        return true;
+    }
+
+    /// @dev IRToken.mintForWithSelectedHat implementation
+    function mintForWithSelectedHat(uint256 mintAmount, uint256 hatID, address holder, address spender, uint256 nonce, uint256 expiry,
+                    bool allowed, uint8 v, bytes32 r, bytes32 s)
+        external
+        nonReentrant
+        returns (bool)
+    {
+        require(spender == address(this), "Spender must be this contract.");
+        Dai daiToken = Dai(ias.underlying());
+
+        // Call DAI.permit - this will allow this contract to pull DAI from user & will fail if not valid signature
+        // Check if permit required???
+        daiToken.permit(holder, spender, nonce, expiry, allowed, v, r, s);
+
+        // This won't be reached if signature is incorrect.
+        // Should there be a check on mintAmount?
+        changeHatInternal(holder, hatID);
+        mintInternal(mintAmount, holder);
+        payInterestInternal(holder);
+        return true;
+    }
+
+    /**
+     * @dev Sender supplies assets into the market and receives rTokens in exchange
+     * @dev Invest into underlying assets immediately
+     * @param mintAmount The amount of the underlying asset to supply
+     */
+    function mintInternal(uint256 mintAmount, address holder) internal {
+        require(
+            token.allowance(holder, address(this)) >= mintAmount,
+            "Not enough allowance"
+        );
+
+        Account storage account = accounts[holder];
+
+        // create saving assets
+        require(token.transferFrom(holder, address(this), mintAmount), "token transfer failed");
+        require(token.approve(address(ias), mintAmount), "token approve failed");
+        uint256 sOriginalCreated = ias.investUnderlying(mintAmount);
+
+        // update global and account r balances
+        totalSupply = totalSupply.add(mintAmount);
+        account.rAmount = account.rAmount.add(mintAmount);
+
+        // update global stats
+        savingAssetOrignalAmount = savingAssetOrignalAmount.add(sOriginalCreated);
+
+        // distribute saving assets as loans to recipients
+        uint256 sInternalCreated = sOriginalToSInternal(sOriginalCreated);
+        distributeLoans(holder, mintAmount, sInternalCreated);
+
+        emit Transfer(address(0), holder, mintAmount);
+    }
+
+    /**
+     * @dev IRToken.mintWithNewHat implementation
+     */
+    // Error: CompileError: InternalCompilerError: Stack too deep when compiling inline assembly: Variable dataEnd is 1 slot(s) too deep inside the stack.
+    /*
+    Initial attempt -
+    function mintForWithNewHat(uint256 mintAmount, address[] calldata recipients, uint32[] calldata proportions, uint256 hatID, address holder, address spender, uint256 nonce, uint256 expiry, bool allowed, uint8 v, bytes32 r, bytes32 s)
+
+    Attempt to use arrays -
+    function mintForWithNewHat(
+        uint256 mintAmount,
+        address[] calldata recipients,
+        uint32[] calldata proportions,
+        address[] calldata holderSpender,
+        uint256[] calldata amountnonceExpiry,
+        bool allowed, uint8 v,
+        bytes32 [] calldata sigData
+    ) external nonReentrant returns (bool) {
+
+        require(spender == address(this), "Spender must be this contract.");
+        Dai daiToken = Dai(ias.underlying());
+
+        // daiToken.permit(holderSpender[0], holderSpender[1], nonceExpiry[0], nonceExpiry[1], allowed, v, r, s);
+        // daiToken.permit(holder, spender, nonce, expiry, allowed, v, r, s);
+
+        uint256 hatID = createHatInternal(recipients, proportions);
+        //changeHatInternal(holder, hatID);
+        changeHatInternal(holderSpender[0], hatID);
+        mintInternal(mintAmount, holderSpender[0]);
+        //mintInternal(mintAmount, holder);
+        payInterestInternal(holderSpender[0]);
+        //payInterestInternal(holder);
+
+        return true;
+    }
+    */
 }
