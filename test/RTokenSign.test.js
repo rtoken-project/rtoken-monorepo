@@ -90,7 +90,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         // Format as a string with fields
         let result = "";
         for (let type of deps) {
-           result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(",")})`;
+            result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(",")})`;
         }
         return result;
     }
@@ -230,27 +230,27 @@ contract("RToken With DAI Permit Functions", accounts => {
         };
 
         const hash = ethUtil.keccak256(
-                        Buffer.concat([
-                            Buffer.from("1901", "hex"),
-                            structHash(types, "EIP712Domain", domain),
-                            structHash(types, "Permit", message),
-                        ]),
-                    );
+            Buffer.concat([
+                Buffer.from("1901", "hex"),
+                structHash(types, "EIP712Domain", domain),
+                structHash(types, "Permit", message),
+            ]),
+        );
 
         // The holder signs the permit message (This would normally be done via MetaMask or similar)
         const sig = ethUtil.ecsign(hash, privateKey);
 
         // Business calls for holder.
         await rToken.mintFor(toWad(100),
-                              holder,
-                              rToken.address,
-                              nonce,
-                              0,
-                              true,
-                              sig.v,
-                              ethUtil.bufferToHex(sig.r),
-                              ethUtil.bufferToHex(sig.s),
-                              { from: business });
+            holder,
+            rToken.address,
+            nonce,
+            0,
+            true,
+            sig.v,
+            ethUtil.bufferToHex(sig.r),
+            ethUtil.bufferToHex(sig.s),
+            { from: business });
 
         // Holder should now have rDAI.
         rDAI_Balance = await rToken.balanceOf(holder);
@@ -262,7 +262,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         nonce = await dai_token.nonces.call(holder);
         assert.equal(1, nonce, "Nonce should be 1");
 
-        allowance = await dai_token.allowance.call(holder, rToken.address)
+        allowance = await dai_token.allowance.call(holder, rToken.address);
         const max = web3.utils.toTwosComplement(-1);
         var t = web3.utils.toBN(max);
         assert.equal(wad4human(allowance), wad4human(t.toString()), "Allowance should be max.");
@@ -290,10 +290,10 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Check hat
         var hat = await rToken.getHatByAddress.call(holder);
-        assert.equal(hat[0], 0, "Initial hat ID should be 0.")
+        assert.equal(hat[0], 0, "Initial hat ID should be 0.");
 
         // Intiially the rDAI contract has no allowance of DAI token for spender.
-        var allowance = await dai_token.allowance.call(holder, rToken.address)
+        var allowance = await dai_token.allowance.call(holder, rToken.address);
         assert.equal(wad4human(allowance), "0.00000", "Initial DAI allowance should be 0");
 
         // First call of DAI permit so nonce is 0.
@@ -315,7 +315,7 @@ contract("RToken With DAI Permit Functions", accounts => {
                 { name: "expiry", type: "uint256"},
                 { name: "allowed", type: "bool"}
             ],
-        }
+        };
 
         const chainId = await web3.eth.net.getId();
 
@@ -324,7 +324,7 @@ contract("RToken With DAI Permit Functions", accounts => {
             version: "1",
             chainId: chainId,
             verifyingContract: dai_token.address
-        }
+        };
 
         const message = {
             holder: holder,
@@ -332,15 +332,15 @@ contract("RToken With DAI Permit Functions", accounts => {
             nonce: nonce,
             expiry: 0,
             allowed: true
-        }
+        };
 
         const hash = ethUtil.keccak256(
-                        Buffer.concat([
-                            Buffer.from("1901", "hex"),
-                            structHash(types, "EIP712Domain", domain),
-                            structHash(types, "Permit", message),
-                        ]),
-                    );
+            Buffer.concat([
+                Buffer.from("1901", "hex"),
+                structHash(types, "EIP712Domain", domain),
+                structHash(types, "Permit", message),
+            ]),
+        );
 
         // The holder signs the permit message (This would normally be done via MetaMask or similar)
         const sig = ethUtil.ecsign(hash, privateKey);
@@ -350,16 +350,16 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Business calls mintForWithSelectedHat using signed message
         await rToken.mintForWithSelectedHat(toWad(100),
-                                            1,
-                                            holder,
-                                            rToken.address,
-                                            nonce,
-                                            0,
-                                            true,
-                                            sig.v,
-                                            ethUtil.bufferToHex(sig.r),
-                                            ethUtil.bufferToHex(sig.s),
-                                            { from: business });
+            1,
+            holder,
+            rToken.address,
+            nonce,
+            0,
+            true,
+            sig.v,
+            ethUtil.bufferToHex(sig.r),
+            ethUtil.bufferToHex(sig.s),
+            { from: business });
 
         // Holder should now have rDAI.
         rDAI_Balance = await rToken.balanceOf(holder);
@@ -371,13 +371,13 @@ contract("RToken With DAI Permit Functions", accounts => {
         nonce = await dai_token.nonces.call(holder);
         assert.equal(1, nonce, "Nonce should be 1");
 
-        allowance = await dai_token.allowance.call(holder, rToken.address)
+        allowance = await dai_token.allowance.call(holder, rToken.address);
         const max = web3.utils.toTwosComplement(-1);
         var t = web3.utils.toBN(max);
         assert.equal(wad4human(allowance), wad4human(t.toString()), "Allowance should be max.");
 
         // Check hat
         hat = await rToken.getHatByAddress.call(holder);
-        assert.equal(hat[0], 1, "New hat ID should be 1.")
+        assert.equal(hat[0], 1, "New hat ID should be 1.");
     });
 });
