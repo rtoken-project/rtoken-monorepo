@@ -90,7 +90,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         // Format as a string with fields
         let result = "";
         for (let type of deps) {
-          result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(",")})`;
+           result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(",")})`;
         }
         return result;
     }
@@ -107,16 +107,16 @@ contract("RToken With DAI Permit Functions", accounts => {
         // Add field contents
         for (let field of types[primaryType]) {
             let value = data[field.name];
-            if (field.type == 'string' || field.type == 'bytes') {
-                encTypes.push('bytes32');
+            if (field.type == "string" || field.type == "bytes") {
+                encTypes.push("bytes32");
                 value = ethUtil.keccak256(value);
                 encValues.push(value);
             } else if (types[field.type] !== undefined) {
-                encTypes.push('bytes32');
+                encTypes.push("bytes32");
                 value = ethUtil.keccak256(encodeData(field.type, value));
                 encValues.push(value);
-            } else if (field.type.lastIndexOf(']') === field.type.length - 1) {
-                throw 'TODO: Arrays currently unimplemented in encodeData';
+            } else if (field.type.lastIndexOf("]") === field.type.length - 1) {
+                throw "TODO: Arrays currently unimplemented in encodeData";
             } else {
                 encTypes.push(field.type);
                 encValues.push(value);
@@ -149,7 +149,7 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         {
             const result = await createCompoundAllocationStrategy(toWad(.1));
-            cToken = result.cToken;
+            var cToken = result.cToken;
             compoundAS = result.compoundAS;
         }
 
@@ -174,7 +174,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         rToken = await RToken.at(proxy.address);
 
         await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
-        SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
+        var SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
     it("MintFor Test", async () => {
@@ -185,40 +185,40 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Initially the holder should have no rDAI, only has DAI (but no ETH).
         var rDAI_Balance = await rToken.balanceOf(holder);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial holder rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial holder rDAI balance should be 0");
         rDAI_Balance = await rToken.balanceOf(rToken.address);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial spender rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial spender rDAI balance should be 0");
 
         // Intiially the rDAI contract has no allowance of DAI token for spender.
         var allowance = await dai_token.allowance.call(holder, rToken.address)
-        assert.equal(wad4human(allowance), "0.00000", 'Initial DAI allowance should be 0');
+        assert.equal(wad4human(allowance), "0.00000", "Initial DAI allowance should be 0");
 
         // First call of DAI permit so nonce is 0.
         var nonce = await dai_token.nonces.call(holder);
-        assert.equal(0, nonce, 'Initial DAI nonce should be 0');
+        assert.equal(0, nonce, "Initial DAI nonce should be 0");
 
         // EIP712 signing set-up.
         const types = {
             EIP712Domain: [
-                { name: 'name', type: 'string' },
-                { name: 'version', type: 'string' },
-                { name: 'chainId', type: 'uint256' },
-                { name: 'verifyingContract', type: 'address' },
+                { name: "name", type: "string" },
+                { name: "version", type: "string" },
+                { name: "chainId", type: "uint256" },
+                { name: "verifyingContract", type: "address" },
             ],
             Permit: [
-                { name: 'holder', type: 'address'},
-                { name: 'spender', type: 'address'},
-                { name: 'nonce', type: 'uint256'},
-                { name: 'expiry', type: 'uint256'},
-                { name: 'allowed', type: 'bool'}
+                { name: "holder", type: "address"},
+                { name: "spender", type: "address"},
+                { name: "nonce", type: "uint256"},
+                { name: "expiry", type: "uint256"},
+                { name: "allowed", type: "bool"}
             ],
         }
 
         const chainId = await web3.eth.net.getId();
 
         const domain = {
-            name: 'Dai Stablecoin',
-            version: '1',
+            name: "Dai Stablecoin",
+            version: "1",
             chainId: chainId,
             verifyingContract: dai_token.address
         }
@@ -233,9 +233,9 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         const hash = ethUtil.keccak256(
                         Buffer.concat([
-                            Buffer.from('1901', 'hex'),
-                            structHash(types, 'EIP712Domain', domain),
-                            structHash(types, 'Permit', message),
+                            Buffer.from("1901", "hex"),
+                            structHash(types, "EIP712Domain", domain),
+                            structHash(types, "Permit", message),
                         ]),
                     );
 
@@ -256,18 +256,18 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Holder should now have rDAI.
         rDAI_Balance = await rToken.balanceOf(holder);
-        assert.equal(wad4human(rDAI_Balance), "100.00000", 'Holder rDAI balance should be 100');
+        assert.equal(wad4human(rDAI_Balance), "100.00000", "Holder rDAI balance should be 100");
         rDAI_Balance = await rToken.balanceOf(rToken.address);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial spender rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial spender rDAI balance should be 0");
 
         // DAI permit has been called so nonce is incremented.
         nonce = await dai_token.nonces.call(holder);
-        assert.equal(1, nonce, 'Nonce should be 1');
+        assert.equal(1, nonce, "Nonce should be 1");
 
         allowance = await dai_token.allowance.call(holder, rToken.address)
         const max = web3.utils.toTwosComplement(-1);
         var t = web3.utils.toBN(max);
-        assert.equal(wad4human(allowance), wad4human(t.toString()), 'Allowance should be max.');
+        assert.equal(wad4human(allowance), wad4human(t.toString()), "Allowance should be max.");
 
         // Check hat
         assert.deepEqual(parseHat(await rToken.getHatByAddress.call(holder)), {
@@ -286,44 +286,44 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Initially the holder should have no rDAI, only has DAI.
         var rDAI_Balance = await rToken.balanceOf(holder);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial holder rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial holder rDAI balance should be 0");
         rDAI_Balance = await rToken.balanceOf(rToken.address);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial spender rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial spender rDAI balance should be 0");
 
         // Check hat
         var hat = await rToken.getHatByAddress.call(holder);
-        assert.equal(hat[0], 0, 'Initial hat ID should be 0.')
+        assert.equal(hat[0], 0, "Initial hat ID should be 0.")
 
         // Intiially the rDAI contract has no allowance of DAI token for spender.
         var allowance = await dai_token.allowance.call(holder, rToken.address)
-        assert.equal(wad4human(allowance), "0.00000", 'Initial DAI allowance should be 0');
+        assert.equal(wad4human(allowance), "0.00000", "Initial DAI allowance should be 0");
 
         // First call of DAI permit so nonce is 0.
         var nonce = await dai_token.nonces.call(holder);
-        assert.equal(0, nonce, 'Initial DAI nonce should be 0');
+        assert.equal(0, nonce, "Initial DAI nonce should be 0");
 
         // EIP712 signing set-up.
         const types = {
             EIP712Domain: [
-                { name: 'name', type: 'string' },
-                { name: 'version', type: 'string' },
-                { name: 'chainId', type: 'uint256' },
-                { name: 'verifyingContract', type: 'address' },
+                { name: "name", type: "string" },
+                { name: "version", type: "string" },
+                { name: "chainId", type: "uint256" },
+                { name: "verifyingContract", type: "address" },
             ],
             Permit: [
-                { name: 'holder', type: 'address'},
-                { name: 'spender', type: 'address'},
-                { name: 'nonce', type: 'uint256'},
-                { name: 'expiry', type: 'uint256'},
-                { name: 'allowed', type: 'bool'}
+                { name: "holder", type: "address"},
+                { name: "spender", type: "address"},
+                { name: "nonce", type: "uint256"},
+                { name: "expiry", type: "uint256"},
+                { name: "allowed", type: "bool"}
             ],
         }
 
         const chainId = await web3.eth.net.getId();
 
         const domain = {
-            name: 'Dai Stablecoin',
-            version: '1',
+            name: "Dai Stablecoin",
+            version: "1",
             chainId: chainId,
             verifyingContract: dai_token.address
         }
@@ -338,9 +338,9 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         const hash = ethUtil.keccak256(
                         Buffer.concat([
-                            Buffer.from('1901', 'hex'),
-                            structHash(types, 'EIP712Domain', domain),
-                            structHash(types, 'Permit', message),
+                            Buffer.from("1901", "hex"),
+                            structHash(types, "EIP712Domain", domain),
+                            structHash(types, "Permit", message),
                         ]),
                     );
 
@@ -365,21 +365,21 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         // Holder should now have rDAI.
         rDAI_Balance = await rToken.balanceOf(holder);
-        assert.equal(wad4human(rDAI_Balance), "100.00000", 'Holder rDAI balance should be 100');
+        assert.equal(wad4human(rDAI_Balance), "100.00000", "Holder rDAI balance should be 100");
         rDAI_Balance = await rToken.balanceOf(rToken.address);
-        assert.equal(wad4human(rDAI_Balance), "0.00000", 'Initial spender rDAI balance should be 0');
+        assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial spender rDAI balance should be 0");
 
         // DAI permit has been called so nonce is incremented.
         nonce = await dai_token.nonces.call(holder);
-        assert.equal(1, nonce, 'Nonce should be 1');
+        assert.equal(1, nonce, "Nonce should be 1");
 
         allowance = await dai_token.allowance.call(holder, rToken.address)
         const max = web3.utils.toTwosComplement(-1);
         var t = web3.utils.toBN(max);
-        assert.equal(wad4human(allowance), wad4human(t.toString()), 'Allowance should be max.');
+        assert.equal(wad4human(allowance), wad4human(t.toString()), "Allowance should be max.");
 
         // Check hat
         hat = await rToken.getHatByAddress.call(holder);
-        assert.equal(hat[0], 1, 'New hat ID should be 1.')
+        assert.equal(hat[0], 1, "New hat ID should be 1.")
     });
 });
