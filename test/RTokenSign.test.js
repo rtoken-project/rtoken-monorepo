@@ -149,7 +149,6 @@ contract("RToken With DAI Permit Functions", accounts => {
 
         {
             const result = await createCompoundAllocationStrategy(toWad(.1));
-            var cToken = result.cToken;
             compoundAS = result.compoundAS;
         }
 
@@ -174,7 +173,6 @@ contract("RToken With DAI Permit Functions", accounts => {
         rToken = await RToken.at(proxy.address);
 
         await web3tx(compoundAS.transferOwnership, "compoundAS.transferOwnership")(rToken.address);
-        var SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
     it("MintFor Test", async () => {
@@ -190,7 +188,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         assert.equal(wad4human(rDAI_Balance), "0.00000", "Initial spender rDAI balance should be 0");
 
         // Intiially the rDAI contract has no allowance of DAI token for spender.
-        var allowance = await dai_token.allowance.call(holder, rToken.address)
+        var allowance = await dai_token.allowance.call(holder, rToken.address);
         assert.equal(wad4human(allowance), "0.00000", "Initial DAI allowance should be 0");
 
         // First call of DAI permit so nonce is 0.
@@ -212,7 +210,7 @@ contract("RToken With DAI Permit Functions", accounts => {
                 { name: "expiry", type: "uint256"},
                 { name: "allowed", type: "bool"}
             ],
-        }
+        };
 
         const chainId = await web3.eth.net.getId();
 
@@ -221,7 +219,7 @@ contract("RToken With DAI Permit Functions", accounts => {
             version: "1",
             chainId: chainId,
             verifyingContract: dai_token.address
-        }
+        };
 
         const message = {
             holder: holder,
@@ -229,7 +227,7 @@ contract("RToken With DAI Permit Functions", accounts => {
             nonce: nonce,
             expiry: 0,
             allowed: true
-        }
+        };
 
         const hash = ethUtil.keccak256(
                         Buffer.concat([
