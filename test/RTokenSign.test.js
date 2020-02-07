@@ -4,13 +4,13 @@ const InterestRateModelMock = artifacts.require("InterestRateModelMock");
 const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
 const RToken = artifacts.require("RToken");
 const Proxy = artifacts.require("Proxy");
-const { time, expectRevert } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
+
 
 const Dai = artifacts.require("Dai");
 
-const ethUtil = require('ethereumjs-util');
-const abi = require('ethereumjs-abi');
+const ethUtil = require("ethereumjs-util");
+const abi = require("ethereumjs-abi");
 
 contract("RToken With DAI Permit Functions", accounts => {
 
@@ -18,12 +18,12 @@ contract("RToken With DAI Permit Functions", accounts => {
     const bingeBorrower = accounts[1];
     const business = accounts[2];
     let dai_token;
-    let cToken;
     let compoundAS;
+
     let rToken;
     let rTokenLogic;
-    let SELF_HAT_ID;
-    const privateKey = ethUtil.keccak256('cow');
+
+    const privateKey = ethUtil.keccak256("cow");
     // '0xc85ef7d79691fe79573b1a7064c19c1a9819ebdbd1faaab1a8ec92344438aaf4'
     const address = ethUtil.privateToAddress(privateKey);
     const holder = ethUtil.bufferToHex(address);
@@ -88,9 +88,9 @@ contract("RToken With DAI Permit Functions", accounts => {
         deps = [primaryType].concat(deps.sort());
 
         // Format as a string with fields
-        let result = '';
+        let result = "";
         for (let type of deps) {
-            result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(',')})`;
+          result += `${type}(${types[type].map(({ name, type }) => `${type} ${name}`).join(",")})`;
         }
         return result;
     }
@@ -101,7 +101,7 @@ contract("RToken With DAI Permit Functions", accounts => {
         let encValues = [];
 
         // Add typehash
-        encTypes.push('bytes32');
+        encTypes.push("bytes32");
         encValues.push(ethUtil.keccak256(encodeType(types, primaryType)));
 
         // Add field contents
