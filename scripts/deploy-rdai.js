@@ -1,20 +1,20 @@
-const { promisify } = require("util");
-const rl = require("./rl");
-
+/**
+ * @dev Interactive script to deploy a fullset of rdai contracts
+ */
 module.exports = async function (callback) {
     try {
-        global.web3 = web3;
-
-
-        let network = await web3.eth.net.getNetworkType();
-        console.log("Current network:", network);
-
+        const { promisify } = require("util");
+        const rl = require("./common/rl");
         const { web3tx } = require("@decentral.ee/web3-test-helpers");
+
+        global.web3 = web3;
+        const network = await web3.eth.net.getNetworkType();
+
         const CompoundAllocationStrategy = artifacts.require("CompoundAllocationStrategy");
         const RDAI = artifacts.require("rDAI");
         const Proxy = artifacts.require("Proxy");
 
-        const addresses = require("./addresses")[network];
+        const addresses = require("./common/addresses")[network];
 
         let compoundASAddress = await promisify(rl.question)("Specify a deployed CompoundAllocationStrategy (deploy a new one if blank): ");
         let compoundAS;

@@ -5,15 +5,14 @@ module.exports = async function (callback) {
 
         const { web3tx, toWad, wad4human } = require("@decentral.ee/web3-test-helpers");
 
-        let network = await web3.eth.net.getNetworkType();
-        console.log("Current network:", network);
-
         const IERC20 = artifacts.require("IERC20");
         const RToken = artifacts.require("RToken");
         const IAllocationStrategy = artifacts.require("IAllocationStrategy");
 
-        const rToken = await RToken.at(process.argv[6]);
-        const mintAmount = process.argv[7] || 10;
+        const rtokenAddress = process.argv[process.argv.length - 2];
+        const mintAmount = process.argv[process.argv.length - 1];
+
+        const rToken = await RToken.at(rtokenAddress);
         console.log("rToken address", rToken.address);
         const minter = (await web3.eth.getAccounts())[0];
         console.log("minter address", minter);
