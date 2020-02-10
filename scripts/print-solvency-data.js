@@ -1,20 +1,9 @@
 const { wad4human } = require("@decentral.ee/web3-test-helpers");
+const addresses = require("./common/addresses");
 
 const SECONDS_PER_DAY = 3600 * 24;
 const AVG_SECONDS_PER_BLOCK = 13;
 const AVG_NUM_BLOCKS_PER_DAY = Math.floor(SECONDS_PER_DAY / AVG_SECONDS_PER_BLOCK);
-
-const RTOKENS = {
-    rSAI: {
-        address: "0xea8b224edd3e342deb514c4176c2e72bcce6fff9",
-        creationBlockNumber: 8764716,
-    },
-
-    rDAI: {
-        address: "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0",
-        creationBlockNumber: 9117143,
-    }
-};
 
 let IAllocationStrategy, IRToken, rtoken;
 
@@ -45,11 +34,12 @@ async function printData(data) {
 module.exports = async function (callback) {
     try {
         global.web3 = web3;
+        const network = await web3.eth.net.getNetworkType();
 
         const cmd = process.argv[process.argv.length - 2];
-        const token = process.argv[process.argv.length - 1];
+        const tokenName = process.argv[process.argv.length - 1];
 
-        const RTokenData = RTOKENS[token];
+        const RTokenData = addresses[network][tokenName];
 
         IAllocationStrategy = artifacts.require("IAllocationStrategy");
         IRToken = artifacts.require("IRToken");
@@ -79,9 +69,8 @@ module.exports = async function (callback) {
             await printData(data);
         }
 
-        callback();       
+        callback();
     } catch (err) {
         callback(err);
-    }   
+    }
 };
-

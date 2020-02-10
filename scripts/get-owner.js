@@ -2,13 +2,12 @@ module.exports = async function (callback) {
     try {
         global.web3 = web3;
 
-        let network = await web3.eth.net.getNetworkType();
-        console.log("Current network:", network);
+        const Ownable = artifacts.require("Ownable");
 
-        const IRTokenAdmin = artifacts.require("IRTokenAdmin");
+        const address = process.argv[process.argv.length - 1];
 
-        const admin = await IRTokenAdmin.at(process.argv[6]);
-        console.log("admin.owner address", await admin.owner.call());
+        const ownable = await Ownable.at(address);
+        console.log("owner address", await ownable.owner.call());
 
         callback();
     } catch (err) {
