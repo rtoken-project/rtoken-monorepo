@@ -1,7 +1,10 @@
-module.exports = function (loanEvents) {
+module.exports = function (loanEvents, untilBlockNumber) {
     const toBN = web3.utils.toBN;
     const accounts = {};
     loanEvents.forEach(e => {
+        if (untilBlockNumber && e.blockNumber > untilBlockNumber) {
+            return;
+        }
         const owner = e.args.owner;
         const recipient = e.args.recipient;
         [owner, recipient].forEach(i => {

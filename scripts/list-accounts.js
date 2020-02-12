@@ -13,10 +13,11 @@ module.exports = async function (callback) {
         const toBN = web3.utils.toBN;
         const network = await web3.eth.net.getNetworkType();
 
+        const IRToken = artifacts.require("IRToken");
+
         const tokenName = process.argv[process.argv.length - 1];
 
         const RTokenData = getRTokenData(network, tokenName);
-        const IRToken = artifacts.require("IRToken");
         const rtoken = await IRToken.at(RTokenData.address);
 
         const loanEvents = await getAllEvents(
@@ -25,7 +26,7 @@ module.exports = async function (callback) {
             RTokenData.creationBlockNumber);
         const accounts = analyizeAccounts(loanEvents);
 
-        console.log("owner,lRecipientsSum(sum),lDebt(sum),sInternalAmount(sum),rAmount,rInterest,lRecipientsSum,lDebt,sInternalAmount,error1(lRecipientsSum),error2(lDebt),error3(sInternalAmount),error(rAmount)");
+        console.log("owner,hatID, lRecipientsSum(sum),lDebt(sum),sInternalAmount(sum),rAmount,rInterest,lRecipientsSum,lDebt,sInternalAmount,error1(lRecipientsSum),error2(lDebt),error3(sInternalAmount),error(rAmount)");
         await Promise.all(
             Object.keys(accounts).map(async owner => {
                 const lRecipients = accounts[owner].lRecipients;
@@ -36,6 +37,7 @@ module.exports = async function (callback) {
                 const accountStats = await rtoken.getAccountStats.call(owner);
                 console.log([
                     owner,
+                    accountStats.hatID.toString(),
                     wad4human(lRecipientsSum),
                     wad4human(lDebt),
                     wad4human(sInternalAmount),

@@ -1,3 +1,5 @@
+const getRTokenData = require("./common/getRTokenData");
+
 function parseHat(hat) {
     return {
         recipients: hat.recipients,
@@ -8,14 +10,17 @@ function parseHat(hat) {
 module.exports = async function (callback) {
     try {
         global.web3 = web3;
+        const network = await web3.eth.net.getNetworkType();
 
-        const RToken = artifacts.require("RToken");
+        const IRToken = artifacts.require("IRToken");
 
-        const rtokenAddress = process.argv[process.argv.length - 2];
+        const tokenName = process.argv[process.argv.length - 2];
         const hatID = process.argv[process.argv.length - 1];
 
-        const rToken = await RToken.at(rtokenAddress);
+        const RTokenData = getRTokenData(network, tokenName);
+        const rToken = await IRToken.at(RTokenData.address);
         console.log("rToken address", rToken.address);
+
         const hat = await rToken.getHatByID.call(hatID);
         console.log(`Hat ${hatID}`, parseHat(hat));
 
