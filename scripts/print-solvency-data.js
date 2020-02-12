@@ -115,21 +115,21 @@ module.exports = async function (callback) {
             "LoansTransferred",
             RTokenData.creationBlockNumber);
 
+        console.log([
+            "date",
+            "blocknumber",
+            "timestamp",
+            "totalSupply",
+            "savingsValue",
+            "savingsDeficit",
+            "allocaionStrategy",
+            "lRecipientsSumTotal",
+            "lDebtTotal",
+            "rInterestTotal",
+            "payableInterestsTotal",
+            "supplyDeficit",
+        ].join(","));
         if (cmd === "all") {
-            console.log([
-                "date",
-                "blocknumber",
-                "timestamp",
-                "totalSupply",
-                "savingsValue",
-                "savingsDeficit",
-                "allocaionStrategy",
-                "lRecipientsSumTotal",
-                "lDebtTotal",
-                "rInterestTotal",
-                "payableInterestsTotal",
-                "supplyDeficit",
-            ].join(","));
             const startingBlock = await web3.eth.getBlock(RTokenData.creationBlockNumber + AVG_NUM_BLOCKS_PER_DAY);
             let expectedBlockTimestamp = startingBlock.timestamp;
             let blocksPerDay = AVG_NUM_BLOCKS_PER_DAY;
