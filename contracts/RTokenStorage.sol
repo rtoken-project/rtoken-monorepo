@@ -39,19 +39,7 @@ contract RTokenStorage is RTokenStructs, IERC20 {
     /// @dev Saving assets original amount
     /// This amount is in the same unit used in allocation strategy
     uint256 public savingAssetOrignalAmount;
-    /// @dev Saving asset original to internal amount conversion rate.
-    ///      - It has 18 decimals
-    ///      - It starts with value 1.
-    ///      - Each strategy switching results a new conversion rate
-    ///
-    /// NOTE:
-    ///
-    /// 1. The reason there is an exchange rate is that, each time the
-    ///    allocation strategy is switched, the unit of the original amount gets
-    ///    changed, it is impossible to change all the internal savings
-    ///    accounting entries for all accounts, hence instead a conversaion rate
-    ///    is used to simplify the process.
-    /// 2. internalSavings == originalSavings * savingAssetConversionRate
+    /// @dev Saving asset original to internal amount conversion rate
     uint256 public savingAssetConversionRate;
     /// @dev Approved token transfer amounts on behalf of others
     mapping(address => mapping(address => uint256)) public transferAllowances;
