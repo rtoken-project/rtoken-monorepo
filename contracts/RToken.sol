@@ -21,9 +21,9 @@ import {IAllocationStrategy} from "./IAllocationStrategy.sol";
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
  */
 contract RToken is
-    RTokenStorage,
     IRToken,
     IRTokenAdmin,
+    RTokenStorage,
     Ownable,
     Proxiable,
     LibraryLock,

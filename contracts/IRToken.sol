@@ -7,6 +7,7 @@ pragma solidity >=0.5.10 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {RTokenStructs} from "./RTokenStructs.sol";
+import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
@@ -15,6 +16,39 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
  *      addresses and pay earned interest in new _rTokens_.
  */
 contract IRToken is RTokenStructs, IERC20 {
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Token details
+    ////////////////////////////////////////////////////////////////////////////
+
+    /// @notice Returning the underlying token
+    function token() external returns (IERC20);
+
+    /**
+     * @notice Returns the name of the token.
+     */
+    function name() external view returns (string memory);
+
+    /**
+     * @notice Returns the symbol of the token, usually a shorter version of the
+     * name.
+     */
+    function symbol() external view returns (string memory);
+
+    /**
+     * @notice Returns the number of decimals used to get its user representation.
+     * For example, if `decimals` equals `2`, a balance of `505` tokens should
+     * be displayed to a user as `5,05` (`505 / 10 ** 2`).
+     *
+     * Tokens usually opt for a value of 18, imitating the relationship between
+     * Ether and Wei.
+     *
+     * NOTE: This information is only used for _display_ purposes: it in
+     * no way affects any of the arithmetic of the contract, including
+     * {IERC20-balanceOf} and {IERC20-transfer}.
+     */
+    function decimals() external view returns (uint256);
+
     ////////////////////////////////////////////////////////////////////////////
     // For external transactions
     ////////////////////////////////////////////////////////////////////////////
@@ -193,6 +227,27 @@ contract IRToken is RTokenStructs, IERC20 {
         external
         view
         returns (uint256 amount);
+
+    /// @notice Get current saving strategy
+    function ias() external returns (IAllocationStrategy);
+
+    /// @notice Saving asset original to internal amount conversion rate.
+    ///
+    /// @dev About the saving asset original to internal conversaioon rate:
+    ///
+    ///      - It has 18 decimals
+    ///      - It starts with value 1
+    ///      - Each strategy switching results a new conversion rate
+    ///
+    /// NOTE:
+    ///
+    /// 1. The reason there is an exchange rate is that, each time the
+    ///    allocation strategy is switched, the unit of the original amount gets
+    ///    changed, it is impossible to change all the internal savings
+    ///    accounting entries for all accounts, hence instead a conversaion rate
+    ///    is used to simplify the process.
+    /// 2. internalSavings == originalSavings * savingAssetConversionRate
+    function savingAssetConversionRate() external returns (uint256);
 
     ////////////////////////////////////////////////////////////////////////////
     // statistics views
