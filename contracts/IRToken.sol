@@ -20,6 +20,10 @@ contract IRToken is RTokenStructs, IERC20 {
     ////////////////////////////////////////////////////////////////////////////
     // Token details
     ////////////////////////////////////////////////////////////////////////////
+
+    /// @notice Returning the underlying token
+    function token() external returns (IERC20);
+
     /**
      * @notice Returns the name of the token.
      */
