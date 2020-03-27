@@ -1,0 +1,8 @@
+.topbar-wrapper img[alt='Swagger UI'],
+.topbar-wrapper span {
+  visibility: collapse;
+}
+
+.topbar-wrapper .link:before {
+  content: url('./rtoken.png');
+}

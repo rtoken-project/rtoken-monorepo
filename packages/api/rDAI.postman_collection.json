@@ -1,0 +1,673 @@
+{
+	"info": {
+		"_postman_id": "6f868efa-4f85-4547-83cd-3c5300abc29a",
+		"name": "rDAI - Official",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TheGraph",
+			"item": [
+				{
+					"name": "getAccounts()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query{\n\taccounts(first: 1000, where: { id_not: \"0x0000000000000000000000000000000000000000\"})\n\t{\n\t\tid\n\t\tbalance\n\t\that\n\t\t{\n\t\t\tid\n\t\t}\n\t\tloansOwned(where: { amount_gt: 0 })\n\t\t{\n\t\t\tid\n\t\t\tamount\n\t\t\trecipient {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t\tloansReceived(where: { amount_gt: 0 })\n\t\t{\n\t\t\tid\n\t\t\tamount\n\t\t\towner {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "interest sent",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query{\n\taccount(id: $from) {\n            balance\n            loansOwned(where: { recipient: $to }) {\n              amount\n              recipient {\n                id\n              }\n              hat {\n                id\n              }\n              transfers {\n                value\n                transaction {\n                  id\n                  timestamp\n                  blockNumber\n                }\n              }\n            }\n          }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai?from=0x9492510BbCB93B6992d8b7Bb67888558E12DCac4&to=0x8605E554111d8ea3295e69adDaf8b2ABF60d68A3",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0x9492510BbCB93B6992d8b7Bb67888558E12DCac4"
+								},
+								{
+									"key": "to",
+									"value": "0x8605E554111d8ea3295e69adDaf8b2ABF60d68A3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getSpecificAccount()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query\n{\n\taccount(id: \"0xa153b8891e77f1ae037026514c927530d877fab8\")\n\t{\n\t\tid\n\t\tbalance\n\t\tloansOwned(where: { amount_gt: 0 })\n\t\t{\n\t\t\tamount\n\t\t\towner\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\trecipient\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\that\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\t  transfers {\n                id\n                value\n              }\n\t\t}\n\t\tloansReceived(where: { amount_gt: 0 })\n\t\t{\n\t\t\tamount\n\t\t\towner\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\trecipient\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\that\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOutgoing()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query\n{\n\taccount(id: \"0x9492510bbcb93b6992d8b7bb67888558e12dcac4\")\n\t{\n\t\tbalance\n\tloansOwned(where: { amount_gt: 0, recipient: \"0x8605e554111d8ea3295e69addaf8b2abf60d68a3\" })\n\t\t{\n\t\t\tamount\n\t\t\trecipient\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\that\n\t\t\t{\n\t\t\t\tid\n\t\t\t}\n\t\t\t  transfers {\n                value\n                transaction { \n                    timestamp\n                }\n                loan {\n                    id\n                }\n              }\n\t\t}\n\n\t}\n}\n",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getCompoundRate()",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query{\n          markets(where: { symbol: cDAI }) {\n            accrualBlockNumber\n            borrowRate\n            cash\n            collateralFactor\n            exchangeRate\n            interestRateModelAddress\n            name\n            reserves\n            supplyRate\n            symbol\n            id\n            totalBorrows\n            totalSupply\n            underlyingAddress\n            underlyingName\n            underlyingPrice\n            underlyingSymbol\n            reserveFactor\n            underlyingPriceUSD\n          }\n        \n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/id/Qmb7e8bYoj93F9u33R3JY1H764626C8KHUgWMeVjWPiwdD",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"id",
+								"Qmb7e8bYoj93F9u33R3JY1H764626C8KHUgWMeVjWPiwdD"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All accounts with outstanding interest",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query{\n\taccounts(first: 1000, where: { id_not: \"0x0000000000000000000000000000000000000000\"})\n\t{\n\t\tid\n\t\tbalance\n\t\that\n\t\t{\n\t\t\tid\n\t\t}\n\t\tloansReceived(where: { amount_gt: 0 })\n\t\t{\n\t\t\tid\n\t\t\tamount\n\t\t\towner {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/amxx/rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"amxx",
+								"rdai"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllIncoming",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query{\n\taccounts(first: 1000, where: { id_not: \"0x0000000000000000000000000000000000000000\"})\n\t{\n\t\tid\n\t\tbalance\n\t\that\n\t\t{\n\t\t\tid\n\t\t}\n\t\tloansOwned(where: { amount_gt: 0 })\n\t\t{\n\t\t\tid\n\t\t\tamount\n\t\t\trecipient {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t\tloansReceived(where: { amount_gt: 0 })\n\t\t{\n\t\t\tid\n\t\t\tamount\n\t\t\towner {\n\t\t\t\tid\n\t\t\t}\n\t\t}\n\t}\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "allUsersWithHat",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n  accounts( where: { id_not: \"0x0000000000000000000000000000000000000000\" hat: \"11\"   })\n  {\n      id\n      balance\n      hat\n      {\n          id\n      }\n  }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai",
+							"protocol": "https",
+							"host": [
+								"api",
+								"thegraph",
+								"com"
+							],
+							"path": [
+								"subgraphs",
+								"name",
+								"pi0neerpat",
+								"mcd-rdai"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "10d4c433-f428-4670-b4d2-ec36f840250d",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "33c90a5b-8d33-4e55-875e-64da976ce9de",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "rtoken-api",
+			"item": [
+				{
+					"name": "Sanity-check",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"value": "api.rdai.money",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/allOutgoing?owner=0x8605e554111d8ea3295e69addaf8b2abf60d68a3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"allOutgoing"
+							],
+							"query": [
+								{
+									"key": "owner",
+									"value": "0x8605e554111d8ea3295e69addaf8b2abf60d68a3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/outgoing",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"value": "api.rdai.money",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/allOutgoing?owner=0xa153b8891e77f1ae037026514c927530d877fab8",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"allOutgoing"
+							],
+							"query": [
+								{
+									"key": "owner",
+									"value": "0xa153b8891e77f1ae037026514c927530d877fab8"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/incoming",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"value": "api.rdai.money",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/allIncoming?owner=0x236daa98f115caa9991a3894ae387cdc13eaad1b",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"allIncoming"
+							],
+							"query": [
+								{
+									"key": "owner",
+									"value": "0x236daa98f115caa9991a3894ae387cdc13eaad1b"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "/interestSent",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"value": "api.rdai.money",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/interestSent?from=0x9492510BbCB93B6992d8b7Bb67888558E12DCac4&to=0x8605E554111d8ea3295e69adDaf8b2ABF60d68A3",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"interestSent"
+							],
+							"query": [
+								{
+									"key": "from",
+									"value": "0x9492510BbCB93B6992d8b7Bb67888558E12DCac4"
+								},
+								{
+									"key": "to",
+									"value": "0x8605E554111d8ea3295e69adDaf8b2ABF60d68A3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "receivedSavingsOf",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/receivedSavingsOf?owner=0x358f6260f1f90cd11a10e251ce16ea526f131b02",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"receivedSavingsOf"
+							],
+							"query": [
+								{
+									"key": "owner",
+									"value": "0x358f6260f1f90cd11a10e251ce16ea526f131b02"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "receivedSavingsOfByHat",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/receivedSavingsOfByHat?hatID=11",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"receivedSavingsOfByHat"
+							],
+							"query": [
+								{
+									"key": "hatID",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "amountEarnedByHat",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/amountEarnedByHat?hatID=11",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"amountEarnedByHat"
+							],
+							"query": [
+								{
+									"key": "hatID",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getHatIDByAddress",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/getHatIDByAddress?owner=0x9492510BbCB93B6992d8b7Bb67888558E12DCac4",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"getHatIDByAddress"
+							],
+							"query": [
+								{
+									"key": "owner",
+									"value": "0x9492510BbCB93B6992d8b7Bb67888558E12DCac4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "allUsersWithHat",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/allUsersWithHat?hatID=11",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"allUsersWithHat"
+							],
+							"query": [
+								{
+									"key": "hatID",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "userContributionToHat",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/userContributionToHat?hatID=75&owner=0x9492510BbCB93B6992d8b7Bb67888558E12DCac4",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"userContributionToHat"
+							],
+							"query": [
+								{
+									"key": "hatID",
+									"value": "75"
+								},
+								{
+									"key": "owner",
+									"value": "0x9492510BbCB93B6992d8b7Bb67888558E12DCac4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getTopDonorByHatGroup",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/getTopDonorByHatGroup?hats=[11,12]",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"getTopDonorByHatGroup"
+							],
+							"query": [
+								{
+									"key": "hats",
+									"value": "[11,12]"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sortHatsByReceivedSavingsOf",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "host",
+								"type": "text",
+								"value": "api.rdai.money",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "{{url}}/v1/sortHatsByReceivedSavingsOf?hats=[12,11]",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"v1",
+								"sortHatsByReceivedSavingsOf"
+							],
+							"query": [
+								{
+									"key": "hats",
+									"value": "[12,11]"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}

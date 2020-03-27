@@ -1,0 +1,179 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "rDAI protocol information.",
+    "version": "0.1.0",
+    "title": "rDAI - API",
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/rtoken-project/rtoken-api/blob/master/LICENSE"
+    }
+  },
+  "host": "api.rdai.money",
+  "basePath": "/v1",
+  "tags": [
+    {
+      "name": "general",
+      "description": "Get basic account information"
+    }
+  ],
+  "schemes": ["https", "http"],
+  "paths": {
+    "/allOutgoing": {
+      "get": {
+        "tags": ["general"],
+        "summary": "Get outgoing interest",
+        "description": "Returns where all accounts which the owner is sending interest to",
+        "operationId": "getOutgoingInterest",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "description": "Address of the owner",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Loan"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/allIncoming": {
+      "get": {
+        "tags": ["general"],
+        "summary": "Get incoming interest",
+        "description": "Returns all accounts sending interest to the owner",
+        "operationId": "getIncomingInterest",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "owner",
+            "in": "query",
+            "description": "Address of the owner",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Loan"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    },
+    "/receivedSavingsOfByHat": {
+      "get": {
+        "tags": ["general"],
+        "summary": "Get the total savingsOf for all the recipients in a hat",
+        "description": "Returns all accounts sending interest to the owner",
+        "operationId": "receivedSavingsOfByHat",
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "name": "hatID",
+            "in": "query",
+            "description": "ID of the Hat",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "amount": "string"
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Error"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Loan": {
+      "type": "object",
+      "xml": {
+        "name": "Tag"
+      },
+      "properties": {
+        "value": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "recipient": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "hat": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            }
+          }
+        },
+        "transfers": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "integer",
+                "format": "int64"
+              },
+              "transaction": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "timestamp": {
+                    "type": "string"
+                  },
+                  "blockNumber": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Get HELP in our Discord",
+    "url": "https://discord.gg/ZrssveV"
+  }
+}

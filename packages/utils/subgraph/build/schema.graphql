@@ -1,0 +1,19 @@
+type User @entity {
+  id: ID!
+  totalInterestPaid: BigInt!
+  receivedAddressList: [Bytes!]!
+  sentAddressList: [Bytes!]!
+  receivedLoansList: [Loan!] @derivedFrom(field: "to")
+  sentLoansList: [Loan!] @derivedFrom(field: "from")
+}
+
+type Loan @entity {
+  "ID is: <fromAddress>-<toAddress>"
+  id: ID!
+  from: User!
+  to: User!
+  timeStarted: String!
+  interestRateFloor: BigInt!
+  sInternalAmount: BigInt!
+  redeemableAmount: BigInt!
+}
