@@ -1,0 +1,79 @@
+name: CD
+
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - uses: actions/checkout@v1
+
+    - name: show contexts
+      run: |
+        echo github.repository: ${{ github.repository }}
+        echo github.ref: ${{ github.ref }}
+        echo github.head_ref: ${{ github.head_ref }}
+        echo github.base_ref: ${{ github.base_ref }}
+
+    - name: Use Node.js 12.x
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+
+    - name: npm install, build, and test
+      run: |
+        yarn install --frozen-lockfile       
+        npm run build
+
+    - name: archive build
+      # only archive for master branch push
+      if: github.event_name  == 'push'
+      uses: actions/upload-artifact@v1
+      with:
+        name: build
+        path: build
+
+  deploy:
+
+    needs: build
+
+    # only deploy for master branch push
+    if: github.event_name  == 'push'
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: download build
+        uses: actions/download-artifact@v1
+        with:
+          name: build
+
+      - name: create empty directory
+        run: |
+          mkdir empty.d
+
+      - name: empty build archive
+        uses: actions/upload-artifact@v1
+        with:
+          name: build
+          path: empty.d
+
+      - name: deploy to s3
+        run: |
+          aws s3 sync --acl public-read --delete build/ s3://explorer.rtoken.money
+          aws cloudfront create-invalidation --distribution-id E28BQ4T23W5MAW --paths '/*'
+        env:
+          AWS_DEFAULT_REGION: eu-central-1
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
