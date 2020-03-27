@@ -1,0 +1,12 @@
+# rToken Monorepo
+
+[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+
+| Package                                                                   | Description                                                                            | Type               | Local dependencies                          |
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------ | ------------------------------------------- |
+| :scroll: @rtoken/contracts ([link](./packages/contracts))                 | Performs all web3 function                                                             | Truffle project    | none                                        |
+| :satellite: @rtoken/api ([link](./packages/api))                          | Code for the API deployed at [api.rdai.money](https://api.rdai.money)                  | Express.js server  | @rtoken/utils (formerly @rtoken/analytics)) |
+| :hammer_and_wrench: @rtoken/utils ([link](./packages/utils))              | Utility library for reading/writing from the contract                                  | Javascript module  | @rtoken/contracts                           |
+| :telescope::stars: rToken Explorer ([link](./packages/explorer))          | Code for the explorer deployed at [explorer.rdai.money](https://explorer.rdai.money)   | React App          | rDAI Subgraph (see @rtoken/utils)           |
+| :money_with_wings: (Official Dapp) rdai-app ([link](./packages/rdai-app)) | Code for the dapp deployed at [app.rdai.money](https://app.rdai.money)                 | Vue App            | @rtoken/contracts                           |
+| :crown: (Example Dapp) High Priests ([link](./packages/high-priests))     | Code for the dapp deployed at [highpriests.rdai.money](https://highpriests.rdai.money) | React App (Gatsby) | @rtoken/api, @rtoken/utils                  |
