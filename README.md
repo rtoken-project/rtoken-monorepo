@@ -4,13 +4,11 @@
 
 ## Our Wares:
 
-These packages are included in this monorepo:
-
-| Package                                                      | Description                                                           | Type                        | Packages used     |
-| ------------------------------------------------------------ | --------------------------------------------------------------------- | --------------------------- | ----------------- |
-| :scroll: @rtoken/contracts ([link](./packages/contracts))    | Performs all web3 function                                            | Truffle project / JS module | none              |
-| :hammer_and_wrench: @rtoken/utils ([link](./packages/utils)) | Utility library for using the rToken contracts                        | JS module                   | @rtoken/contracts |
-| :satellite: @rtoken/api ([link](./packages/api))             | Code for the API deployed at [api.rdai.money](https://api.rdai.money) | Express.js server           | @rtoken/utils     |
+| Package                           | Description                                       | Type                | Packages used     |
+| --------------------------------- | ------------------------------------------------- | ------------------- | ----------------- |
+| :scroll: @rtoken/contracts        | Magic sauce                                       | Truffle / JS module | none              |
+| :hammer_and_wrench: @rtoken/utils | Utility library                                   | JS module           | @rtoken/contracts |
+| :satellite: @rtoken/api           | Open API [api.rdai.money](https://api.rdai.money) | Express.js server   | @rtoken/utils     |
 
 ## Looking for something else?
 
