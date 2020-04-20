@@ -1,4 +1,4 @@
-name: CD
+name: Contracts CI
 
 on:
   push:
@@ -28,6 +28,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: npm install, build, and test
+      working-directory: packages/contracts
       run: |
         npm ci
         npm run build
@@ -47,6 +48,7 @@ jobs:
         node-version: 12.x
 
     - name: npm install, build, and test
+      working-directory: packages/contracts
       run: |
         npm ci
         npm run test-coverage
