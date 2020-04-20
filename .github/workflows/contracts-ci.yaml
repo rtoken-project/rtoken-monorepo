@@ -1,4 +1,4 @@
-name: CD
+name: Contracts CI
 
 on:
   push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build:
+  contracts-build:
 
     runs-on: ubuntu-latest
 
@@ -28,12 +28,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
     - name: npm install, build, and test
+      working-directory: packages/contracts
       run: |
         npm ci
         npm run build
         npm run test
 
-  coverage:
+  contracts-coverage:
 
     runs-on: ubuntu-latest
 
@@ -47,6 +48,7 @@ jobs:
         node-version: 12.x
 
     - name: npm install, build, and test
+      working-directory: packages/contracts
       run: |
         npm ci
         npm run test-coverage
@@ -57,3 +59,4 @@ jobs:
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: packages/contracts/coverage/lcov.info

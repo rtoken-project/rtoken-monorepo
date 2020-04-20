@@ -1,0 +1,28 @@
+{
+  "name": "rtoken-api",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "watch": "nodemon --exec yarn start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bignumber": "^1.1.0",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "rtoken-analytics": "^0.0.9",
+    "swagger-ui-express": "^4.1.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  }
+}

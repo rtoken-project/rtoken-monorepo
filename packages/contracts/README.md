@@ -1,26 +1,34 @@
-# rToken Monorepo
+<p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
 
-[![lerna](https://img.shields.io/badge/maintained%20with-lerna-cc00ff.svg)](https://lerna.js.org/)
+<p align="center">
+    <a href="https://github.com/rtoken-project/rtoken-contracts/actions">
+        <img alt="GitHub Workflow Status" src="https://img.shields.io/github/workflow/status/rtoken-project/rtoken-contracts/CD">
+    </a>
+    <a href="https://coveralls.io/github/rtoken-project/rtoken-contracts">
+        <img alt="Coveralls github branch" src="https://img.shields.io/coveralls/github/rtoken-project/rtoken-contracts/master">
+    </a>
+    <a href="https://www.npmjs.com/package/@rtoken/contracts">
+        <img alt="npm" src="https://img.shields.io/npm/v/@rtoken/contracts">
+    </a>
+    <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
+</p>
 
-## Our Wares:
+RToken Ethereum Contracts
+=========================
 
-| Package                           | Description                                       | Type                | Packages used     |
-| --------------------------------- | ------------------------------------------------- | ------------------- | ----------------- |
-| :scroll: @rtoken/contracts        | Magic sauce                                       | Truffle / JS module | none              |
-| :hammer_and_wrench: @rtoken/utils | Utility library                                   | JS module           | @rtoken/contracts |
-| :satellite: @rtoken/api           | Open API [api.rdai.money](https://api.rdai.money) | Express.js server   | @rtoken/utils     |
+`RToken`, or Reedemable Token, is an _ERC20_ token that is 1:1 redeemable to its
+underlying _ERC20_ token. The underlying tokens are invested into interest
+earning assets specified by the allocation strategy, for example into
+[_Compound_](http://compound.finance). Owners of the _rTokens_ can use a
+definition called _hat_ to configure who is the beneficiary of the accumulated
+interest. _RToken_ can be used for community funds, charities, crowdfunding,
+etc. It is also a building block for _DApps_ that need to lock underlying tokens
+while not losing their earning potentials.
 
-## Looking for something else?
+---
 
-Example dapps and more can be found in our other repos:
+## How does it look like
 
-<<<<<<< HEAD
-| Package                                                                                                   | Description                                                                            | Type               | Packages used                     |
-| --------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- | ------------------ | --------------------------------- |
-| :money_with_wings: Official dapp ([link](https://github.com/rtoken-project/rdai-app))                     | Code for the dapp deployed at [app.rdai.money](https://app.rdai.money)                 | Vue App            | @rtoken/contracts                 |
-| :crown: Example dapp - High Priests ([link](https://github.com/rtoken-project/example-dapp-high-priests)) | Code for the dapp deployed at [highpriests.rdai.money](https://highpriests.rdai.money) | React App (Gatsby) | @rtoken/api, @rtoken/utils        |
-| :telescope::stars: rToken Explorer ([link](https://github.com/rtoken-project/rtoken-explorer))            | Code for the explorer deployed at [explorer.rdai.money](https://explorer.rdai.money)   | React App          | rDAI Subgraph (see @rtoken/utils) |
-=======
 ```
             +------+
       +-----+ User +-------+
@@ -503,4 +511,3 @@ For example for these metrics:
 * top beneficiaries
 * global volumes
 * global interest earned by period
->>>>>>> master
