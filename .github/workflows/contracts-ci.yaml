@@ -10,7 +10,7 @@ on:
 
 jobs:
 
-  build:
+  contracts-build:
 
     runs-on: ubuntu-latest
 
@@ -34,7 +34,7 @@ jobs:
         npm run build
         npm run test
 
-  coverage:
+  contracts-coverage:
 
     runs-on: ubuntu-latest
 

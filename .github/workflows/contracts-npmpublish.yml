@@ -1,11 +1,11 @@
-name: Node.js Package
+name: Contracts Node.js Package
 
 on:
   release:
     types: [created]
 
 jobs:
-  publish-npm:
+  contracts-publish-npm:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
