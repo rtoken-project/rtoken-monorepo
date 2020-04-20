@@ -54,6 +54,7 @@ jobs:
         npm run test-coverage
 
     - name: Coveralls
+      working-directory: packages/contracts
       # only report coverage for master branch push
       if: github.event_name  == 'push'
       uses: coverallsapp/github-action@master
