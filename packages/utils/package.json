@@ -8,21 +8,14 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "setup_subgraph_local": "cd subgraph && yarn && yarn codegen && yarn create-local && yarn deploy-local",
     "start_ganache": "ganache-cli -h 0.0.0.0 -m sweet",
-    "fetch_contracts": " ",
     "deploy_contracts": "truffle test --network subgraphDev test/deployContracts.js",
-    "update_yaml": "",
-    "deploy_subgraph": "cd subgraph && yarn create-local && yarn deploy-local --watch",
-    "start_subgraph": "yarn deploy_contracts && yarn deploy_subgraph",
     "test_local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
     "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "watch": "webpack --watch",
-    "lint": "eslint --config ./.eslintrc.json ./src",
-    "pretty": "prettier --write '{src,tests}/**/*.js'",
-    "format": "npm run lint && npm run pretty"
+    "lint": "eslint --config ./.eslintrc.json ./src"
   },
   "predeploy": "npm version patch",
   "subgraph": {
