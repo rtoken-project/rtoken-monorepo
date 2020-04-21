@@ -2,6 +2,8 @@
   "name": "@rtoken/subgraph",
   "private": true,
   "description": "Subgraph for the rToken Ethereum contracts",
+  "repository": "https://github.com/rtoken-project/rtoken-monorepo",
+  "homepage": "https://rdai.money/",
   "version": "1.0.1-rc6",
   "license": "MIT",
   "scripts": {

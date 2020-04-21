@@ -3,14 +3,13 @@
   "version": "0.0.9",
   "description": "Data and analytics utility for rToken",
   "main": "src/rtoken-analytics.js",
-  "repository": "git@github.com:rtoken-project/rtoken-analytics.git",
+  "repository": "https://github.com/rtoken-project/rtoken-monorepo",
+  "homepage": "https://rdai.money/",
   "author": "Patrick Gallagher <blockchainbuddha@gmail.com>",
   "license": "MIT",
   "private": false,
   "scripts": {
-    "start_ganache": "ganache-cli -h 0.0.0.0 -m sweet",
-    "deploy_contracts": "truffle test --network subgraphDev test/deployContracts.js",
-    "test_local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
+    "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
     "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
@@ -25,7 +24,7 @@
       "contractAddress": "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0"
     },
     "local": {
-      "url": "http://localhost:8000/subgraphs/name/rtoken-project/rtoken-analytics",
+      "url": "http://localhost:8000/subgraphs/name/rtoken-test",
       "id": "",
       "contractAddress": ""
     }
