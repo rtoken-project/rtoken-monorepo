@@ -4,7 +4,13 @@
   "devDependencies": {
     "lerna": "^3.20.2"
   },
-  "workspaces": [
-    "packages/*"
-  ]
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "packages/subgraph/@graphprotocol/graph-ts",
+      "packages/subgraph/@graphprotocol/graph-ts/**"
+    ]
+  }
 }

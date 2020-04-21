@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 description: Tracking interest on rDAI (mainnet)
-repository: https;//github.com/rtoken-project/rtoken-contracts
+repository: https;//github.com/rtoken-project/rtoken-analytics
 schema:
   file: schema.graphql
 dataSources:
@@ -8,11 +8,11 @@ dataSources:
     name: RToken
     network: mainnet
     source:
-      address: '0x548624d677f08BF43C05b3351c2C25b488BD4CEA'
+      address: "0x548624d677f08BF43C05b3351c2C25b488BD4CEA"
       abi: RToken
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
         - AllocationStrategyChanged

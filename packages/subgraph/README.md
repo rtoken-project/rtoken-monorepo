@@ -64,26 +64,27 @@ docker-compose up
 # leave running
 ```
 
-In a new terminal, switch back to the `rtoken-analytics` repo, and start running ganache-cli.
+#### Deploy the contracts to Ganache
+
+In a new terminal, navigate to `@rtoken/contracts` and start running ganache-cli and deploy the contracts.
 
 ```bash
 yarn start-ganache
-# leave running
-```
-
-In a new terminal,deploy the contracts to ganache.
-
-```bash
+# Then in a new terminal
 yarn deploy-contracts
 ```
 
+// Todo: verify this:
+
 The address in `rtoken-analytics/subgraph/subgraph.yaml` should be automatically updated during the previous step. Before proceeding, check that the deployed rToken address printed at the start of the deployment process matches the one shown in the .yaml file.
 
-We are now ready to deploy our subgraph.
+#### Deploy the Subgraph
+
+We are now ready to deploy our subgraph. Navigate back to this package and run:
 
 ```bash
-cd subgraph
-yarn create-local  # Only needs to be run the first time
+graph codegen
+yarn create-local  # Only run once
 yarn deploy-local
 ```
 
