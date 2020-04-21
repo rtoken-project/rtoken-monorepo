@@ -5,6 +5,7 @@
   },
   "env": {
     "es6": true,
+    "commonjs": true,
     "browser": true
   },
   "parserOptions": {
@@ -19,5 +20,4 @@
     "Atomics": "readonly",
     "SharedArrayBuffer": "readonly"
   },
-  "plugins": ["react", "react-hooks"]
 }

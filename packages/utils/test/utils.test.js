@@ -9,7 +9,7 @@ const BigNumber = require('bignumber.js');
 
 // NOTE: Compound API is super slow. Use hard coded value instead.
 const debug = {
-  hardCodeInterestRate: '0.048356383475363732'
+  hardCodeInterestRate: '0.048356383475363732',
   // hardCodeInterestRate: false
 };
 
@@ -27,7 +27,7 @@ const subgraphURL = process.env.SUBGRAPH_URL;
 const rdaiSubgraphId = process.env.SUBGRAPH_ID;
 const isLocal = process.env.LOCAL;
 
-test('RTokenAnalytics', async accounts => {
+test('RTokenAnalytics', async (accounts) => {
   let rtokenAnalytics;
 
   before(async () => {
@@ -53,7 +53,7 @@ test('RTokenAnalytics', async accounts => {
       interestTolerance, // Currently unused
       rdaiSubgraphId,
       subgraphURL,
-      web3Provider
+      web3Provider,
     };
     rtokenAnalytics = new RTokenAnalytics(options);
   });
@@ -89,7 +89,7 @@ const getCompoundRate = async () => {
     const compoundRateFormatted = Math.round(compoundRate * 10000) / 100;
     console.log(`\nCurrent Compound Rate: ${compoundRateFormatted}%`);
     return {
-      compoundRate
+      compoundRate,
     };
   } catch (e) {
     console.log(e.msg);
