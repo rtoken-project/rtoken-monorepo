@@ -33,10 +33,11 @@ The rToken team uses a local subgraph deployment to enable rapid development and
 - If you've already performed this step, you should skip down to the [Testing and restarting](#testing-and-restarting).
 - If you get stuck, see The Graph [docs](https://thegraph.com/docs/quick-start#local-development).
 
-First install the dependencies
+First install the dependencie: [docker](https://docs.docker.com/install/) and [docker-compose](https://docs.docker.com/compose/install/)
+
+Install the necessary packages:
 
 ```bash
-sudo apt install docker docker-compose
 yarn global add truffle ganache-cli @graphprotocol/graph-cli
 ```
 
@@ -47,7 +48,9 @@ git clone https://github.com/graphprotocol/graph-node/
 cd graph-node/docker
 ```
 
-If on Linux, run the following script. Note I had problems here, so you may need to troubleshoot by first running `docker-compose create` or `docker-compose up`. If you get a "version" error, update your docker-compose with [these instructions](https://docs.docker.com/compose/install/). If you get an error like `ERROR: could not find an available, non-overlapping IPv4 address...` then take off your tin-foil hat and stop running OpenVPN, or follow [this tutorial](https://stackoverflow.com/questions/45692255/how-make-openvpn-work-with-docker).
+If on Linux, run the following script.
+
+> Note I had problems here, so you may need to troubleshoot by first running `docker-compose create` or `docker-compose up`. If you get a "version" error, update your docker-compose with [these instructions](https://docs.docker.com/compose/install/). If you get an error like `ERROR: could not find an available, non-overlapping IPv4 address...` then try turning off OpenVPN, or follow [this tutorial](https://stackoverflow.com/questions/45692255/how-make-openvpn-work-with-docker).
 
 ```bash
 sudo apt install jq # if necessary
@@ -64,15 +67,14 @@ docker-compose up
 In a new terminal, switch back to the `rtoken-analytics` repo, and start running ganache-cli.
 
 ```bash
-yarn start_ganache
+yarn start-ganache
 # leave running
 ```
 
-In a new terminal, we can fetch the latest contracts from the `rtoken-contracts` repo, and deploy them to ganache.
+In a new terminal,deploy the contracts to ganache.
 
 ```bash
-yarn fetch_contracts
-yarn deploy_contracts
+yarn deploy-contracts
 ```
 
 The address in `rtoken-analytics/subgraph/subgraph.yaml` should be automatically updated during the previous step. Before proceeding, check that the deployed rToken address printed at the start of the deployment process matches the one shown in the .yaml file.
@@ -87,11 +89,11 @@ yarn deploy-local
 
 Great job! Now let's make sure things are working properly by doing a sanity check using Postman, or other API tool.
 
-| Property     | value                                                                  |
-| ------------ | ---------------------------------------------------------------------- |
-| URL          | `http://localhost:8000/subgraphs/name/rtoken-project/rtoken-analytics` |
-| Request type | POST                                                                   |
-| body         | GraphQL                                                                |
+| Property     | value                                              |
+| ------------ | -------------------------------------------------- |
+| URL          | `http://localhost:8000/subgraphs/name/rtoken-test` |
+| Request type | POST                                               |
+| body         | GraphQL                                            |
 
 ```graphql
 query {
@@ -137,14 +139,14 @@ sudo rm -rf data && docker-compose up
 Open a new terminal, at the root directory of this repository.
 
 ```bash
-yarn start_ganache
+yarn start-ganache
 # leave running
 ```
 
 In a new terminal, deploy the contracts. This will also re-deploy the new subgraph, whenever subgraph.yaml is changed.
 
 ```bash
-yarn start_subgraph
+yarn start-subgraph
 # leave running
 ```
 

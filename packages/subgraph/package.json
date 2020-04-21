@@ -1,16 +1,30 @@
 {
-  "name": "rdai-graph",
+  "name": "@rtoken/subgraph",
+  "description": "Subgraph for the rToken Ethereum contracts",
+  "version": "1.0.1-rc6",
   "license": "MIT",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/rtoken-project/rtoken-analytics",
-    "create-local": "graph create --node http://localhost:8020/ rtoken-project/rtoken-analytics",
-    "remove-local": "graph remove --node http://localhost:8020/ rtoken-project/rtoken-analytics",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 rtoken-project/rtoken-analytics"
+    "create-local": "graph create --node http://localhost:8020/ rtoken-test",
+    "remove-local": "graph remove --node http://localhost:8020/ rtoken-test",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 rtoken-test",
+    "junk": " ",
+    "start-ganache": "ganache-cli -h 0.0.0.0 -m sweet",
+    "deploy-contracts": "truffle test --network subgraphDev test/deployContracts.js",
+    "setup_subgraph_local": "cd subgraph && yarn && yarn codegen && yarn create-local && yarn deploy-local",
+    "deploy_subgraph": "cd subgraph && yarn create-local && yarn deploy-local --watch",
+    "start_subgraph": "yarn deploy_contracts && yarn deploy_subgraph",
+    "test_local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
+    "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/RTokenAnalytics.test.js"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.16.1",
-    "@graphprotocol/graph-ts": "0.16.0"
+    "@graphprotocol/graph-cli": "0.17.1",
+    "@graphprotocol/graph-ts": "^0.18.1"
+  },
+  "devDependencies": {
+    "ganache-cli": "^6.9.1",
+    "truffle": "^5.1.22"
   }
 }
