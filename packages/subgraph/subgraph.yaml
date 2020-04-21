@@ -8,28 +8,26 @@ dataSources:
     name: RToken
     network: mainnet
     source:
-      # address: '0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9'
-      address: '0x548624d677f08BF43C05b3351c2C25b488BD4CEA'
+      address: '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0'
       abi: RToken
+      # startBlock: 9117140
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       language: wasm/assemblyscript
       entities:
-        - AllocationStrategyChanged
-        - Approval
-        - CodeUpdated
-        - HatChanged
-        - HatCreated
-        - InterestPaid
-        - LoansTransferred
-        - OwnershipTransferred
+        - Transaction
+        - Account
+        - Loan
+        - Hat
+        - HatMembership
         - Transfer
+        - LoanTransferred
+        - InterestPaid
+        - HatChanged
       abis:
         - name: RToken
-          file: ./abis/rToken.json
-        - name: CompoundAllocationStrategy
-          file: ./abis/CompoundAllocationStrategy.json
+          file: ./abis/RToken.json
       eventHandlers:
         - event: AllocationStrategyChanged(address,uint256)
           handler: handleAllocationStrategyChanged

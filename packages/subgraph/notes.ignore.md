@@ -9,3 +9,8 @@ old commands
 "test_local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
 "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=\$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
 ```
+
+Todo:
+
+1. Remove contracts, compound, truffle commands, truffle.js, /abis/CompoundAllocationStrategy
+2. add gitignore for /build and /generated

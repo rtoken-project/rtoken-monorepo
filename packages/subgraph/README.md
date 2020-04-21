@@ -83,7 +83,7 @@ The address in `rtoken-analytics/subgraph/subgraph.yaml` should be automatically
 We are now ready to deploy our subgraph. Navigate back to this package and run:
 
 ```bash
-graph codegen
+yarn codegen
 yarn create-local  # Only run once
 yarn deploy-local
 ```
