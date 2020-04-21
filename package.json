@@ -7,10 +7,6 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "packages/subgraph/@graphprotocol/graph-ts",
-      "packages/subgraph/@graphprotocol/graph-ts/**"
     ]
   }
 }

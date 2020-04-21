@@ -76,7 +76,13 @@ ganache-cli -h 0.0.0.0 -m sweet
 truffle test --network subgraph test/subgraphDeployment.test.js
 ```
 
-Copy the deployed rToken contract address printed at the start of the deployment process.
+Copy the deployed rToken contract address printed at the start of the deployment process. If you used the same mnemonic, then this step isn't necessary
+
+```
+> truffle test --network subgraph test/subgraphDeployment.test.js
+...
+The rTOKEN contract (proxy) is deployed at: 0xc97EeFc57dD8E74A30AC2cC52E8785B40a14a30c
+```
 
 #### Deploy the Subgraph
 
@@ -136,34 +142,21 @@ You should get a response like this
 
 ### Testing and restarting
 
-Here are the current steps to fully automate :zap: subgraph re-deployment and testing upon changes to the subraph.
+Once you've completed the initial setup, here is the flow for testing and restarting your subgraph.
 
-In the repo `graph-node/docker`, stop your docker instance, and restart it.
+1. In the repo `graph-node/docker`, stop your docker instance, and restart it:
 
 ```bash
 sudo rm -rf data && docker-compose up
 
 ```
 
-Open a new terminal, at the root directory of this repository.
+2. Deploy the contracts to ganache (if needed)
+
+3. Re-deploy the new subgraph, whenever subgraph.yaml is changed:
 
 ```bash
-yarn start-ganache
-# leave running
-```
-
-In a new terminal, deploy the contracts. This will also re-deploy the new subgraph, whenever subgraph.yaml is changed.
-
-```bash
-yarn start-subgraph
-# leave running
-```
-
-In a new terminal, start the test suite
-
-```bash
-nodemon -x yarn test_local
-# leave running
+yarn deploy-local --watch
 ```
 
 ## Bring-your-own rToken
