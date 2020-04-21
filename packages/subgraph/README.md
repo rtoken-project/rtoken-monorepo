@@ -76,13 +76,11 @@ ganache-cli -h 0.0.0.0 -m sweet
 truffle test --network subgraph test/subgraphDeployment.test.js
 ```
 
-// Todo: verify this:
-
-The address in `rtoken-analytics/subgraph/subgraph.yaml` should be automatically updated during the previous step. Before proceeding, check that the deployed rToken address printed at the start of the deployment process matches the one shown in the .yaml file.
+Copy the deployed rToken contract address printed at the start of the deployment process.
 
 #### Deploy the Subgraph
 
-We are now ready to deploy our subgraph. Navigate back to this package and run:
+Navigate back to this package and paste the contract address in `subgraph.yaml`. We are now ready to deploy our subgraph.
 
 ```bash
 yarn codegen
@@ -90,7 +88,7 @@ yarn create-local  # Only run once
 yarn deploy-local
 ```
 
-Great job! Now let's make sure things are working properly by doing a sanity check using Postman, or other API tool.
+Great job! Now let's make sure things are working properly by doing a sanity check using Postman, or another API tool.
 
 | Property     | value                                              |
 | ------------ | -------------------------------------------------- |
@@ -100,10 +98,15 @@ Great job! Now let's make sure things are working properly by doing a sanity che
 
 ```graphql
 query {
-  users(first: 5) {
+  accounts(
+    first: 1000
+    where: { id_not: "0x0000000000000000000000000000000000000000" }
+  ) {
     id
-    sentAddressList
-    receivedAddressList
+    balance
+    hat {
+      id
+    }
   }
 }
 ```
@@ -113,17 +116,20 @@ You should get a response like this
 ```js
 {
     "data": {
-        "users": [
+        "accounts": [
             {
-                "id": "0x1eeee046f7722b0c7f04ecc457dc5cf69f4fba99",
-                "receivedAddressList": [
-                    "0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c",
-                    "0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c",
-                    "0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c"
-                ],
-                "sentAddressList": []
+                "balance": "0",
+                "hat": null,
+                "id": "0x0000000000000000000000000000000000000000"
             },
-            ...
+            {
+                "balance": "90.001030003030003391",
+                "hat": null,
+                "id": "0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c"
+            }
+        ]
+    }
+}
 ```
 
 :tada: Congrats! if you were successful with the initial setup, you can move to the next section to enable automatic redeployments of the subgraph upon changes.
