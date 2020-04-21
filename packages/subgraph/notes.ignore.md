@@ -13,4 +13,4 @@ old commands
 Todo:
 
 1. Remove contracts, compound, truffle commands, truffle.js, /abis/CompoundAllocationStrategy
-2. add gitignore for /build and /generated
+2. update to latest version of graph-cli 18.0

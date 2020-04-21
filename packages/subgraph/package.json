@@ -12,12 +12,9 @@
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 rtoken-test",
     "deploy": "graph deploy --node https://api.thegraph.com/deploy/ --ipfs https://api.thegraph.com/ipfs/rtoken-project/rtoken-analytics",
     "junk": " ",
-    "start-ganache": "ganache-cli -h 0.0.0.0 -m sweet",
-    "deploy-contracts": "truffle test --network subgraphDev test/deployContracts.js",
-    "setup_subgraph_local": "cd subgraph && yarn && graph codegen && yarn create-local && yarn deploy-local",
-    "deploy_subgraph": "cd subgraph && yarn create-local && yarn deploy-local --watch",
-    "start_subgraph": "yarn deploy_contracts && yarn deploy_subgraph",
-    "test_local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
+    "setup-subgraph-local": "yarn codegen && yarn create-local && yarn deploy-local",
+    "deploy-subgraph": "yarn create-local && yarn deploy-local --watch",
+    "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/RTokenAnalytics.test.js",
     "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/RTokenAnalytics.test.js"
   },
   "dependencies": {
