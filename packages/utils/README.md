@@ -1,4 +1,16 @@
-# @rtoken/utils
+
+<p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
+
+<p align="center">
+    <a href="https://www.npmjs.com/package/@rtoken/contracts">
+        <img alt="npm" src="https://img.shields.io/npm/v/@rtoken/contracts">
+    </a>
+    <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
+</p>
+
+@rtoken/utils
+=========================
+
 
 This library provides tools for getting rDAI and rToken data into your dapp.
 
