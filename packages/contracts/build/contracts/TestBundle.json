@@ -1,0 +1,158 @@
+{
+  "contractName": "TestBundle",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/test/TestBundle.sol\":\"TestBundle\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/CErc20.sol\":{\"keccak256\":\"0x5a851f847c93f5d6ca92f711758c05972458e34c001db2b64057be5a5ba6520b\",\"urls\":[\"bzz-raw://04d9db51fd3fa3d23507624e02cc1ccaf4490c7d42f0de7782327aa9d277c89e\",\"dweb:/ipfs/Qmdf2aNBzFfVvrma6GiQEnppt3imb7tyQHShb2tz74Re6b\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/CToken.sol\":{\"keccak256\":\"0xf9e6eb4ce700c024efaa3bb367a191f8bf98471e9fff6854f55eb81f69d6be68\",\"urls\":[\"bzz-raw://1a036193c252f3995667652d57fc424b54774af0a85813621bd86c6d1fc3bfbb\",\"dweb:/ipfs/Qmck2Ab2tC4vaTjfntexeoAgpggdw2czWPoAgR3JHmukMf\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/CarefulMath.sol\":{\"keccak256\":\"0xbeb605bfb980199c42701b9557bcffffa3a845c6386adfc6130568d9f3f38495\",\"urls\":[\"bzz-raw://6595932dbb88fb67d81694ab43f9dd42124e3db91d3b29d8c226577c1a96481a\",\"dweb:/ipfs/Qmb66bD8XPmJBH1eShryFwWUAWEyAx4uHzDdLQs1mZMVTe\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/ComptrollerInterface.sol\":{\"keccak256\":\"0xde6c4cb111e4d36ec44f350299a5b585d9a45636189e25a814d7b9f2dbb822af\",\"urls\":[\"bzz-raw://a67fcb86ceabbd676cff39ce557a74b726879af516f33557e1fb618bff68d295\",\"dweb:/ipfs/QmbD6qN2xXE2zmqjkNo3TED5deEziS3V5yrDNL4nAvi2GB\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/EIP20Interface.sol\":{\"keccak256\":\"0x8bef6d59a76c8541a034a403357b73dcb50d75847259371b7bdd64f5609ca674\",\"urls\":[\"bzz-raw://b5dd267ee3867de45e4c6491782fcf7259ce9265cf01e7bdf49612c4852f721f\",\"dweb:/ipfs/QmbLiQf3NSTetqHiNVog42wADgQEvVDRxfBjZJ6ouL3D5e\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/EIP20NonStandardInterface.sol\":{\"keccak256\":\"0x83355bb84aad5f6b682cf9066f2b0899dca97b844e720f6e55a3aa46bd0d2049\",\"urls\":[\"bzz-raw://8e67fcb8e269e6f23805f42976390de78a9727c3800f7ff626ac39ac6d9f26d0\",\"dweb:/ipfs/QmaTtMbQEqCXrdsifhiZ3erLeig1K48DV1cibtayRB5WVd\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/ErrorReporter.sol\":{\"keccak256\":\"0x3f0cb233287ad13e45a46b4fa63dbad2c63a17d0647049c04f487bf3c71c8cac\",\"urls\":[\"bzz-raw://b6b34d0f897d0a2917d2e6567e95a21bd7e0b25adc172c431c40fdae96cc5504\",\"dweb:/ipfs/QmV32L6X3fHz6kFgS5VQkm24cZxre4jMEdexjLZ6DVCgCi\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/Exponential.sol\":{\"keccak256\":\"0x5578daa70764231d35e464fdb46d473d1a08c727ef5676c7b12015948b218dbf\",\"urls\":[\"bzz-raw://ef86f477727842fea96169716f57a53b1307d9f0d4770d5963c0df0ef029f0d0\",\"dweb:/ipfs/Qmahf4aXZGnMMmuY6gebrTCWd64rPHuToSeqhkeFXL7T62\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol\":{\"keccak256\":\"0x1aca227009cbde84beabddc89823f55130c2519823d4669d4e714a2a798af6c2\",\"urls\":[\"bzz-raw://cb8fc34b58cd973fa29d1636a5ecf02858f355f477ffc7525acf62e1c3aa5977\",\"dweb:/ipfs/QmXiAaRwvSw7FFLzuyJD7zwxZrGAhLEo4APJZjDc8yXYem\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/ReentrancyGuard.sol\":{\"keccak256\":\"0x185090f837286a2757b50a3535fc78b1409a1f261fcc375c05ef86a348026488\",\"urls\":[\"bzz-raw://c7f61e912a2d9649e89f6a2fa0c4a574178003da8775edb6f14959df1ab76796\",\"dweb:/ipfs/QmVtSqyJfhJkrCjJbmcw8MWCC6zNcoPW7Nyr2uXhJfYyCV\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/test/TestBundle.sol\":{\"keccak256\":\"0x9bd6f8c16d12d38e4d6008f710d641ce60c743cd91142c614d5374f3ae1a05df\",\"urls\":[\"bzz-raw://8e586f64ed9fadf66c74d2ee3de895bdfd83336a052981a8b4bd8f738f3b1f16\",\"dweb:/ipfs/QmNxgHe59Bweh6P2JvocB9RAVGZGXUabBpvoz4pVC8mNyq\"]},\"@openzeppelin/contracts/GSN/Context.sol\":{\"keccak256\":\"0x90a3995645af7562d84b9d69363ffa5ae7217714ab61e951bf7bc450f40e4061\",\"urls\":[\"bzz-raw://216ef9d6b614db4eb46970b4e84903f2534a45572dd30a79f0041f1a5830f436\",\"dweb:/ipfs/QmNPrJ4MWKUAWzKXpUqeyKRUfosaoANZAqXgvepdrCwZAG\"]},\"@openzeppelin/contracts/access/Roles.sol\":{\"keccak256\":\"0xb002c378d7b82a101bd659c341518953ca0919d342c0a400196982c0e7e7bcdb\",\"urls\":[\"bzz-raw://00a788c4631466c220b385bdd100c571d24b2deccd657615cfbcef6cadf669a4\",\"dweb:/ipfs/QmTEwDbjJNxmMNCDMqtuou3dyM8Wtp8Q9NFvn7SAVM7Jf3\"]},\"@openzeppelin/contracts/access/roles/MinterRole.sol\":{\"keccak256\":\"0xbe8eef6f2cb4e427f5c5d8a76865ccd06e55a4f1d6671ba312d45bfa705aedbf\",\"urls\":[\"bzz-raw://badf338a5e22c8658c01fe2ce89b487d9dbf6d2d9d5eb49df7415383e2498765\",\"dweb:/ipfs/QmP5aMkvFwMJyuQjKE8ADh5tkWYqonb4KjgkAjgYEVVFAv\"]},\"@openzeppelin/contracts/math/SafeMath.sol\":{\"keccak256\":\"0x640b6dee7a4b830bdfd52b5031a07fc2b12209f5b2e29e5d364a7d37f69d8076\",\"urls\":[\"bzz-raw://31113152e1ddb78fe7a4197f247591ca894e93f916867beb708d8e747b6cc74f\",\"dweb:/ipfs/QmbZaJyXdpsYGykVhHH9qpVGQg9DGCxE2QufbCUy3daTgq\"]},\"@openzeppelin/contracts/token/ERC20/ERC20.sol\":{\"keccak256\":\"0x65a4078c03875c25413a068ce9cfdd7e68a90f8786612d1189c89341e6e3b802\",\"urls\":[\"bzz-raw://45c0d95495b944fbb1aa09d900b0ab530903a432125ab8fddfa05064a7988991\",\"dweb:/ipfs/Qma2VeknkKA1THeubGzshWFk44BktXkXP1UKp9Un2uDSsu\"]},\"@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol\":{\"keccak256\":\"0xa2b957cf89692c504962afb7506999155f83385373f808243246cd5879de5940\",\"urls\":[\"bzz-raw://c44ae0ad1bce141c33b962f8b4e9228bdf8df36c8ac363b4f0bf9498b8bfc32a\",\"dweb:/ipfs/QmcSBRdFwVvy2wFZrBwo5cvqNP4UHh9Eyzf8jnxBgnPqfe\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603e80601d6000396000f3fe6080604052600080fdfea265627a7a7231582083da7fd9445c4f09801f9b272b2c1f1b6d185fccd3b72d41a6e984bb2dcbe27164736f6c634300050c0032",
+  "deployedBytecode": "0x6080604052600080fdfea265627a7a7231582083da7fd9445c4f09801f9b272b2c1f1b6d185fccd3b72d41a6e984bb2dcbe27164736f6c634300050c0032",
+  "sourceMap": "226:22:26:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;226:22:26;;;;;;;",
+  "deployedSourceMap": "226:22:26:-;;;;;",
+  "source": "pragma solidity ^0.5.0;\n\n//\n// This is a dummy contract to include external contracts for testing\n//\nimport \"@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol\";\nimport {CErc20} from '../../compound/contracts/CErc20.sol';\n\ncontract TestBundle {}\n",
+  "sourcePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/test/TestBundle.sol",
+  "ast": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/test/TestBundle.sol",
+    "exportedSymbols": {
+      "TestBundle": [
+        10396
+      ]
+    },
+    "id": 10397,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 10392,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:26"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol",
+        "id": 10393,
+        "nodeType": "ImportDirective",
+        "scope": 10397,
+        "sourceUnit": 11402,
+        "src": "101:63:26",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/CErc20.sol",
+        "file": "../../compound/contracts/CErc20.sol",
+        "id": 10395,
+        "nodeType": "ImportDirective",
+        "scope": 10397,
+        "sourceUnit": 278,
+        "src": "165:59:26",
+        "symbolAliases": [
+          {
+            "foreign": 10394,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 10396,
+        "linearizedBaseContracts": [
+          10396
+        ],
+        "name": "TestBundle",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 10397,
+        "src": "226:22:26"
+      }
+    ],
+    "src": "0:249:26"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/test/TestBundle.sol",
+    "exportedSymbols": {
+      "TestBundle": [
+        10396
+      ]
+    },
+    "id": 10397,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 10392,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:26"
+      },
+      {
+        "absolutePath": "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol",
+        "file": "@openzeppelin/contracts/token/ERC20/ERC20Mintable.sol",
+        "id": 10393,
+        "nodeType": "ImportDirective",
+        "scope": 10397,
+        "sourceUnit": 11402,
+        "src": "101:63:26",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/CErc20.sol",
+        "file": "../../compound/contracts/CErc20.sol",
+        "id": 10395,
+        "nodeType": "ImportDirective",
+        "scope": 10397,
+        "sourceUnit": 278,
+        "src": "165:59:26",
+        "symbolAliases": [
+          {
+            "foreign": 10394,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 10396,
+        "linearizedBaseContracts": [
+          10396
+        ],
+        "name": "TestBundle",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 10397,
+        "src": "226:22:26"
+      }
+    ],
+    "src": "0:249:26"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.12+commit.7709ece9.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-04-22T15:18:28.183Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

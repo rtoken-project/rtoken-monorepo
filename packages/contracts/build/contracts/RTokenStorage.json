@@ -1,0 +1,1859 @@
+{
+  "contractName": "RTokenStorage",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "_guardCounter",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "_owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "accountStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "cumulativeInterest",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "accounts",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "hatID",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rAmount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "rInterest",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lDebt",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "sInternalAmount",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "hatStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "useCount",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalLoans",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalInternalSavings",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "ias",
+      "outputs": [
+        {
+          "internalType": "contract IAllocationStrategy",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "initialized",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "savingAssetConversionRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "savingAssetOrignalAmount",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "internalType": "string",
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "token",
+      "outputs": [
+        {
+          "internalType": "contract IERC20",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "transferAllowances",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "sender",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "recipient",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "amount",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Approval\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"from\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"to\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"name\":\"Transfer\",\"type\":\"event\"},{\"constant\":true,\"inputs\":[],\"name\":\"_guardCounter\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"_owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"accountStats\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"cumulativeInterest\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"accounts\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"hatID\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rAmount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"rInterest\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lDebt\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"sInternalAmount\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"}],\"name\":\"allowance\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"spender\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"approve\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"balanceOf\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"decimals\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"hatStats\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"useCount\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalLoans\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalInternalSavings\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"ias\",\"outputs\":[{\"internalType\":\"contract IAllocationStrategy\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"initialized\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"name\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"savingAssetConversionRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"savingAssetOrignalAmount\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"symbol\",\"outputs\":[{\"internalType\":\"string\",\"name\":\"\",\"type\":\"string\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"token\",\"outputs\":[{\"internalType\":\"contract IERC20\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"totalSupply\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transfer\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"transferAllowances\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"sender\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"recipient\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"amount\",\"type\":\"uint256\"}],\"name\":\"transferFrom\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"allowance(address,address)\":{\"details\":\"Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.     * This value changes when {approve} or {transferFrom} are called.\"},\"approve(address,uint256)\":{\"details\":\"Sets `amount` as the allowance of `spender` over the caller's tokens.     * Returns a boolean value indicating whether the operation succeeded.     * IMPORTANT: Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729     * Emits an {Approval} event.\"},\"balanceOf(address)\":{\"details\":\"Returns the amount of tokens owned by `account`.\"},\"transfer(address,uint256)\":{\"details\":\"Moves `amount` tokens from the caller's account to `recipient`.     * Returns a boolean value indicating whether the operation succeeded.     * Emits a {Transfer} event.\"},\"transferFrom(address,address,uint256)\":{\"details\":\"Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance.     * Returns a boolean value indicating whether the operation succeeded.     * Emits a {Transfer} event.\"}}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStorage.sol\":\"RTokenStorage\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IAllocationStrategy.sol\":{\"keccak256\":\"0xe6771d9a3f2c4719d6b2c60cd8abf03686d8cdddf5d359ccf7ab58d17d9e1380\",\"urls\":[\"bzz-raw://80f212859923c044b4ef360dc19776149f2aacbb27c994f6b76b9cc8260a41f7\",\"dweb:/ipfs/QmWPsojno4n63Drh9WvBtCM89aovwDuabHppDh1LVgmgkY\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRToken.sol\":{\"keccak256\":\"0xa7e01f9f70c505d624fe31e53b6b766d0d476c2851fadc1c3e3e19b779b4d2fc\",\"urls\":[\"bzz-raw://417316c44a1591fd07c2254097f98fd4ac0bc352e7035cf57f9df9c22ebde63c\",\"dweb:/ipfs/QmVoRFAMjS7GSjtLCoZJsqXCKygqVW7oas9X1G1WrMNZmE\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStorage.sol\":{\"keccak256\":\"0x2879364f6e821d6d136ec4dc1d70a9ab47f5cecfff5c117d86cce5b5f9e4d79c\",\"urls\":[\"bzz-raw://30a1e2a903b3efdf921270a53f6da3dcbed9a72dd7a63fafc66520c612b52450\",\"dweb:/ipfs/QmPnV6yWW1nCbdXH1nU22wRPRxzUDDr1S6mFhWaoz5fvCR\"]},\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStructs.sol\":{\"keccak256\":\"0x5c7c3b26d2f6f8fd489b2a326d4658f67e1f4e3cbe03c3a6831dd5103ead41e0\",\"urls\":[\"bzz-raw://991d8988992e169e0faa0d57f16684cc190b33a5b4e028993c9f74f158a8a16d\",\"dweb:/ipfs/QmVYKkdVLb2yuhDx7fMTY8UNFrskX2w3eSyLMnvoBVD3yU\"]},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"keccak256\":\"0xe5bb0f57cff3e299f360052ba50f1ea0fff046df2be070b6943e0e3c3fdad8a9\",\"urls\":[\"bzz-raw://59fd025151435da35faa8093a5c7a17de02de9d08ad27275c5cdf05050820d91\",\"dweb:/ipfs/QmQMvwEcPhoRXzbXyrdoeRtvLoifUW9Qh7Luho7bmUPRkc\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/**\n * Because the use of ABIEncoderV2 , the pragma should be locked above 0.5.10 ,\n * as there is a known bug in array storage:\n * https://blog.ethereum.org/2019/06/25/solidity-storage-array-bugs/\n */\npragma solidity >=0.5.10 <0.6.0;\npragma experimental ABIEncoderV2;\n\nimport {RTokenStructs} from \"./RTokenStructs.sol\";\nimport {IERC20} from \"./IRToken.sol\";\nimport {IAllocationStrategy} from \"./IAllocationStrategy.sol\";\n\ncontract RTokenStorage is RTokenStructs, IERC20 {\n    /* WARNING: NEVER RE-ORDER VARIABLES! Always double-check that new variables are added APPEND-ONLY. Re-ordering variables can permanently BREAK the deployed proxy contract.*/\n    address public _owner;\n    bool public initialized;\n    /// @dev counter to allow mutex lock with only one SSTORE operation\n    uint256 public _guardCounter;\n    /**\n     * @notice EIP-20 token name for this token\n     */\n    string public name;\n    /**\n     * @notice EIP-20 token symbol for this token\n     */\n    string public symbol;\n    /**\n     * @notice EIP-20 token decimals for this token\n     */\n    uint256 public decimals;\n    /**\n     * @notice Total number of tokens in circulation\n     */\n    uint256 public totalSupply;\n    /// @dev Current saving strategy\n    IAllocationStrategy public ias;\n    /// @dev Underlying token\n    IERC20 public token;\n    /// @dev Saving assets original amount\n    /// This amount is in the same unit used in allocation strategy\n    uint256 public savingAssetOrignalAmount;\n    /// @dev Saving asset original to internal amount conversion rate\n    uint256 public savingAssetConversionRate;\n    /// @dev Approved token transfer amounts on behalf of others\n    mapping(address => mapping(address => uint256)) public transferAllowances;\n    /// @dev Hat list\n    Hat[] internal hats;\n    /// @dev Account mapping\n    mapping(address => Account) public accounts;\n    /// @dev AccountStats mapping\n    mapping(address => AccountStatsStored) public accountStats;\n    /// @dev HatStats mapping\n    mapping(uint256 => HatStatsStored) public hatStats;\n}\n",
+  "sourcePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStorage.sol",
+  "ast": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStorage.sol",
+    "exportedSymbols": {
+      "RTokenStorage": [
+        9344
+      ]
+    },
+    "id": 9345,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9289,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.5",
+          ".10",
+          "<",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "202:32:20"
+      },
+      {
+        "id": 9290,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "235:33:20"
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStructs.sol",
+        "file": "./RTokenStructs.sol",
+        "id": 9292,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 9409,
+        "src": "270:50:20",
+        "symbolAliases": [
+          {
+            "foreign": 9291,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRToken.sol",
+        "file": "./IRToken.sol",
+        "id": 9294,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 6391,
+        "src": "321:37:20",
+        "symbolAliases": [
+          {
+            "foreign": 9293,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IAllocationStrategy.sol",
+        "file": "./IAllocationStrategy.sol",
+        "id": 9296,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 6134,
+        "src": "359:62:20",
+        "symbolAliases": [
+          {
+            "foreign": 9295,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9297,
+              "name": "RTokenStructs",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 9408,
+              "src": "449:13:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_RTokenStructs_$9408",
+                "typeString": "contract RTokenStructs"
+              }
+            },
+            "id": 9298,
+            "nodeType": "InheritanceSpecifier",
+            "src": "449:13:20"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9299,
+              "name": "IERC20",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11470,
+              "src": "464:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC20_$11470",
+                "typeString": "contract IERC20"
+              }
+            },
+            "id": 9300,
+            "nodeType": "InheritanceSpecifier",
+            "src": "464:6:20"
+          }
+        ],
+        "contractDependencies": [
+          9408,
+          11470
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 9344,
+        "linearizedBaseContracts": [
+          9344,
+          11470,
+          9408
+        ],
+        "name": "RTokenStorage",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 9302,
+            "name": "_owner",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "656:21:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 9301,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "656:7:20",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9304,
+            "name": "initialized",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "683:23:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 9303,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "683:4:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9306,
+            "name": "_guardCounter",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "784:28:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9305,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "784:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9308,
+            "name": "name",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "882:18:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 9307,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "882:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9310,
+            "name": "symbol",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "972:20:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 9309,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "972:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9312,
+            "name": "decimals",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1066:23:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9311,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1066:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9314,
+            "name": "totalSupply",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1164:26:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9313,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1164:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9316,
+            "name": "ias",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1233:30:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IAllocationStrategy_$6133",
+              "typeString": "contract IAllocationStrategy"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9315,
+              "name": "IAllocationStrategy",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6133,
+              "src": "1233:19:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IAllocationStrategy_$6133",
+                "typeString": "contract IAllocationStrategy"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9318,
+            "name": "token",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1299:19:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IERC20_$11470",
+              "typeString": "contract IERC20"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9317,
+              "name": "IERC20",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11470,
+              "src": "1299:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC20_$11470",
+                "typeString": "contract IERC20"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9320,
+            "name": "savingAssetOrignalAmount",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1435:39:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9319,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1435:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9322,
+            "name": "savingAssetConversionRate",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1550:40:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9321,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1550:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9328,
+            "name": "transferAllowances",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1661:73:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
+              "typeString": "mapping(address => mapping(address => uint256))"
+            },
+            "typeName": {
+              "id": 9327,
+              "keyType": {
+                "id": 9323,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1669:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1661:47:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
+                "typeString": "mapping(address => mapping(address => uint256))"
+              },
+              "valueType": {
+                "id": 9326,
+                "keyType": {
+                  "id": 9324,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1688:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "nodeType": "Mapping",
+                "src": "1680:27:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
+                  "typeString": "mapping(address => uint256)"
+                },
+                "valueType": {
+                  "id": 9325,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1699:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9331,
+            "name": "hats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1762:19:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_struct$_Hat_$9392_storage_$dyn_storage",
+              "typeString": "struct RTokenStructs.Hat[]"
+            },
+            "typeName": {
+              "baseType": {
+                "contractScope": null,
+                "id": 9329,
+                "name": "Hat",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9392,
+                "src": "1762:3:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Hat_$9392_storage_ptr",
+                  "typeString": "struct RTokenStructs.Hat"
+                }
+              },
+              "id": 9330,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "1762:5:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_struct$_Hat_$9392_storage_$dyn_storage_ptr",
+                "typeString": "struct RTokenStructs.Hat[]"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 9335,
+            "name": "accounts",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1816:43:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$9407_storage_$",
+              "typeString": "mapping(address => struct RTokenStructs.Account)"
+            },
+            "typeName": {
+              "id": 9334,
+              "keyType": {
+                "id": 9332,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1824:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1816:27:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$9407_storage_$",
+                "typeString": "mapping(address => struct RTokenStructs.Account)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9333,
+                "name": "Account",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9407,
+                "src": "1835:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Account_$9407_storage_ptr",
+                  "typeString": "struct RTokenStructs.Account"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9339,
+            "name": "accountStats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1899:58:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_AccountStatsStored_$9371_storage_$",
+              "typeString": "mapping(address => struct RTokenStructs.AccountStatsStored)"
+            },
+            "typeName": {
+              "id": 9338,
+              "keyType": {
+                "id": 9336,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1907:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1899:38:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_AccountStatsStored_$9371_storage_$",
+                "typeString": "mapping(address => struct RTokenStructs.AccountStatsStored)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9337,
+                "name": "AccountStatsStored",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9371,
+                "src": "1918:18:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_AccountStatsStored_$9371_storage_ptr",
+                  "typeString": "struct RTokenStructs.AccountStatsStored"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9343,
+            "name": "hatStats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1993:50:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_HatStatsStored_$9385_storage_$",
+              "typeString": "mapping(uint256 => struct RTokenStructs.HatStatsStored)"
+            },
+            "typeName": {
+              "id": 9342,
+              "keyType": {
+                "id": 9340,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "2001:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1993:34:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_HatStatsStored_$9385_storage_$",
+                "typeString": "mapping(uint256 => struct RTokenStructs.HatStatsStored)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9341,
+                "name": "HatStatsStored",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9385,
+                "src": "2012:14:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_HatStatsStored_$9385_storage_ptr",
+                  "typeString": "struct RTokenStructs.HatStatsStored"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 9345,
+        "src": "423:1623:20"
+      }
+    ],
+    "src": "202:1845:20"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStorage.sol",
+    "exportedSymbols": {
+      "RTokenStorage": [
+        9344
+      ]
+    },
+    "id": 9345,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 9289,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.5",
+          ".10",
+          "<",
+          "0.6",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "202:32:20"
+      },
+      {
+        "id": 9290,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "235:33:20"
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/RTokenStructs.sol",
+        "file": "./RTokenStructs.sol",
+        "id": 9292,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 9409,
+        "src": "270:50:20",
+        "symbolAliases": [
+          {
+            "foreign": 9291,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRToken.sol",
+        "file": "./IRToken.sol",
+        "id": 9294,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 6391,
+        "src": "321:37:20",
+        "symbolAliases": [
+          {
+            "foreign": 9293,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IAllocationStrategy.sol",
+        "file": "./IAllocationStrategy.sol",
+        "id": 9296,
+        "nodeType": "ImportDirective",
+        "scope": 9345,
+        "sourceUnit": 6134,
+        "src": "359:62:20",
+        "symbolAliases": [
+          {
+            "foreign": 9295,
+            "local": null
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "baseContracts": [
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9297,
+              "name": "RTokenStructs",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 9408,
+              "src": "449:13:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_RTokenStructs_$9408",
+                "typeString": "contract RTokenStructs"
+              }
+            },
+            "id": 9298,
+            "nodeType": "InheritanceSpecifier",
+            "src": "449:13:20"
+          },
+          {
+            "arguments": null,
+            "baseName": {
+              "contractScope": null,
+              "id": 9299,
+              "name": "IERC20",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11470,
+              "src": "464:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC20_$11470",
+                "typeString": "contract IERC20"
+              }
+            },
+            "id": 9300,
+            "nodeType": "InheritanceSpecifier",
+            "src": "464:6:20"
+          }
+        ],
+        "contractDependencies": [
+          9408,
+          11470
+        ],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": false,
+        "id": 9344,
+        "linearizedBaseContracts": [
+          9344,
+          11470,
+          9408
+        ],
+        "name": "RTokenStorage",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "constant": false,
+            "id": 9302,
+            "name": "_owner",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "656:21:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 9301,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "656:7:20",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9304,
+            "name": "initialized",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "683:23:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 9303,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "683:4:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9306,
+            "name": "_guardCounter",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "784:28:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9305,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "784:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9308,
+            "name": "name",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "882:18:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 9307,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "882:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9310,
+            "name": "symbol",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "972:20:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_string_storage",
+              "typeString": "string"
+            },
+            "typeName": {
+              "id": 9309,
+              "name": "string",
+              "nodeType": "ElementaryTypeName",
+              "src": "972:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_string_storage_ptr",
+                "typeString": "string"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9312,
+            "name": "decimals",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1066:23:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9311,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1066:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9314,
+            "name": "totalSupply",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1164:26:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9313,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1164:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9316,
+            "name": "ias",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1233:30:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IAllocationStrategy_$6133",
+              "typeString": "contract IAllocationStrategy"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9315,
+              "name": "IAllocationStrategy",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 6133,
+              "src": "1233:19:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IAllocationStrategy_$6133",
+                "typeString": "contract IAllocationStrategy"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9318,
+            "name": "token",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1299:19:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IERC20_$11470",
+              "typeString": "contract IERC20"
+            },
+            "typeName": {
+              "contractScope": null,
+              "id": 9317,
+              "name": "IERC20",
+              "nodeType": "UserDefinedTypeName",
+              "referencedDeclaration": 11470,
+              "src": "1299:6:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IERC20_$11470",
+                "typeString": "contract IERC20"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9320,
+            "name": "savingAssetOrignalAmount",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1435:39:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9319,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1435:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9322,
+            "name": "savingAssetConversionRate",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1550:40:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 9321,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "1550:7:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9328,
+            "name": "transferAllowances",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1661:73:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
+              "typeString": "mapping(address => mapping(address => uint256))"
+            },
+            "typeName": {
+              "id": 9327,
+              "keyType": {
+                "id": 9323,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1669:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1661:47:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_mapping$_t_address_$_t_uint256_$_$",
+                "typeString": "mapping(address => mapping(address => uint256))"
+              },
+              "valueType": {
+                "id": 9326,
+                "keyType": {
+                  "id": 9324,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1688:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "nodeType": "Mapping",
+                "src": "1680:27:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_mapping$_t_address_$_t_uint256_$",
+                  "typeString": "mapping(address => uint256)"
+                },
+                "valueType": {
+                  "id": 9325,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "1699:7:20",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9331,
+            "name": "hats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1762:19:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_struct$_Hat_$9392_storage_$dyn_storage",
+              "typeString": "struct RTokenStructs.Hat[]"
+            },
+            "typeName": {
+              "baseType": {
+                "contractScope": null,
+                "id": 9329,
+                "name": "Hat",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9392,
+                "src": "1762:3:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Hat_$9392_storage_ptr",
+                  "typeString": "struct RTokenStructs.Hat"
+                }
+              },
+              "id": 9330,
+              "length": null,
+              "nodeType": "ArrayTypeName",
+              "src": "1762:5:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_struct$_Hat_$9392_storage_$dyn_storage_ptr",
+                "typeString": "struct RTokenStructs.Hat[]"
+              }
+            },
+            "value": null,
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 9335,
+            "name": "accounts",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1816:43:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$9407_storage_$",
+              "typeString": "mapping(address => struct RTokenStructs.Account)"
+            },
+            "typeName": {
+              "id": 9334,
+              "keyType": {
+                "id": 9332,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1824:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1816:27:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_Account_$9407_storage_$",
+                "typeString": "mapping(address => struct RTokenStructs.Account)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9333,
+                "name": "Account",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9407,
+                "src": "1835:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_Account_$9407_storage_ptr",
+                  "typeString": "struct RTokenStructs.Account"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9339,
+            "name": "accountStats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1899:58:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_address_$_t_struct$_AccountStatsStored_$9371_storage_$",
+              "typeString": "mapping(address => struct RTokenStructs.AccountStatsStored)"
+            },
+            "typeName": {
+              "id": 9338,
+              "keyType": {
+                "id": 9336,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "1907:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1899:38:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_address_$_t_struct$_AccountStatsStored_$9371_storage_$",
+                "typeString": "mapping(address => struct RTokenStructs.AccountStatsStored)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9337,
+                "name": "AccountStatsStored",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9371,
+                "src": "1918:18:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_AccountStatsStored_$9371_storage_ptr",
+                  "typeString": "struct RTokenStructs.AccountStatsStored"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          },
+          {
+            "constant": false,
+            "id": 9343,
+            "name": "hatStats",
+            "nodeType": "VariableDeclaration",
+            "scope": 9344,
+            "src": "1993:50:20",
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_HatStatsStored_$9385_storage_$",
+              "typeString": "mapping(uint256 => struct RTokenStructs.HatStatsStored)"
+            },
+            "typeName": {
+              "id": 9342,
+              "keyType": {
+                "id": 9340,
+                "name": "uint256",
+                "nodeType": "ElementaryTypeName",
+                "src": "2001:7:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "1993:34:20",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_uint256_$_t_struct$_HatStatsStored_$9385_storage_$",
+                "typeString": "mapping(uint256 => struct RTokenStructs.HatStatsStored)"
+              },
+              "valueType": {
+                "contractScope": null,
+                "id": 9341,
+                "name": "HatStatsStored",
+                "nodeType": "UserDefinedTypeName",
+                "referencedDeclaration": 9385,
+                "src": "2012:14:20",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_struct$_HatStatsStored_$9385_storage_ptr",
+                  "typeString": "struct RTokenStructs.HatStatsStored"
+                }
+              }
+            },
+            "value": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 9345,
+        "src": "423:1623:20"
+      }
+    ],
+    "src": "202:1845:20"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.12+commit.7709ece9.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-04-22T15:18:28.173Z",
+  "devdoc": {
+    "methods": {
+      "allowance(address,address)": {
+        "details": "Returns the remaining number of tokens that `spender` will be allowed to spend on behalf of `owner` through {transferFrom}. This is zero by default.     * This value changes when {approve} or {transferFrom} are called."
+      },
+      "approve(address,uint256)": {
+        "details": "Sets `amount` as the allowance of `spender` over the caller's tokens.     * Returns a boolean value indicating whether the operation succeeded.     * IMPORTANT: Beware that changing an allowance with this method brings the risk that someone may use both the old and the new allowance by unfortunate transaction ordering. One possible solution to mitigate this race condition is to first reduce the spender's allowance to 0 and set the desired value afterwards: https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729     * Emits an {Approval} event."
+      },
+      "balanceOf(address)": {
+        "details": "Returns the amount of tokens owned by `account`."
+      },
+      "transfer(address,uint256)": {
+        "details": "Moves `amount` tokens from the caller's account to `recipient`.     * Returns a boolean value indicating whether the operation succeeded.     * Emits a {Transfer} event."
+      },
+      "transferFrom(address,address,uint256)": {
+        "details": "Moves `amount` tokens from `sender` to `recipient` using the allowance mechanism. `amount` is then deducted from the caller's allowance.     * Returns a boolean value indicating whether the operation succeeded.     * Emits a {Transfer} event."
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}
