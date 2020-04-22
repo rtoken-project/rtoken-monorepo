@@ -1,4 +1,4 @@
-name: @rtoken/utils Node.js Package
+name: rtoken/utils Node.js Package
 
 on:
   release:
