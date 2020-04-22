@@ -14,7 +14,7 @@
     "build-dev": "webpack -d --mode development",
     "build-prod": "webpack -p --mode production",
     "watch": "webpack --watch",
-    "lint": "eslint ./src --fix"
+    "lint": "eslint . --fix"
   },
   "predeploy": "npm version patch",
   "subgraph": {
