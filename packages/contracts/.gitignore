@@ -6,3 +6,4 @@
 /data
 *.ignore.*
 yarn.lock
+/build
