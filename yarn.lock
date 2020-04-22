@@ -3644,7 +3644,7 @@ bignumber.js@^9.0.0:
 
 bignumber@^1.1.0:
   version "1.1.0"
-  resolved "https://npm.patrickgallagher.dev:443/bignumber/-/bignumber-1.1.0.tgz#e6ab0a743da5f3ea018e5c17597d121f7868c159"
+  resolved "https://registry.npmjs.org/bignumber/-/bignumber-1.1.0.tgz#e6ab0a743da5f3ea018e5c17597d121f7868c159"
   integrity sha1-5qsKdD2l8+oBjlwXWX0SH3howVk=
 
 bin-links@^1.1.0, bin-links@^1.1.2:

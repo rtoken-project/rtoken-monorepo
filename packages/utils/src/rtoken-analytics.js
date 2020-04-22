@@ -9,7 +9,7 @@ const { createHttpLink } = require('apollo-link-http');
 const ethers = require('ethers');
 const { parseUnits, formatUnits, bigNumberify } = ethers.utils;
 
-const BigNumber = require('bignumber.js');
+const BigNumber = require('bignumber');
 const CONTRACTS = require('./constants');
 
 const DEFAULT_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/id/';

@@ -5,7 +5,7 @@ const RTokenAnalytics = require('../src/rtoken-analytics');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
 
-const BigNumber = require('bignumber.js');
+const BigNumber = require('bignumber');
 
 // NOTE: Compound API is super slow. Use hard coded value instead.
 const debug = {
