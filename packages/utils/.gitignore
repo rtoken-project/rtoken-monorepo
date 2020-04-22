@@ -2,7 +2,6 @@
 node_modules/
 *.swp
 yarn-error.log
-package-lock.json
 *.swp
 .env
 .env.*
