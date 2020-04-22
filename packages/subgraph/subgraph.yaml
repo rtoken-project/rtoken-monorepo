@@ -1,34 +1,36 @@
 specVersion: 0.0.2
 description: Tracking interest on rDAI (mainnet)
-repository: https;//github.com/rtoken-project/rtoken-analytics
+repository: https://github.com/rtoken-project/rtoken-monorepo
 schema:
-  file: schema.graphql
+  file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: RToken
     network: mainnet
     source:
-      address: "0x548624d677f08BF43C05b3351c2C25b488BD4CEA"
       abi: RToken
+      # Local testing
+      address: '0xc97EeFc57dD8E74A30AC2cC52E8785B40a14a30c'
+      # Mainnet
+      # address: '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0'
+      # startBlock: 9117140
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
       language: wasm/assemblyscript
       entities:
-        - AllocationStrategyChanged
-        - Approval
-        - CodeUpdated
-        - HatChanged
-        - HatCreated
-        - InterestPaid
-        - LoansTransferred
-        - OwnershipTransferred
+        - Transaction
+        - Account
+        - Loan
+        - Hat
+        - HatMembership
         - Transfer
+        - LoanTransferred
+        - InterestPaid
+        - HatChanged
       abis:
         - name: RToken
-          file: RToken/abis/rToken.json
-        - name: CompoundAllocationStrategy
-          file: RToken/abis/CompoundAllocationStrategy.json
+          file: ./abis/RToken.json
       eventHandlers:
         - event: AllocationStrategyChanged(address,uint256)
           handler: handleAllocationStrategyChanged
@@ -42,11 +44,10 @@ dataSources:
           handler: handleHatCreated
         - event: InterestPaid(indexed address,uint256)
           handler: handleInterestPaid
-        - event: LoansTransferred(indexed address,indexed address,indexed
-            uint256,bool,uint256,uint256)
+        - event: LoansTransferred(indexed address,indexed address,indexed uint256,bool,uint256,uint256)
           handler: handleLoansTransferred
         - event: OwnershipTransferred(indexed address,indexed address)
           handler: handleOwnershipTransferred
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
-      file: RToken/RToken.wasm
+      file: ./src/mapping.ts

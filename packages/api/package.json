@@ -1,6 +1,8 @@
 {
   "name": "rtoken-api",
   "private": true,
+  "repository": "https://github.com/rtoken-project/rtoken-monorepo",
+  "homepage": "https://rdai.money/",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",

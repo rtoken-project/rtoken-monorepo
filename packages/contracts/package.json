@@ -2,6 +2,8 @@
     "name": "@rtoken/contracts",
     "version": "1.0.1-rc6",
     "description": "RToken Ethereum contracts",
+    "repository": "https://github.com/rtoken-project/rtoken-monorepo",
+    "homepage": "https://rdai.money/",
     "license": "MIT",
     "dependencies": {
         "@openzeppelin/contracts": "2.4.0",
@@ -35,7 +37,7 @@
         "dev": "nodemon -e sol,js -i build -x 'npm run test 2>&1'",
         "proxify": "truffle-flattener contracts/RToken.sol > flat.ignore.sol && sol-proxy create flat.ignore.sol",
         "lint": "run-s lint:*",
-        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives && echo '✔  Your .js files look good.'",
+        "lint:js": "eslint . --max-warnings=0 --report-unused-disable-directives --fix && echo '✔  Your .js files look good.'",
         "lint:sol": "solhint contracts/*.sol && echo '✔  Your .sol files look good.'"
     }
 }
