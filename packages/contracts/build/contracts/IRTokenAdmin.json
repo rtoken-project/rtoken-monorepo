@@ -1,0 +1,1204 @@
+{
+  "contractName": "IRTokenAdmin",
+  "abi": [
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "strategy",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "conversionRate",
+          "type": "uint256"
+        }
+      ],
+      "name": "AllocationStrategyChanged",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "address",
+          "name": "newCode",
+          "type": "address"
+        }
+      ],
+      "name": "CodeUpdated",
+      "type": "event"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "getCurrentAllocationStrategy",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "allocationStrategy",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "allocationStrategy",
+          "type": "address"
+        }
+      ],
+      "name": "changeAllocationStrategy",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "contractAddress",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "hatID",
+          "type": "uint256"
+        }
+      ],
+      "name": "changeHatFor",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newCode",
+          "type": "address"
+        }
+      ],
+      "name": "updateCode",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"strategy\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"conversionRate\",\"type\":\"uint256\"}],\"name\":\"AllocationStrategyChanged\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"address\",\"name\":\"newCode\",\"type\":\"address\"}],\"name\":\"CodeUpdated\",\"type\":\"event\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"allocationStrategy\",\"type\":\"address\"}],\"name\":\"changeAllocationStrategy\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"contractAddress\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"hatID\",\"type\":\"uint256\"}],\"name\":\"changeHatFor\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"getCurrentAllocationStrategy\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"allocationStrategy\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"constant\":false,\"inputs\":[{\"internalType\":\"address\",\"name\":\"newCode\",\"type\":\"address\"}],\"name\":\"updateCode\",\"outputs\":[],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{\"changeAllocationStrategy(address)\":{\"params\":{\"allocationStrategy\":\"Allocation strategy instance\"}},\"changeHatFor(address,uint256)\":{\"params\":{\"contractAddress\":\"contract address\",\"hatID\":\"Hat ID\"}}}},\"userdoc\":{\"methods\":{\"changeAllocationStrategy(address)\":{\"notice\":\"Change allocation strategy for the contract instance\"},\"changeHatFor(address,uint256)\":{\"notice\":\"Change hat for the contract address\"},\"getCurrentAllocationStrategy()\":{\"notice\":\"Get the current allocation strategy\"},\"owner()\":{\"notice\":\"Get current owner\"},\"transferOwnership(address)\":{\"notice\":\"Transfers ownership of the contract to a new account (`newOwner`).     * To be implemented by Ownable\"},\"updateCode(address)\":{\"notice\":\"Update the rToken logic contract code\"}},\"notice\":\"IRTokenAdmin interface\"}},\"settings\":{\"compilationTarget\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRTokenAdmin.sol\":\"IRTokenAdmin\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRTokenAdmin.sol\":{\"keccak256\":\"0x25dba438823ddf59003f7963b49cb3e7c1105e62c19126ccc99aeb39b02c59f9\",\"urls\":[\"bzz-raw://53c52647440910aa820fe4d0ad6a358faf4a6f80562fa0d6cb87b5a22c6fbed8\",\"dweb:/ipfs/QmVFpJKMQpFymdK22v4b4NQcs5yWEN3urTtnRkHFoideNx\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "/**\n * In order to build a Aragon App, it is required to have a solidity requirement\n * that is without ABIEncoderV2.\n */\npragma solidity >= 0.4.24;\n\n/**\n * IRTokenAdmin interface\n */\ninterface IRTokenAdmin {\n\n    /**\n     * @notice Get current owner\n     */\n    function owner() external view returns (address);\n\n    /**\n     * @notice Transfers ownership of the contract to a new account (`newOwner`).\n     *\n     * To be implemented by Ownable\n     */\n    function transferOwnership(address newOwner) external;\n\n    /**\n    * @notice Get the current allocation strategy\n    */\n    function getCurrentAllocationStrategy()\n        external view returns (address allocationStrategy);\n\n    /**\n    * @notice Change allocation strategy for the contract instance\n    * @param allocationStrategy Allocation strategy instance\n    */\n    function changeAllocationStrategy(address allocationStrategy)\n        external;\n\n    /**\n     * @notice Change hat for the contract address\n     * @param contractAddress contract address\n     * @param hatID Hat ID\n     */\n    function changeHatFor(address contractAddress, uint256 hatID)\n        external;\n\n    /**\n     * @notice Update the rToken logic contract code\n     */\n    function updateCode(address newCode) external;\n\n    /**\n     * @notice Code updated event\n     */\n    event CodeUpdated(address newCode);\n\n    /**\n     * @notice Allocation strategy changed event\n     * @param strategy New strategy address\n     * @param conversionRate New saving asset conversion rate\n     */\n    event AllocationStrategyChanged(address strategy, uint256 conversionRate);\n}\n",
+  "sourcePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRTokenAdmin.sol",
+  "ast": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRTokenAdmin.sol",
+    "exportedSymbols": {
+      "IRTokenAdmin": [
+        6435
+      ]
+    },
+    "id": 6436,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6392,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "122:26:14"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "IRTokenAdmin interface",
+        "fullyImplemented": false,
+        "id": 6435,
+        "linearizedBaseContracts": [
+          6435
+        ],
+        "name": "IRTokenAdmin",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice Get current owner",
+            "id": 6397,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "owner",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6393,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "277:2:14"
+            },
+            "returnParameters": {
+              "id": 6396,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6395,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6397,
+                  "src": "303:7:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6394,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "303:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "302:9:14"
+            },
+            "scope": 6435,
+            "src": "263:49:14",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Transfers ownership of the contract to a new account (`newOwner`).\n     * To be implemented by Ownable",
+            "id": 6402,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "transferOwnership",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6400,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6399,
+                  "name": "newOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6402,
+                  "src": "486:16:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6398,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "486:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "485:18:14"
+            },
+            "returnParameters": {
+              "id": 6401,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "512:0:14"
+            },
+            "scope": 6435,
+            "src": "459:54:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Get the current allocation strategy",
+            "id": 6407,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getCurrentAllocationStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6403,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "621:2:14"
+            },
+            "returnParameters": {
+              "id": 6406,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6405,
+                  "name": "allocationStrategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6407,
+                  "src": "655:26:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6404,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "655:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "654:28:14"
+            },
+            "scope": 6435,
+            "src": "584:99:14",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Change allocation strategy for the contract instance\n@param allocationStrategy Allocation strategy instance",
+            "id": 6412,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "changeAllocationStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6410,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6409,
+                  "name": "allocationStrategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6412,
+                  "src": "866:26:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6408,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "866:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "865:28:14"
+            },
+            "returnParameters": {
+              "id": 6411,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "910:0:14"
+            },
+            "scope": 6435,
+            "src": "832:79:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Change hat for the contract address\n@param contractAddress contract address\n@param hatID Hat ID",
+            "id": 6419,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "changeHatFor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6417,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6414,
+                  "name": "contractAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6419,
+                  "src": "1080:23:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6413,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1080:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6416,
+                  "name": "hatID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6419,
+                  "src": "1105:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6415,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1105:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1079:40:14"
+            },
+            "returnParameters": {
+              "id": 6418,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1136:0:14"
+            },
+            "scope": 6435,
+            "src": "1058:79:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update the rToken logic contract code",
+            "id": 6424,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateCode",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6422,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6421,
+                  "name": "newCode",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6424,
+                  "src": "1232:15:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6420,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1232:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1231:17:14"
+            },
+            "returnParameters": {
+              "id": 6423,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1257:0:14"
+            },
+            "scope": 6435,
+            "src": "1212:46:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": "@notice Code updated event",
+            "id": 6428,
+            "name": "CodeUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6427,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6426,
+                  "indexed": false,
+                  "name": "newCode",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6428,
+                  "src": "1332:15:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6425,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1332:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1331:17:14"
+            },
+            "src": "1314:35:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": "@notice Allocation strategy changed event\n@param strategy New strategy address\n@param conversionRate New saving asset conversion rate",
+            "id": 6434,
+            "name": "AllocationStrategyChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6433,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6430,
+                  "indexed": false,
+                  "name": "strategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6434,
+                  "src": "1558:16:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6429,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1558:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6432,
+                  "indexed": false,
+                  "name": "conversionRate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6434,
+                  "src": "1576:22:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6431,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1576:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1557:42:14"
+            },
+            "src": "1526:74:14"
+          }
+        ],
+        "scope": 6436,
+        "src": "184:1418:14"
+      }
+    ],
+    "src": "122:1481:14"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/IRTokenAdmin.sol",
+    "exportedSymbols": {
+      "IRTokenAdmin": [
+        6435
+      ]
+    },
+    "id": 6436,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6392,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".24"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "122:26:14"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "IRTokenAdmin interface",
+        "fullyImplemented": false,
+        "id": 6435,
+        "linearizedBaseContracts": [
+          6435
+        ],
+        "name": "IRTokenAdmin",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice Get current owner",
+            "id": 6397,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "owner",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6393,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "277:2:14"
+            },
+            "returnParameters": {
+              "id": 6396,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6395,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6397,
+                  "src": "303:7:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6394,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "303:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "302:9:14"
+            },
+            "scope": 6435,
+            "src": "263:49:14",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Transfers ownership of the contract to a new account (`newOwner`).\n     * To be implemented by Ownable",
+            "id": 6402,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "transferOwnership",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6400,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6399,
+                  "name": "newOwner",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6402,
+                  "src": "486:16:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6398,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "486:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "485:18:14"
+            },
+            "returnParameters": {
+              "id": 6401,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "512:0:14"
+            },
+            "scope": 6435,
+            "src": "459:54:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Get the current allocation strategy",
+            "id": 6407,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getCurrentAllocationStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6403,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "621:2:14"
+            },
+            "returnParameters": {
+              "id": 6406,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6405,
+                  "name": "allocationStrategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6407,
+                  "src": "655:26:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6404,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "655:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "654:28:14"
+            },
+            "scope": 6435,
+            "src": "584:99:14",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Change allocation strategy for the contract instance\n@param allocationStrategy Allocation strategy instance",
+            "id": 6412,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "changeAllocationStrategy",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6410,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6409,
+                  "name": "allocationStrategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6412,
+                  "src": "866:26:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6408,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "866:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "865:28:14"
+            },
+            "returnParameters": {
+              "id": 6411,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "910:0:14"
+            },
+            "scope": 6435,
+            "src": "832:79:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Change hat for the contract address\n@param contractAddress contract address\n@param hatID Hat ID",
+            "id": 6419,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "changeHatFor",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6417,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6414,
+                  "name": "contractAddress",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6419,
+                  "src": "1080:23:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6413,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1080:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6416,
+                  "name": "hatID",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6419,
+                  "src": "1105:13:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6415,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1105:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1079:40:14"
+            },
+            "returnParameters": {
+              "id": 6418,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1136:0:14"
+            },
+            "scope": 6435,
+            "src": "1058:79:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Update the rToken logic contract code",
+            "id": 6424,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "updateCode",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6422,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6421,
+                  "name": "newCode",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6424,
+                  "src": "1232:15:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6420,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1232:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1231:17:14"
+            },
+            "returnParameters": {
+              "id": 6423,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1257:0:14"
+            },
+            "scope": 6435,
+            "src": "1212:46:14",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "anonymous": false,
+            "documentation": "@notice Code updated event",
+            "id": 6428,
+            "name": "CodeUpdated",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6427,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6426,
+                  "indexed": false,
+                  "name": "newCode",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6428,
+                  "src": "1332:15:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6425,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1332:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1331:17:14"
+            },
+            "src": "1314:35:14"
+          },
+          {
+            "anonymous": false,
+            "documentation": "@notice Allocation strategy changed event\n@param strategy New strategy address\n@param conversionRate New saving asset conversion rate",
+            "id": 6434,
+            "name": "AllocationStrategyChanged",
+            "nodeType": "EventDefinition",
+            "parameters": {
+              "id": 6433,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6430,
+                  "indexed": false,
+                  "name": "strategy",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6434,
+                  "src": "1558:16:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6429,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1558:7:14",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6432,
+                  "indexed": false,
+                  "name": "conversionRate",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6434,
+                  "src": "1576:22:14",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 6431,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1576:7:14",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1557:42:14"
+            },
+            "src": "1526:74:14"
+          }
+        ],
+        "scope": 6436,
+        "src": "184:1418:14"
+      }
+    ],
+    "src": "122:1481:14"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.12+commit.7709ece9.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-04-22T02:35:54.234Z",
+  "devdoc": {
+    "methods": {
+      "changeAllocationStrategy(address)": {
+        "params": {
+          "allocationStrategy": "Allocation strategy instance"
+        }
+      },
+      "changeHatFor(address,uint256)": {
+        "params": {
+          "contractAddress": "contract address",
+          "hatID": "Hat ID"
+        }
+      }
+    }
+  },
+  "userdoc": {
+    "methods": {
+      "changeAllocationStrategy(address)": {
+        "notice": "Change allocation strategy for the contract instance"
+      },
+      "changeHatFor(address,uint256)": {
+        "notice": "Change hat for the contract address"
+      },
+      "getCurrentAllocationStrategy()": {
+        "notice": "Get the current allocation strategy"
+      },
+      "owner()": {
+        "notice": "Get current owner"
+      },
+      "transferOwnership(address)": {
+        "notice": "Transfers ownership of the contract to a new account (`newOwner`).     * To be implemented by Ownable"
+      },
+      "updateCode(address)": {
+        "notice": "Update the rToken logic contract code"
+      }
+    },
+    "notice": "IRTokenAdmin interface"
+  }
+}

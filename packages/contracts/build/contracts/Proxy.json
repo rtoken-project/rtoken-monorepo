@@ -1,0 +1,781 @@
+{
+  "contractName": "Proxy",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "constructData",
+          "type": "bytes"
+        },
+        {
+          "internalType": "address",
+          "name": "contractLogic",
+          "type": "address"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bytes\",\"name\":\"constructData\",\"type\":\"bytes\"},{\"internalType\":\"address\",\"name\":\"contractLogic\",\"type\":\"address\"}],\"payable\":false,\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"payable\":true,\"stateMutability\":\"payable\",\"type\":\"fallback\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/Proxy.sol\":\"Proxy\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/Proxy.sol\":{\"keccak256\":\"0xb9fa35f588b3d8c16d27bac832174b87b3398194014e24df23c5e5bde5084042\",\"urls\":[\"bzz-raw://3314b81180677ade5f7f1129d3f33f96fb6ea6deff238275cf75dab20167113f\",\"dweb:/ipfs/QmcNPKp9f5sEWCwRhhwqeYQRokC5STYpdRzR7We7Y42vox\"]}},\"version\":1}",
+  "bytecode": "0x608060405234801561001057600080fd5b506040516102b43803806102b48339818101604052604081101561003357600080fd5b810190808051604051939291908464010000000082111561005357600080fd5b90830190602082018581111561006857600080fd5b825164010000000081118282018810171561008257600080fd5b82525081516020918201929091019080838360005b838110156100af578181015183820152602001610097565b50505050905090810190601f1680156100dc5780820380516001836020036101000a031916815260200191505b5060408190526020918201517fc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf78190558551909450600093506001600160a01b0385169286929182918401908083835b6020831061014b5780518252601f19909201916020918201910161012c565b6001836020036101000a038019825116818451168082178552505050505050905001915050600060405180830381855af49150503d80600081146101ab576040519150601f19603f3d011682016040523d82523d6000602084013e6101b0565b606091505b505090508061022057604080517f08c379a000000000000000000000000000000000000000000000000000000000815260206004820152601360248201527f436f6e737472756374696f6e206661696c656400000000000000000000000000604482015290519081900360640190fd5b5050506083806102316000396000f3fe60806040527fc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7543660008037600080366000846127105a03f43d806000803e818015604957816000f35b816000fdfea265627a7a7231582014fc8beb60b3f4114c2e555d5ce275bb7f9c62c6597edeb380a74ea102eeba9964736f6c634300050c0032",
+  "deployedBytecode": "0x60806040527fc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7543660008037600080366000846127105a03f43d806000803e818015604957816000f35b816000fdfea265627a7a7231582014fc8beb60b3f4114c2e555d5ce275bb7f9c62c6597edeb380a74ea102eeba9964736f6c634300050c0032",
+  "sourceMap": "25:1227:18:-;;;175:485;8:9:-1;5:2;;;30:1;27;20:12;5:2;175:485:18;;;;;;;;;;;;;;;13:2:-1;8:3;5:11;2:2;;;29:1;26;19:12;2:2;175:485:18;;;;;;;;;;;;;19:11:-1;14:3;11:20;8:2;;;44:1;41;34:12;8:2;62:21;;;;123:4;114:14;;138:31;;;135:2;;;182:1;179;172:12;135:2;213:10;;261:11;244:29;;285:43;;;282:58;-1:-1;233:115;230:2;;;361:1;358;351:12;230:2;372:25;;-1:-1;175:485:18;;420:4:-1;411:14;;;;175:485:18;;;;;411:14:-1;175:485:18;23:1:-1;8:100;33:3;30:1;27:10;8:100;;;90:11;;;84:18;71:11;;;64:39;52:2;45:10;8:100;;;12:14;175:485:18;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;-1:-1:-1;175:485:18;;;;;;;;;341:66;334:89;;;540:41;;175:485;;-1:-1:-1;502:12:18;;-1:-1:-1;;;;;;540:26:18;;;567:13;;175:485;;;540:41;;;;175:485;540:41;36:153:-1;66:2;61:3;58:11;36:153;;176:10;;164:23;;-1:-1;;139:12;;;;98:2;89:12;;;;114;36:153;;;274:1;267:3;263:2;259:12;254:3;250:22;246:30;315:4;311:9;305:3;299:10;295:26;356:4;350:3;344:10;340:21;389:7;380;377:20;372:3;365:33;3:399;;;540:41:18;;;;;;;;;;;;;;;;;;;;;;;14:1:-1;21;16:31;;;;75:4;69:11;64:16;;144:4;140:9;133:4;115:16;111:27;107:43;104:1;100:51;94:4;87:65;169:16;166:1;159:27;225:16;222:1;215:4;212:1;208:12;193:49;7:242;;16:31;36:4;31:9;;7:242;;501:80:18;;;622:7;614:39;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;175:485;;;25:1227;;;;;;",
+  "deployedSourceMap": "25:1227:18:-;;;777:66;771:73;880:12;875:3;870;857:36;988:1;985;971:12;966:3;951:13;943:5;938:3;934:15;921:69;1016:14;1064:5;1061:1;1058;1043:27;1090:7;1110:55;;;;1214:5;1211:1;1204:16;1110:55;1145:5;1142:1;1135:16",
+  "source": "pragma solidity ^0.5.0;\n\ncontract Proxy {\n    // Code position in storage is keccak256(\"PROXIABLE\") = \"0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7\"\n    constructor(bytes memory constructData, address contractLogic) public {\n        // save the code address\n        assembly { // solium-disable-line\n            sstore(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7, contractLogic)\n        }\n        // solhint-disable-next-line avoid-low-level-calls\n        (bool success, /* bytes memory _*/ ) = contractLogic.delegatecall(constructData); // solium-disable-line\n        require(success, \"Construction failed\");\n    }\n\n    function() external payable {\n        assembly { // solium-disable-line\n            let contractLogic := sload(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7)\n            calldatacopy(0x0, 0x0, calldatasize)\n            let success := delegatecall(sub(gas, 10000), contractLogic, 0x0, calldatasize, 0, 0)\n            let retSz := returndatasize\n            returndatacopy(0, 0, retSz)\n            switch success\n            case 0 {\n                revert(0, retSz)\n            }\n            default {\n                return(0, retSz)\n            }\n        }\n    }\n}\n",
+  "sourcePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/Proxy.sol",
+  "ast": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/Proxy.sol",
+    "exportedSymbols": {
+      "Proxy": [
+        6634
+      ]
+    },
+    "id": 6635,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6607,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:18"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6634,
+        "linearizedBaseContracts": [
+          6634
+        ],
+        "name": "Proxy",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6627,
+              "nodeType": "Block",
+              "src": "245:415:18",
+              "statements": [
+                {
+                  "externalReferences": [
+                    {
+                      "contractLogic": {
+                        "declaration": 6611,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "409:13:18",
+                        "valueSize": 1
+                      }
+                    }
+                  ],
+                  "id": 6614,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    sstore(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7, contractLogic)\n}",
+                  "src": "288:145:18"
+                },
+                {
+                  "assignments": [
+                    6616,
+                    null
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 6616,
+                      "name": "success",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 6627,
+                      "src": "502:12:18",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "typeName": {
+                        "id": 6615,
+                        "name": "bool",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "502:4:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    null
+                  ],
+                  "id": 6621,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6619,
+                        "name": "constructData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6609,
+                        "src": "567:13:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6617,
+                        "name": "contractLogic",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6611,
+                        "src": "540:13:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "id": 6618,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "delegatecall",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "540:26:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_baredelegatecall_nonpayable$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
+                        "typeString": "function (bytes memory) returns (bool,bytes memory)"
+                      }
+                    },
+                    "id": 6620,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "540:41:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_bool_$_t_bytes_memory_ptr_$",
+                      "typeString": "tuple(bool,bytes memory)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "501:80:18"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6623,
+                        "name": "success",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6616,
+                        "src": "622:7:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "hexValue": "436f6e737472756374696f6e206661696c6564",
+                        "id": 6624,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "631:21:18",
+                        "subdenomination": null,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_53fc05b59b095efb0a0a07aaec7d7fc967571c6ee1b12f4135653e1823a87654",
+                          "typeString": "literal_string \"Construction failed\""
+                        },
+                        "value": "Construction failed"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_53fc05b59b095efb0a0a07aaec7d7fc967571c6ee1b12f4135653e1823a87654",
+                          "typeString": "literal_string \"Construction failed\""
+                        }
+                      ],
+                      "id": 6622,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        11488,
+                        11489
+                      ],
+                      "referencedDeclaration": 11489,
+                      "src": "614:7:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 6625,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "614:39:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6626,
+                  "nodeType": "ExpressionStatement",
+                  "src": "614:39:18"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6628,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6612,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6609,
+                  "name": "constructData",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6628,
+                  "src": "187:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6608,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "187:5:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6611,
+                  "name": "contractLogic",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6628,
+                  "src": "215:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6610,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "215:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:51:18"
+            },
+            "returnParameters": {
+              "id": 6613,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "245:0:18"
+            },
+            "scope": 6634,
+            "src": "175:485:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6632,
+              "nodeType": "Block",
+              "src": "694:556:18",
+              "statements": [
+                {
+                  "externalReferences": [],
+                  "id": 6631,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    let contractLogic := sload(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7)\n    calldatacopy(0x0, 0x0, calldatasize())\n    let success := delegatecall(sub(gas(), 10000), contractLogic, 0x0, calldatasize(), 0, 0)\n    let retSz := returndatasize()\n    returndatacopy(0, 0, retSz)\n    switch success\n    case 0 { revert(0, retSz) }\n    default { return(0, retSz) }\n}",
+                  "src": "704:540:18"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6633,
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6629,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "674:2:18"
+            },
+            "returnParameters": {
+              "id": 6630,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "694:0:18"
+            },
+            "scope": 6634,
+            "src": "666:584:18",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6635,
+        "src": "25:1227:18"
+      }
+    ],
+    "src": "0:1253:18"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/contracts/Proxy.sol",
+    "exportedSymbols": {
+      "Proxy": [
+        6634
+      ]
+    },
+    "id": 6635,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 6607,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:18"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 6634,
+        "linearizedBaseContracts": [
+          6634
+        ],
+        "name": "Proxy",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 6627,
+              "nodeType": "Block",
+              "src": "245:415:18",
+              "statements": [
+                {
+                  "externalReferences": [
+                    {
+                      "contractLogic": {
+                        "declaration": 6611,
+                        "isOffset": false,
+                        "isSlot": false,
+                        "src": "409:13:18",
+                        "valueSize": 1
+                      }
+                    }
+                  ],
+                  "id": 6614,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    sstore(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7, contractLogic)\n}",
+                  "src": "288:145:18"
+                },
+                {
+                  "assignments": [
+                    6616,
+                    null
+                  ],
+                  "declarations": [
+                    {
+                      "constant": false,
+                      "id": 6616,
+                      "name": "success",
+                      "nodeType": "VariableDeclaration",
+                      "scope": 6627,
+                      "src": "502:12:18",
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_bool",
+                        "typeString": "bool"
+                      },
+                      "typeName": {
+                        "id": 6615,
+                        "name": "bool",
+                        "nodeType": "ElementaryTypeName",
+                        "src": "502:4:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    null
+                  ],
+                  "id": 6621,
+                  "initialValue": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6619,
+                        "name": "constructData",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6609,
+                        "src": "567:13:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bytes_memory_ptr",
+                          "typeString": "bytes memory"
+                        }
+                      ],
+                      "expression": {
+                        "argumentTypes": null,
+                        "id": 6617,
+                        "name": "contractLogic",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6611,
+                        "src": "540:13:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_address",
+                          "typeString": "address"
+                        }
+                      },
+                      "id": 6618,
+                      "isConstant": false,
+                      "isLValue": false,
+                      "isPure": false,
+                      "lValueRequested": false,
+                      "memberName": "delegatecall",
+                      "nodeType": "MemberAccess",
+                      "referencedDeclaration": null,
+                      "src": "540:26:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_baredelegatecall_nonpayable$_t_bytes_memory_ptr_$returns$_t_bool_$_t_bytes_memory_ptr_$",
+                        "typeString": "function (bytes memory) returns (bool,bytes memory)"
+                      }
+                    },
+                    "id": 6620,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "540:41:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$_t_bool_$_t_bytes_memory_ptr_$",
+                      "typeString": "tuple(bool,bytes memory)"
+                    }
+                  },
+                  "nodeType": "VariableDeclarationStatement",
+                  "src": "501:80:18"
+                },
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "arguments": [
+                      {
+                        "argumentTypes": null,
+                        "id": 6623,
+                        "name": "success",
+                        "nodeType": "Identifier",
+                        "overloadedDeclarations": [],
+                        "referencedDeclaration": 6616,
+                        "src": "622:7:18",
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        }
+                      },
+                      {
+                        "argumentTypes": null,
+                        "hexValue": "436f6e737472756374696f6e206661696c6564",
+                        "id": 6624,
+                        "isConstant": false,
+                        "isLValue": false,
+                        "isPure": true,
+                        "kind": "string",
+                        "lValueRequested": false,
+                        "nodeType": "Literal",
+                        "src": "631:21:18",
+                        "subdenomination": null,
+                        "typeDescriptions": {
+                          "typeIdentifier": "t_stringliteral_53fc05b59b095efb0a0a07aaec7d7fc967571c6ee1b12f4135653e1823a87654",
+                          "typeString": "literal_string \"Construction failed\""
+                        },
+                        "value": "Construction failed"
+                      }
+                    ],
+                    "expression": {
+                      "argumentTypes": [
+                        {
+                          "typeIdentifier": "t_bool",
+                          "typeString": "bool"
+                        },
+                        {
+                          "typeIdentifier": "t_stringliteral_53fc05b59b095efb0a0a07aaec7d7fc967571c6ee1b12f4135653e1823a87654",
+                          "typeString": "literal_string \"Construction failed\""
+                        }
+                      ],
+                      "id": 6622,
+                      "name": "require",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [
+                        11488,
+                        11489
+                      ],
+                      "referencedDeclaration": 11489,
+                      "src": "614:7:18",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_require_pure$_t_bool_$_t_string_memory_ptr_$returns$__$",
+                        "typeString": "function (bool,string memory) pure"
+                      }
+                    },
+                    "id": 6625,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "614:39:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 6626,
+                  "nodeType": "ExpressionStatement",
+                  "src": "614:39:18"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6628,
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6612,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 6609,
+                  "name": "constructData",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6628,
+                  "src": "187:26:18",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 6608,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "187:5:18",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 6611,
+                  "name": "contractLogic",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 6628,
+                  "src": "215:21:18",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 6610,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "215:7:18",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "186:51:18"
+            },
+            "returnParameters": {
+              "id": 6613,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "245:0:18"
+            },
+            "scope": 6634,
+            "src": "175:485:18",
+            "stateMutability": "nonpayable",
+            "superFunction": null,
+            "visibility": "public"
+          },
+          {
+            "body": {
+              "id": 6632,
+              "nodeType": "Block",
+              "src": "694:556:18",
+              "statements": [
+                {
+                  "externalReferences": [],
+                  "id": 6631,
+                  "nodeType": "InlineAssembly",
+                  "operations": "{\n    let contractLogic := sload(0xc5f16f0fcc639fa48a6947836d9850f504798523bf8c9a3a87d5876cf622bcf7)\n    calldatacopy(0x0, 0x0, calldatasize())\n    let success := delegatecall(sub(gas(), 10000), contractLogic, 0x0, calldatasize(), 0, 0)\n    let retSz := returndatasize()\n    returndatacopy(0, 0, retSz)\n    switch success\n    case 0 { revert(0, retSz) }\n    default { return(0, retSz) }\n}",
+                  "src": "704:540:18"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 6633,
+            "implemented": true,
+            "kind": "fallback",
+            "modifiers": [],
+            "name": "",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 6629,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "674:2:18"
+            },
+            "returnParameters": {
+              "id": 6630,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "694:0:18"
+            },
+            "scope": 6634,
+            "src": "666:584:18",
+            "stateMutability": "payable",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 6635,
+        "src": "25:1227:18"
+      }
+    ],
+    "src": "0:1253:18"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.12+commit.7709ece9.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-04-22T02:35:54.239Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

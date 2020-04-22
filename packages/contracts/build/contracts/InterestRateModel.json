@@ -1,0 +1,609 @@
+{
+  "contractName": "InterestRateModel",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "cash",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "borrows",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "reserves",
+          "type": "uint256"
+        }
+      ],
+      "name": "getBorrowRate",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "isInterestRateModel",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.12+commit.7709ece9\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"cash\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"borrows\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"reserves\",\"type\":\"uint256\"}],\"name\":\"getBorrowRate\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"},{\"constant\":true,\"inputs\":[],\"name\":\"isInterestRateModel\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"payable\":false,\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"Compound\",\"details\":\"These functions are specifically not marked `pure` as implementations of this     contract may read from storage variables.\",\"methods\":{\"getBorrowRate(uint256,uint256,uint256)\":{\"details\":\"The return value should be scaled by 1e18, thus a return value of     `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.\",\"params\":{\"borrows\":\"The total borrows of the underlying asset in the CToken\",\"cash\":\"The total cash of the underlying asset in the CToken\",\"reserves\":\"The total reserves of the underlying asset in the CToken\"},\"return\":\"Success or failure and the borrow interest rate per block scaled by 10e18\"},\"isInterestRateModel()\":{\"details\":\"Marker function used for light validation when updating the interest rate model of a market. Implementations should simply return true.\",\"return\":\"Success or failure\"}},\"title\":\"The Compound InterestRateModel Interface\"},\"userdoc\":{\"methods\":{\"getBorrowRate(uint256,uint256,uint256)\":{\"notice\":\"Gets the current borrow interest rate based on the given asset, total cash, total borrows        and total reserves.\"},\"isInterestRateModel()\":{\"notice\":\"Marker function used for light validation when updating the interest rate model of a market\"}},\"notice\":\"Any interest rate model should derive from this contract.\"}},\"settings\":{\"compilationTarget\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol\":\"InterestRateModel\"},\"evmVersion\":\"petersburg\",\"libraries\":{},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol\":{\"keccak256\":\"0x1aca227009cbde84beabddc89823f55130c2519823d4669d4e714a2a798af6c2\",\"urls\":[\"bzz-raw://cb8fc34b58cd973fa29d1636a5ecf02858f355f477ffc7525acf62e1c3aa5977\",\"dweb:/ipfs/QmXiAaRwvSw7FFLzuyJD7zwxZrGAhLEo4APJZjDc8yXYem\"]}},\"version\":1}",
+  "bytecode": "0x",
+  "deployedBytecode": "0x",
+  "sourceMap": "",
+  "deployedSourceMap": "",
+  "source": "pragma solidity ^0.5.8;\n\n/**\n  * @title The Compound InterestRateModel Interface\n  * @author Compound\n  * @notice Any interest rate model should derive from this contract.\n  * @dev These functions are specifically not marked `pure` as implementations of this\n  *      contract may read from storage variables.\n  */\ninterface InterestRateModel {\n    /**\n      * @notice Gets the current borrow interest rate based on the given asset, total cash, total borrows\n      *         and total reserves.\n      * @dev The return value should be scaled by 1e18, thus a return value of\n      *      `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.\n      * @param cash The total cash of the underlying asset in the CToken\n      * @param borrows The total borrows of the underlying asset in the CToken\n      * @param reserves The total reserves of the underlying asset in the CToken\n      * @return Success or failure and the borrow interest rate per block scaled by 10e18\n      */\n    function getBorrowRate(uint256 cash, uint256 borrows, uint256 reserves) external view returns (uint256, uint256);\n\n    /**\n      * @notice Marker function used for light validation when updating the interest rate model of a market\n      * @dev Marker function used for light validation when updating the interest rate model of a market. Implementations should simply return true.\n      * @return Success or failure\n      */\n    function isInterestRateModel() external view returns (bool);\n}\n",
+  "sourcePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol",
+  "ast": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol",
+    "exportedSymbols": {
+      "InterestRateModel": [
+        5819
+      ]
+    },
+    "id": 5820,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5800,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".8"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title The Compound InterestRateModel Interface\n@author Compound\n@notice Any interest rate model should derive from this contract.\n@dev These functions are specifically not marked `pure` as implementations of this\n     contract may read from storage variables.",
+        "fullyImplemented": false,
+        "id": 5819,
+        "linearizedBaseContracts": [
+          5819
+        ],
+        "name": "InterestRateModel",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice Gets the current borrow interest rate based on the given asset, total cash, total borrows\n        and total reserves.\n@dev The return value should be scaled by 1e18, thus a return value of\n     `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.\n@param cash The total cash of the underlying asset in the CToken\n@param borrows The total borrows of the underlying asset in the CToken\n@param reserves The total reserves of the underlying asset in the CToken\n@return Success or failure and the borrow interest rate per block scaled by 10e18",
+            "id": 5813,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getBorrowRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5807,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5802,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1031:12:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5801,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1031:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5804,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1045:15:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5803,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1045:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5806,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1062:16:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5805,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1062:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1030:49:9"
+            },
+            "returnParameters": {
+              "id": 5812,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5809,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1103:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5808,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1103:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5811,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1112:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5810,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1112:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1102:18:9"
+            },
+            "scope": 5819,
+            "src": "1008:113:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Marker function used for light validation when updating the interest rate model of a market\n@dev Marker function used for light validation when updating the interest rate model of a market. Implementations should simply return true.\n@return Success or failure",
+            "id": 5818,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isInterestRateModel",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5814,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1464:2:9"
+            },
+            "returnParameters": {
+              "id": 5817,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5816,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5818,
+                  "src": "1490:4:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5815,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1490:4:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1489:6:9"
+            },
+            "scope": 5819,
+            "src": "1436:60:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5820,
+        "src": "315:1183:9"
+      }
+    ],
+    "src": "0:1499:9"
+  },
+  "legacyAST": {
+    "absolutePath": "/home/thisguy/repos/rToken-project/rtoken-monorepo/packages/contracts/compound/contracts/InterestRateModel.sol",
+    "exportedSymbols": {
+      "InterestRateModel": [
+        5819
+      ]
+    },
+    "id": 5820,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 5800,
+        "literals": [
+          "solidity",
+          "^",
+          "0.5",
+          ".8"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:23:9"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "documentation": "@title The Compound InterestRateModel Interface\n@author Compound\n@notice Any interest rate model should derive from this contract.\n@dev These functions are specifically not marked `pure` as implementations of this\n     contract may read from storage variables.",
+        "fullyImplemented": false,
+        "id": 5819,
+        "linearizedBaseContracts": [
+          5819
+        ],
+        "name": "InterestRateModel",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": null,
+            "documentation": "@notice Gets the current borrow interest rate based on the given asset, total cash, total borrows\n        and total reserves.\n@dev The return value should be scaled by 1e18, thus a return value of\n     `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.\n@param cash The total cash of the underlying asset in the CToken\n@param borrows The total borrows of the underlying asset in the CToken\n@param reserves The total reserves of the underlying asset in the CToken\n@return Success or failure and the borrow interest rate per block scaled by 10e18",
+            "id": 5813,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "getBorrowRate",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5807,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5802,
+                  "name": "cash",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1031:12:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5801,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1031:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5804,
+                  "name": "borrows",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1045:15:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5803,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1045:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5806,
+                  "name": "reserves",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1062:16:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5805,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1062:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1030:49:9"
+            },
+            "returnParameters": {
+              "id": 5812,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5809,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1103:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5808,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1103:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 5811,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5813,
+                  "src": "1112:7:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 5810,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1112:7:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1102:18:9"
+            },
+            "scope": 5819,
+            "src": "1008:113:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          },
+          {
+            "body": null,
+            "documentation": "@notice Marker function used for light validation when updating the interest rate model of a market\n@dev Marker function used for light validation when updating the interest rate model of a market. Implementations should simply return true.\n@return Success or failure",
+            "id": 5818,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "isInterestRateModel",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 5814,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "1464:2:9"
+            },
+            "returnParameters": {
+              "id": 5817,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 5816,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 5818,
+                  "src": "1490:4:9",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bool",
+                    "typeString": "bool"
+                  },
+                  "typeName": {
+                    "id": 5815,
+                    "name": "bool",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "1490:4:9",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bool",
+                      "typeString": "bool"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "1489:6:9"
+            },
+            "scope": 5819,
+            "src": "1436:60:9",
+            "stateMutability": "view",
+            "superFunction": null,
+            "visibility": "external"
+          }
+        ],
+        "scope": 5820,
+        "src": "315:1183:9"
+      }
+    ],
+    "src": "0:1499:9"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.12+commit.7709ece9.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.0.21",
+  "updatedAt": "2020-04-22T02:35:54.227Z",
+  "devdoc": {
+    "author": "Compound",
+    "details": "These functions are specifically not marked `pure` as implementations of this     contract may read from storage variables.",
+    "methods": {
+      "getBorrowRate(uint256,uint256,uint256)": {
+        "details": "The return value should be scaled by 1e18, thus a return value of     `(true, 1000000000000)` implies an interest rate of 0.000001 or 0.0001% *per block*.",
+        "params": {
+          "borrows": "The total borrows of the underlying asset in the CToken",
+          "cash": "The total cash of the underlying asset in the CToken",
+          "reserves": "The total reserves of the underlying asset in the CToken"
+        },
+        "return": "Success or failure and the borrow interest rate per block scaled by 10e18"
+      },
+      "isInterestRateModel()": {
+        "details": "Marker function used for light validation when updating the interest rate model of a market. Implementations should simply return true.",
+        "return": "Success or failure"
+      }
+    },
+    "title": "The Compound InterestRateModel Interface"
+  },
+  "userdoc": {
+    "methods": {
+      "getBorrowRate(uint256,uint256,uint256)": {
+        "notice": "Gets the current borrow interest rate based on the given asset, total cash, total borrows        and total reserves."
+      },
+      "isInterestRateModel()": {
+        "notice": "Marker function used for light validation when updating the interest rate model of a market"
+      }
+    },
+    "notice": "Any interest rate model should derive from this contract."
+  }
+}

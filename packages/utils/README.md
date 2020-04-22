@@ -13,7 +13,7 @@ This library provides tools for getting rDAI and rToken data into your dapp.
 This will be your connection to the rToken subgraph, which provides the blockchain data.
 
 ```js
-import RTokenUtils, { getClient } from '@rtoken/utils';
+import { RTokenUtils, getClient } from '@rtoken/utils';
 const apolloInstance = getClient();
 ```
 
