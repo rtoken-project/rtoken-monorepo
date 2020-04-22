@@ -6,4 +6,3 @@ package-lock.json
 *.swp
 .env
 .env.*
-dist/

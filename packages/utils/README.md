@@ -34,7 +34,7 @@ const rutils = new RTokenUtils(apolloInstance, options);
 const incomingLoans = rutils.getAllIncoming(address);
 ```
 
-You can change the default settings by passing an additional object to the constructor with the following:
+You can change the default configuration by passing an additional object to the constructor with the following:
 
 | option | default                         | description                       |
 | ------ | ------------------------------- | --------------------------------- |
@@ -53,10 +53,12 @@ This might be helpful if you want more control over the apollo-client, such as c
 const { ApolloClient } = require('apollo-client');
 const { InMemoryCache } = require('apollo-cache-inmemory');
 const { HttpLink } = require('apollo-link-http');
+const fetch = require('cross-fetch');
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
   uri: 'http://localhost:4000/',
+  fetch
 });
 
 const apolloInstance = new ApolloClient({

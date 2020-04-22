@@ -2,7 +2,8 @@
   "name": "@rtoken/utils",
   "version": "0.0.9",
   "description": "Data and analytics utility for rToken",
-  "main": "src/index.js",
+  "module": "src/index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/rtoken-project/rtoken-monorepo",
   "homepage": "https://rdai.money/",
   "author": "Patrick Gallagher <blockchainbuddha@gmail.com>",
@@ -11,9 +12,7 @@
   "scripts": {
     "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/utils.test.js",
     "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/utils.test.js",
-    "build-dev": "webpack -d --mode development",
-    "build-prod": "webpack -p --mode production",
-    "watch": "webpack --watch",
+    "build": "babel ./src --out-dir dist",
     "lint": "eslint . --fix"
   },
   "predeploy": "npm version patch",
@@ -49,6 +48,7 @@
     "@decentral.ee/web3-test-helpers": "^0.2.1",
     "@truffle/hdwallet-provider": "^1.0.26",
     "babel-loader": "^8.0.6",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "chai": "^4.2.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.9.0",
