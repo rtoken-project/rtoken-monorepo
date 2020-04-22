@@ -3,7 +3,7 @@ const rDAI = require('@rtoken/contracts/build/contracts/rDAI.json');
 
 const CONTRACTS = {
   sai: {
-    abi: erc20,
+    abi: erc20.abi,
     kovan: '0xbF7A7169562078c96f0eC1A8aFD6aE50f12e5A99',
     homestead: '0x89d24A6b4CcB1B6fAA2625fE562bDD9a23260359',
   },
@@ -13,7 +13,7 @@ const CONTRACTS = {
     homestead: '0xea8b224eDD3e342DEb514C4176c2E72Bcce6fFF9',
   },
   dai: {
-    abi: erc20,
+    abi: erc20.abi,
     kovan: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
     homestead: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   },

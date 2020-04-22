@@ -2,9 +2,6 @@ const { execute, makePromise } = require('apollo-link');
 const gql = require('graphql-tag');
 const axios = require('axios');
 
-const fetch = require('cross-fetch');
-const { createHttpLink } = require('apollo-link-http');
-
 const ethers = require('ethers');
 const {
   // parseUnits,
@@ -12,50 +9,16 @@ const {
   bigNumberify,
 } = ethers.utils;
 
-const BigNumber = require('bignumber');
-const CONTRACTS = require('../utils/contracts');
+const { getContract, getWeb3Provider } = require('../utils/web3');
 
-const DEFAULT_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/id/';
-const DEFAULT_SUBGRAPH_ID_RDAI =
-  'QmfUZ16H2GBxQ4eULAELDJjjVZcZ36TcDkwhoZ9cjF2WNc';
+const BigNumber = require('bignumber');
 
 class RTokenUtils {
-  constructor(options = {}) {
-    this.web3Provider = options.web3Provider; // Curently unused
+  constructor(apolloInstance, options = {}) {
+    this.client = apolloInstance;
     this.network = options.network || 'homestead';
     this.infuraEndpointKey = options.infuraEndpointKey || '';
-    const url = options.subgraphURL || DEFAULT_SUBGRAPH_URL;
-    const rdai_id = options.rdaiSubgraphId || DEFAULT_SUBGRAPH_ID_RDAI;
-    this.rTokenLink = new createHttpLink({
-      uri: `${url}${rdai_id}`,
-      fetch: fetch,
-    });
-    this.web3Provider = this.getWeb3Provider(
-      this.network,
-      this.infuraEndpointKey
-    );
-  }
-
-  getWeb3Provider(network, infuraEndpointKey) {
-    try {
-      const web3Provider = new ethers.providers.InfuraProvider(
-        network,
-        infuraEndpointKey
-      );
-      return web3Provider;
-    } catch (error) {
-      console.log('error setting up web3 provider: ', error);
-      return;
-    }
-  }
-
-  async getContract(name) {
-    const contract = new ethers.Contract(
-      CONTRACTS[name][this.network],
-      CONTRACTS[name].abi,
-      this.web3Provider
-    );
-    return contract;
+    this.web3Provider = getWeb3Provider(this.network, this.infuraEndpointKey);
   }
 
   // USER STATS
@@ -82,7 +45,7 @@ class RTokenUtils {
       `,
       variables: { id: address },
     };
-    let res = await makePromise(execute(this.rTokenLink, operation));
+    let res = await makePromise(execute(this.client, operation));
     return res.data.user.totalInterestPaid;
   }
 
@@ -120,7 +83,7 @@ class RTokenUtils {
       `,
       variables: { id: address },
     };
-    let res = await makePromise(execute(this.rTokenLink, operation));
+    let res = await makePromise(execute(this.client, operation));
     let loansOwned = [];
     if (res.data.account && res.data.account.loansOwned)
       loansOwned = res.data.account.loansOwned;
@@ -155,7 +118,7 @@ class RTokenUtils {
       `,
       variables: { id: address },
     };
-    let res = await makePromise(execute(this.rTokenLink, operation));
+    let res = await makePromise(execute(this.client, operation));
     let loansReceived = [];
     if (res.data.account && res.data.account.loansReceived)
       loansReceived = res.data.account.loansReceived;
@@ -203,7 +166,7 @@ class RTokenUtils {
         to: addressTo.toLowerCase(),
       },
     };
-    let res = await makePromise(execute(this.rTokenLink, operation));
+    let res = await makePromise(execute(this.client, operation));
     let interestSent = 0;
     let value = new BigNumber(0);
     if (res.data.account.loansOwned.length < 1) return 0;
@@ -329,12 +292,12 @@ class RTokenUtils {
 
   // High Priests Additions
   async receivedSavingsOf(address) {
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     const savings = await rdai.receivedSavingsOf(address);
     return savings;
   }
   async receivedSavingsOfByHat(hatID) {
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     const { recipients } = await rdai.getHatByID(hatID);
     let savingsSum = bigNumberify(0);
     if (recipients && recipients.length) {
@@ -346,7 +309,7 @@ class RTokenUtils {
     return savingsSum.toString();
   }
   async amountEarnedByHat(hatID) {
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     const { recipients } = await rdai.getHatByID(hatID);
     let totalEarned = bigNumberify(0);
     if (recipients && recipients.length) {
@@ -359,7 +322,7 @@ class RTokenUtils {
     return totalEarned.toString();
   }
   async getHatIDByAddress(address) {
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     const hat = await rdai.getHatByAddress(address);
     let hatID = null;
     if (hat) hatID = hat.hatID.toString();
@@ -387,7 +350,7 @@ class RTokenUtils {
         hatID: hatID,
       },
     };
-    let res = await makePromise(execute(this.rTokenLink, operation));
+    let res = await makePromise(execute(this.client, operation));
     let accounts = [];
     let topDonor = {
       balance: 0,
@@ -405,7 +368,7 @@ class RTokenUtils {
   async userContributionToHat(hatID, address) {
     const currentHatID = await this.getHatIDByAddress(address);
     if (currentHatID !== hatID) return 0;
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     let amount = 0;
     amount = await rdai.balanceOf(address);
     return amount.toString();
@@ -426,7 +389,7 @@ class RTokenUtils {
   }
   async sortHatsByReceivedSavingsOf(hats) {
     const hatsArray = JSON.parse(hats);
-    const rdai = await this.getContract('rdai');
+    const rdai = await getContract('rdai');
     let hatObjectsArray = [];
     if (hatsArray && hatsArray.length) {
       for (let i = 0; i < hatsArray.length; i++) {
