@@ -27,7 +27,7 @@ class RTokenAnalytics {
     const rdai_id = options.rdaiSubgraphId || DEFAULT_SUBGRAPH_ID_RDAI;
     this.rTokenLink = new createHttpLink({
       uri: `${url}${rdai_id}`,
-      fetch: fetch
+      fetch: fetch,
     });
     this.web3Provider = this.getWeb3Provider(
       this.network,
@@ -79,7 +79,7 @@ class RTokenAnalytics {
           }
         }
       `,
-      variables: { id: address }
+      variables: { id: address },
     };
     let res = await makePromise(execute(this.rTokenLink, operation));
     return res.data.user.totalInterestPaid;
@@ -117,7 +117,7 @@ class RTokenAnalytics {
           }
         }
       `,
-      variables: { id: address }
+      variables: { id: address },
     };
     let res = await makePromise(execute(this.rTokenLink, operation));
     let loansOwned = [];
@@ -152,7 +152,7 @@ class RTokenAnalytics {
           }
         }
       `,
-      variables: { id: address }
+      variables: { id: address },
     };
     let res = await makePromise(execute(this.rTokenLink, operation));
     let loansReceived = [];
@@ -199,8 +199,8 @@ class RTokenAnalytics {
       `,
       variables: {
         from: addressFrom.toLowerCase(),
-        to: addressTo.toLowerCase()
-      }
+        to: addressTo.toLowerCase(),
+      },
     };
     let res = await makePromise(execute(this.rTokenLink, operation));
     let interestSent = 0;
@@ -298,8 +298,9 @@ class RTokenAnalytics {
     // Correct, new way to get the rate
     const COMPOUND_URL =
       'https://api.compound.finance/api/v2/market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
-    const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${blockTimestamp +
-      1}&num_buckets=1`;
+    const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
+      blockTimestamp + 1
+    }&num_buckets=1`;
     const res = await axios.get(`${COMPOUND_URL}${params}`);
     return res.data.supply_rates[0].rate;
   }
@@ -382,14 +383,14 @@ class RTokenAnalytics {
         }
       `,
       variables: {
-        hatID: hatID
-      }
+        hatID: hatID,
+      },
     };
     let res = await makePromise(execute(this.rTokenLink, operation));
     let accounts = [];
     let topDonor = {
       balance: 0,
-      id: ''
+      id: '',
     };
     if (res.data && res.data.accounts) {
       accounts = res.data.accounts;
@@ -436,11 +437,11 @@ class RTokenAnalytics {
           recipients,
           proportions,
           hatID: hatsArray[i],
-          receivedSavingsOf
+          receivedSavingsOf,
         });
       }
     }
-    hatObjectsArray.sort(function(a, b) {
+    hatObjectsArray.sort(function (a, b) {
       return b.receivedSavingsOf - a.receivedSavingsOf;
     });
     return hatObjectsArray;
