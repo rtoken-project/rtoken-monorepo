@@ -1,3 +1,5 @@
-const utils = require('./main');
+const RTokenUtils = require('./main');
+const getClient = require('./utils/client');
 
-module.exports = utils;
+module.exports = { getClient };
+exports.RTokenUtils = RTokenUtils;

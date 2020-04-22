@@ -6,6 +6,75 @@ This library provides tools for getting rDAI and rToken data into your dapp.
 
 > :warning: Warning: the code in this package is under active development. Please contact the team if you have questions via twitter/discord.
 
+# Usage
+
+#### 1. Create a new `apollo-client` instance.
+
+This will be your connection to the rToken subgraph, which provides the blockchain data.
+
+```js
+import RTokenUtils, { getClient } from '@rtoken/utils';
+const apolloInstance = getClient();
+```
+
+You can also configure your client by passing an object to `getClient()` with the following:
+
+| option | default                             | description                       |
+| ------ | ----------------------------------- | --------------------------------- |
+| uri    | (URL for the mainnet rDAI subgraph) | Location of your rToken subgraph  |
+| debug  | `false`                             | displays log statements on errors |
+
+If you want even more control you can instantiate the Apollo client yourself (see [Using your own Apollo client](#Using-your-own-Apollo-client)).
+
+#### 2. Instantiate the `RTokenUtils` library and use
+
+```js
+const rutils = new RTokenUtils(apolloInstance, options);
+
+const incomingLoans = rutils.getAllIncoming(address);
+```
+
+You can change the default settings by passing an additional object to the constructor with the following:
+
+| option | default                         | description                       |
+| ------ | ------------------------------- | --------------------------------- |
+| uri    | (URL for mainnet rDAI subgraph) | Location of the rToken subgraph   |
+| debug  | `false`                         | displays log statements on errors |
+
+#### 3. Have fun with rDAI!
+
+If you have any questions, please contact us via Discord.
+
+### Using your own Apollo client
+
+This might be helpful if you want more control over the apollo-client, such as custom caching options or authentication of a private client. See `/src/utils/client` for how we instantiate the client.
+
+```js
+const { ApolloClient } = require('apollo-client');
+const { InMemoryCache } = require('apollo-cache-inmemory');
+const { HttpLink } = require('apollo-link-http');
+
+const cache = new InMemoryCache();
+const link = new HttpLink({
+  uri: 'http://localhost:4000/',
+});
+
+const apolloInstance = new ApolloClient({
+  link,
+  cache,
+  onError: (e) => {
+    console.log(e);
+  },
+  defaultOptions: {
+    query: {
+      fetchPolicy: 'network-only',
+    },
+  },
+});
+```
+
+# Deprecated old usage
+
 ## Install
 
 ```bash

@@ -1,6 +1,6 @@
 const ethers = require('ethers');
 const axios = require('axios');
-const RTokenAnalytics = require('../src');
+const RTokenUtils = require('../src');
 // const Registry = require('eth-registry');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
@@ -55,7 +55,7 @@ test('RTokenAnalytics', async (accounts) => {
       subgraphURL,
       web3Provider,
     };
-    rtokenAnalytics = new RTokenAnalytics(options);
+    rtokenAnalytics = new RTokenUtils(options);
   });
 
   it('getAllOutgoing()', async () => {

@@ -19,11 +19,9 @@ const DEFAULT_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/id/';
 const DEFAULT_SUBGRAPH_ID_RDAI =
   'QmfUZ16H2GBxQ4eULAELDJjjVZcZ36TcDkwhoZ9cjF2WNc';
 
-class RTokenAnalytics {
+class RTokenUtils {
   constructor(options = {}) {
     this.web3Provider = options.web3Provider; // Curently unused
-    this.interestRate = options.interestRate || 0; // Currently unused
-    this.interestTolerance = options.interestTolerance || 0; // Currently unused
     this.network = options.network || 'homestead';
     this.infuraEndpointKey = options.infuraEndpointKey || '';
     const url = options.subgraphURL || DEFAULT_SUBGRAPH_URL;
@@ -451,4 +449,4 @@ class RTokenAnalytics {
   }
 }
 
-module.exports = RTokenAnalytics;
+module.exports = RTokenUtils;
