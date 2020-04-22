@@ -1,3 +1,3 @@
-import * as utils from './utils';
+const utils = require('./main');
 
-export default utils;
+module.exports = utils;

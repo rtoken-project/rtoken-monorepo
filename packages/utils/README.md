@@ -1,8 +1,10 @@
 # @rtoken/utils
 
-> NOTE: This package was formerly named "rtoken-analytics". There is A LOT going on in this one package, so we may break this apart into smaller individual pieces for each.
-
 This library provides tools for getting rDAI and rToken data into your dapp.
+
+> NOTE: This package was formerly named `rtoken-analytics`. See the archived repo [here](https://github.com/rtoken-project/rtoken-analytics).
+
+> :warning: Warning: the code in this package is under active development. Please contact the team if you have questions via twitter/discord.
 
 ## Install
 
@@ -34,7 +36,7 @@ If you are using your own rToken subgraph, provide the information in the constr
 ```js
 const options = {
   subgraphURL: 'some other url',
-  rdaiSubgraphId: 'some other id'
+  rdaiSubgraphId: 'some other id',
 };
 const rTokenAnalytics = new RTokenAnalytics(options);
 ```
@@ -51,13 +53,13 @@ Returns array of active loans. Example:
 [
   {
     amount: '0.50000000058207661',
-    hat: {id: '11'},
-    recipient: {id: '0x358f6260f1f90cd11a10e251ce16ea526f131b02'}
+    hat: { id: '11' },
+    recipient: { id: '0x358f6260f1f90cd11a10e251ce16ea526f131b02' },
   },
   {
-    amount: '24.49999999941792339'
+    amount: '24.49999999941792339',
     // ...
-  }
+  },
 ];
 ```
 
@@ -94,7 +96,7 @@ const getCompoundRate = async () => {
 
   return {
     compoundRate,
-    compoundRateFormatted
+    compoundRateFormatted,
   };
 };
 ```
@@ -102,7 +104,7 @@ const getCompoundRate = async () => {
 Then use it like this
 
 ```js
-const {compoundRate, compoundRateFormatted} = await getCompoundRate();
+const { compoundRate, compoundRateFormatted } = await getCompoundRate();
 
 console.log(`Compound Rate: ${compoundRateFormatted}%`);
 // > Compound Rate: 4.56%

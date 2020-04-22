@@ -1,4 +1,3 @@
-require('babel-polyfill');
 const { execute, makePromise } = require('apollo-link');
 const gql = require('graphql-tag');
 const axios = require('axios');
@@ -7,10 +6,14 @@ const fetch = require('cross-fetch');
 const { createHttpLink } = require('apollo-link-http');
 
 const ethers = require('ethers');
-const { parseUnits, formatUnits, bigNumberify } = ethers.utils;
+const {
+  // parseUnits,
+  // formatUnits,
+  bigNumberify,
+} = ethers.utils;
 
 const BigNumber = require('bignumber');
-const CONTRACTS = require('./constants');
+const CONTRACTS = require('../utils/contracts');
 
 const DEFAULT_SUBGRAPH_URL = 'https://api.thegraph.com/subgraphs/id/';
 const DEFAULT_SUBGRAPH_ID_RDAI =

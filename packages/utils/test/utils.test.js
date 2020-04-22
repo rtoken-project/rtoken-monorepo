@@ -1,6 +1,6 @@
 const ethers = require('ethers');
 const axios = require('axios');
-const RTokenAnalytics = require('../src/rtoken-analytics');
+const RTokenAnalytics = require('../src');
 // const Registry = require('eth-registry');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
