@@ -1,6 +1,6 @@
 {
   "name": "@rtoken/utils",
-  "version": "0.0.9",
+  "version": "1.0.1-rc6",
   "description": "Data and analytics utility for rToken",
   "module": "src/index.js",
   "main": "dist/index.js",
