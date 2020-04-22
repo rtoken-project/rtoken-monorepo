@@ -5,6 +5,10 @@
     "repository": "https://github.com/rtoken-project/rtoken-monorepo",
     "homepage": "https://rdai.money/",
     "license": "MIT",
+    "files": [
+        "/contracts/**/*.sol",
+        "/build/contracts/*.json"
+    ],
     "dependencies": {
         "@openzeppelin/contracts": "2.4.0",
         "contracts": "^0.4.0"
