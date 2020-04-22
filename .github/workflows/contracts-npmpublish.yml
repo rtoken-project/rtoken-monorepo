@@ -1,4 +1,4 @@
-name: Contracts Node.js Package
+name: @rtoken/contracts Node.js Package
 
 on:
   release:
