@@ -1,6 +1,7 @@
 const ethers = require('ethers');
 const axios = require('axios');
 const { RTokenUtils, getClient } = require('../src');
+const { getWeb3Provider } = require('../src/utils/web3');
 // const Registry = require('eth-registry');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
@@ -29,8 +30,6 @@ const isLocal = process.env.LOCAL;
 
 let apolloInstance;
 
-// beforeAll(async () => {});
-
 describe('Tests library initialization', () => {
   it('should successfully create a new apollo-client instance', () => {
     apolloInstance = getClient();
@@ -45,7 +44,6 @@ describe('Tests library initialization', () => {
   });
   it('should successfully create a new library object', () => {
     const rutils = new RTokenUtils(apolloInstance);
-    console.log(JSON.stringify(rutils));
     expect(rutils).to.be.an('object');
   });
   it('should successfully create a new library object with options', () => {

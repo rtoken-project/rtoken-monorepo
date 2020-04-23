@@ -1,24 +1,24 @@
-const { execute, makePromise } = require('apollo-link');
-const gql = require('graphql-tag');
-const axios = require('axios');
-const ethers = require('ethers');
+import { execute, makePromise } from 'apollo-link';
+import gql from 'graphql-tag';
+// import axios from 'axios';
+import { ethers } from 'ethers';
 const {
   // parseUnits,
   // formatUnits,
   bigNumberify,
 } = ethers.utils;
 
-import Users from './users';
-const { getContract, getWeb3Provider } = require('./utils/web3');
+import { getContract } from './utils/web3';
 
-const BigNumber = require('bignumber');
+import BigNumber from 'bignumber';
 
-class RTokenUtils {
-  constructor(apolloInstance, options = {}) {
+export default class RTokenUtils {
+  constructor(apolloInstance, web3, options = {}) {
     this.client = apolloInstance;
-    this.network = options.network || 'homestead';
-    this.infuraEndpointKey = options.infuraEndpointKey || '';
-    this.web3Provider = getWeb3Provider(this.network, this.infuraEndpointKey);
+    this.web3 = web3;
+
+    this.options = {};
+    this.options.network = options.network || 'homestead';
   }
 
   // GLOBAL
@@ -163,5 +163,3 @@ class RTokenUtils {
     return hatObjectsArray;
   }
 }
-
-module.exports = RTokenUtils;

@@ -1,13 +1,13 @@
-const { ApolloClient } = require('apollo-client');
-const { InMemoryCache } = require('apollo-cache-inmemory');
-const { HttpLink } = require('apollo-link-http');
-const fetch = require('cross-fetch');
+import { ApolloClient } from 'apollo-client';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { HttpLink } from 'apollo-link-http';
+import fetch from 'cross-fetch';
 
 // rDAI mainnet subgraph
 const DEFAULT_SUBGRAPH_URL =
   'https://api.thegraph.com/subgraphs/name/pi0neerpat/mcd-rdai';
 
-const getClient = ({ uri = DEFAULT_SUBGRAPH_URL, debug } = {}) => {
+export const getClient = ({ uri = DEFAULT_SUBGRAPH_URL, debug } = {}) => {
   const cache = new InMemoryCache();
   const link = new HttpLink({
     uri,
@@ -27,4 +27,3 @@ const getClient = ({ uri = DEFAULT_SUBGRAPH_URL, debug } = {}) => {
     },
   });
 };
-module.exports = getClient;
