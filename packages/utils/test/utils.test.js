@@ -39,13 +39,13 @@ describe('Tests library initialization', () => {
   it('should successfully create a new apollo-client instance with options', () => {
     apolloInstance = getClient({
       uri: 'http://localhost:8000/subgraphs/name/rtoken-test',
-      default: true
+      default: true,
     });
     expect(apolloInstance).to.be.an('object');
   });
   it('should successfully create a new library object', () => {
     const rutils = new RTokenUtils(apolloInstance);
-    console.log((JSON.stringify(rutils)));
+    console.log(JSON.stringify(rutils));
     expect(rutils).to.be.an('object');
   });
   it('should successfully create a new library object with options', () => {

@@ -8,12 +8,12 @@ const {
   bigNumberify,
 } = ethers.utils;
 
-import Users from "./users"
-const { getContract, getWeb3Provider } = require('../utils/web3');
+import Users from './users';
+const { getContract, getWeb3Provider } = require('./utils/web3');
 
 const BigNumber = require('bignumber');
 
-class RTokenUtils  {
+class RTokenUtils {
   constructor(apolloInstance, options = {}) {
     this.client = apolloInstance;
     this.network = options.network || 'homestead';
