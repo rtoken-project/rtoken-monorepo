@@ -10,8 +10,8 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test/utils.test.js --require @babel/register",
-    "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test/utils.test.js --require @babel/register",
+    "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test --require @babel/register",
+    "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test --require @babel/register",
     "build": "babel ./src --out-dir dist",
     "lint": "eslint . --fix"
   },

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
 import axios from 'axios';
-import RTokenUtils, { getClient } from '../src';
+import { getRutils } from './utils/client';
 // const Registry = require('eth-registry');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
@@ -27,33 +27,10 @@ const subgraphURL = process.env.SUBGRAPH_URL;
 const rdaiSubgraphId = process.env.SUBGRAPH_ID;
 const isLocal = process.env.LOCAL;
 
-let apolloInstance;
 let rutils;
 
-describe('Tests library initialization', () => {
-  it('should successfully create a new apollo-client instance', () => {
-    apolloInstance = getClient();
-    expect(apolloInstance).to.be.an('object');
-  });
-  it('should successfully create a new apollo-client instance with options', () => {
-    apolloInstance = getClient({
-      uri: 'http://localhost:8000/subgraphs/name/rtoken-test',
-      default: true,
-    });
-    expect(apolloInstance).to.be.an('object');
-  });
-  it('should successfully create a new library object', () => {
-    rutils = new RTokenUtils(apolloInstance);
-    expect(rutils).to.be.an('object');
-  });
-  it('should successfully create a new library object with options', () => {
-    const options = {
-      network: 'homestead',
-      infuraEndpointKey: process.env.INFURA_ENDPOINT_KEY,
-    };
-    rutils = new RTokenUtils(apolloInstance, options);
-    expect(rutils).to.be.an('object');
-  });
+before(function () {
+  rutils = getRutils();
 });
 
 describe('Tests basic user lookup', () => {

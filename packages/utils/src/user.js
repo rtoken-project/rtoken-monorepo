@@ -14,9 +14,11 @@ import { getUserById } from '../src/graphql-operations/queries';
 export default class User {
   constructor(client, options, globalOptions) {
     this.client = client;
+
     this.options = options;
-    this.globalOptions = globalOptions;
     this.address = options.address;
+
+    this.globalOptions = globalOptions;
   }
 
   // Returns all interest paid to the user
@@ -29,7 +31,7 @@ export default class User {
       },
     });
     if (!res.data.account) {
-      // TODO handle error
+      // TODO handle error no account found
     }
     return res.data.account;
   }
