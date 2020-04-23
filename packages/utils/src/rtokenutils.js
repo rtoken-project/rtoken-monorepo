@@ -13,12 +13,15 @@ import { getContract } from './utils/web3';
 import BigNumber from 'bignumber';
 
 export default class RTokenUtils {
-  constructor(apolloInstance, web3, options = {}) {
+  constructor(apolloInstance, options = {}) {
     this.client = apolloInstance;
-    this.web3 = web3;
 
     this.options = {};
     this.options.network = options.network || 'homestead';
+  }
+
+  user(options) {
+    console.log(options);
   }
 
   // GLOBAL

@@ -1,7 +1,6 @@
-const ethers = require('ethers');
-const axios = require('axios');
-const { RTokenUtils, getClient } = require('../src');
-const { getWeb3Provider } = require('../src/utils/web3');
+import { ethers } from 'ethers';
+import axios from 'axios';
+import RTokenUtils, { getClient } from '../src';
 // const Registry = require('eth-registry');
 var test = require('mocha').describe;
 var assert = require('chai').assert;
@@ -29,6 +28,7 @@ const rdaiSubgraphId = process.env.SUBGRAPH_ID;
 const isLocal = process.env.LOCAL;
 
 let apolloInstance;
+let rutils;
 
 describe('Tests library initialization', () => {
   it('should successfully create a new apollo-client instance', () => {
@@ -43,7 +43,7 @@ describe('Tests library initialization', () => {
     expect(apolloInstance).to.be.an('object');
   });
   it('should successfully create a new library object', () => {
-    const rutils = new RTokenUtils(apolloInstance);
+    rutils = new RTokenUtils(apolloInstance);
     expect(rutils).to.be.an('object');
   });
   it('should successfully create a new library object with options', () => {
@@ -51,8 +51,15 @@ describe('Tests library initialization', () => {
       network: 'homestead',
       infuraEndpointKey: process.env.INFURA_ENDPOINT_KEY,
     };
-    const rutils = new RTokenUtils(apolloInstance, options);
+    rutils = new RTokenUtils(apolloInstance, options);
     expect(rutils).to.be.an('object');
+  });
+});
+
+describe('Tests basic user lookup', () => {
+  it('should get a user address', () => {
+    const balance = rutils.user.balance();
+    console.log(user);
   });
 });
 

@@ -1,4 +1,3 @@
-
 <p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
 
 <p align="center">
@@ -8,9 +7,7 @@
     <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
 </p>
 
-@rtoken/utils
-=========================
-
+# @rtoken/utils
 
 This library provides tools for getting rDAI and rToken data into your dapp.
 
@@ -20,30 +17,31 @@ This library provides tools for getting rDAI and rToken data into your dapp.
 
 # Usage
 
-#### 1. Create a new `apollo-client` instance.
+#### 1. Connect to the Subgraph
 
-This will be your connection to the rToken subgraph, which provides the blockchain data.
+This will be your connection to the rToken subgraph (`../packages/subgraph`), which provides the blockchain data.
 
 ```js
-import { RTokenUtils, getClient } from '@rtoken/utils';
+import { getClient } from '@rtoken/utils';
 const apolloInstance = getClient();
 ```
 
-You can also configure your client by passing an object to `getClient()` with the following:
+You can configure your client by passing an object to `getClient()` with the following:
 
-| option | default                             | description                       |
-| ------ | ----------------------------------- | --------------------------------- |
-| uri    | (URL for the mainnet rDAI subgraph) | Location of your rToken subgraph  |
-| debug  | `false`                             | displays log statements on errors |
+| option | default                     | description                      |
+| ------ | --------------------------- | -------------------------------- |
+| uri    | (mainnet rDAI subgraph URL) | Location of your rToken subgraph |
+| debug  | `false`                     | Display logs on Apollo errors    |
 
 If you want even more control you can instantiate the Apollo client yourself (see [Using your own Apollo client](#Using-your-own-Apollo-client)).
 
 #### 2. Instantiate the `RTokenUtils` library and use
 
 ```js
-const rutils = new RTokenUtils(apolloInstance, options);
+import RTokenUtils, { getClient } from '@rtoken/utils';
 
-const incomingLoans = rutils.getAllIncoming(address);
+const apolloInstance = getClient();
+const rutils = new RTokenUtils(apolloInstance, options);
 ```
 
 You can change the default configuration by passing an additional object to the constructor with the following:
@@ -53,7 +51,23 @@ You can change the default configuration by passing an additional object to the 
 | uri    | (URL for mainnet rDAI subgraph) | Location of the rToken subgraph   |
 | debug  | `false`                         | displays log statements on errors |
 
-#### 3. Have fun with rDAI!
+#### 3. Create and use your objects
+
+Users, Hats, and Global objects are available for inspecting.
+
+```js
+// Users
+const userA = rutils.user({ address: '0xabc...' });
+const interestSent = userA.sentInterestTo('0xbca...');
+
+// Hats
+const myHat = rutils.hat(11);
+const totalInterest = myHat.totalInterestSent();
+
+// Global
+const rDAIGlobal = rutils.global();
+const globalInterest = rDAIGlobal.totalInterestSent();
+```
 
 If you have any questions, please contact us via Discord.
 
@@ -70,7 +84,7 @@ const fetch = require('cross-fetch');
 const cache = new InMemoryCache();
 const link = new HttpLink({
   uri: 'http://localhost:4000/',
-  fetch
+  fetch,
 });
 
 const apolloInstance = new ApolloClient({
