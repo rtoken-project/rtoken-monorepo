@@ -1,55 +1,32 @@
-import { ethers } from 'ethers';
-import { getRutils } from './utils/client';
-
-var test = require('mocha').describe;
-var assert = require('chai').assert;
+// var test = require('mocha').describe;
+// var assert = require('chai').assert;
 var expect = require('expect.js');
 
-const BigNumber = require('bignumber');
+import { getRutils } from './utils/client';
+import { getUsers } from './utils/users';
 
-// NOTE: If Compound API is slow, you can use this hard coded value instead.
-const debug = {
-  hardCodeInterestRate: '0.048356383475363732',
-  // hardCodeInterestRate: false
-};
-const COMPOUND_URL = 'https://api.compound.finance/api/v2/ctoken?addresses[]=';
-const daiCompoundAddress = '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
+const rutils = getRutils();
+const users = getUsers();
+const { customer1, customer2, customer3 } = users;
 
-// NOTE: change these if you are using a custom rToken (e.g. not rDAI)
-// A should be sending interest to B
-const userA = '0x9492510bbcb93b6992d8b7bb67888558e12dcac4';
-const userB = '0x8605e554111d8ea3295e69addaf8b2abf60d68a3';
-
-const interestTolerance = 0;
-// const network = 'mainnet';
-const subgraphURL = process.env.SUBGRAPH_URL;
-const rdaiSubgraphId = process.env.SUBGRAPH_ID;
-const isLocal = process.env.LOCAL;
-
-let rutils;
-
-before(function () {
-  rutils = getRutils();
-});
+// before(function () {
+// });
 
 describe('Tests basic user lookup', () => {
   it('should successfully get a single account details', async () => {
-    const address = '0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c';
     const user = rutils.user({
-      address: address,
+      address: customer1.address,
     });
     const details = await user.details();
-    expect(details.id).to.be(address);
+    expect(details.id).to.be(customer1.address);
   });
-  // it('should successfully get the total interest paid to an account', async () => {
-  //   const address = '0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c';
-  //   const user = rutils.user({
-  //     address: address,
-  //   });
-  //   const interestPaid = await user.totalInterestGenerated();
-  //   console.log(interestPaid);
-  //   // expect(details.id).to.be(address);
-  // });
+  it('should successfully get the token balance for an account', async () => {
+    const user = rutils.user({
+      address: customer1.address,
+    });
+    const details = await user.details();
+    expect(details.id).to.be(customer1.address);
+  });
 });
 
 // test('RTokenAnalytics', async (accounts) => {

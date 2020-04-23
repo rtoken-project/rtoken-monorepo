@@ -1,3 +1,9 @@
+# Notes for @rtoken/utils
+
+## Todo
+
+- remove unused dependencies
+
 ### General
 
 Call handlers can subscribe to functions rather than events, but not available on Rinkeby or Ganache (due to lack of Parity tracing API)

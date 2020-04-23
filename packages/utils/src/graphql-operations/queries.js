@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
 export const getAccountById = gql`
-  query account($id: Bytes) {
+  query accountById($id: Bytes) {
     account(id: $id) {
       id
       balance

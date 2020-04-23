@@ -1,6 +1,6 @@
-import { getRutils } from './utils/client';
-
 var expect = require('expect.js');
+
+import { getRutils } from './utils/client';
 
 let rutils;
 
