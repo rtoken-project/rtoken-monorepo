@@ -1,29 +1,47 @@
-class Users {
-  // USER STATS
+import BigNumber from 'bignumber';
+import { execute, makePromise } from 'apollo-link';
+import gql from 'graphql-tag';
+// import axios from 'axios';
+import { ethers } from 'ethers';
+const {
+  // parseUnits,
+  // formatUnits,
+  bigNumberify,
+} = ethers.utils;
 
-  // Returns all interest accrued within time period no matter where it was sent
-  getTotalInterestGenerated(address, timePeriod) {
-    // TODO:
-    return {};
+import { getUserById } from '../src/graphql-operations/queries';
+
+export default class User {
+  constructor(client, options, globalOptions) {
+    this.client = client;
+    this.options = options;
+    this.globalOptions = globalOptions;
+    this.address = options.address;
   }
 
-  // Returns all accrued interest retained by the wallet
-  //TODO
-
   // Returns all interest paid to the user
-  async getTotalInterestPaid(address, timePeriod) {
-    const operation = {
-      query: gql`
-        query getUser($id: Bytes) {
-          user(id: $id) {
-            id
-            totalInterestPaid
-          }
-        }
-      `,
-      variables: { id: address },
-    };
-    let res = await makePromise(execute(this.client, operation));
+  async details() {
+    console.log('details: ', this.address);
+    const res = await this.client.query({
+      query: getUserById,
+      variables: {
+        id: this.address,
+      },
+    });
+    if (!res.data.account) {
+      // TODO handle error
+    }
+    return res.data.account;
+  }
+
+  async getTotalInterestPaid() {
+    const res = await this.client.query({
+      query: getUserById,
+      vatiables: {
+        id: this.address,
+      },
+    });
+    console.log(res.data.user.totalInterestPaid);
     return res.data.user.totalInterestPaid;
   }
 
@@ -211,41 +229,31 @@ class Users {
     return value * period * startingAPY;
   }
 
-  async _getCompoundRate(blockTimestamp) {
-    // Note: This is incorrect. Calculating rate is much more complex than just getting it from storage.
-    // I was trying to avoid using compoiund historic data API, since its so slow...
+  ////////////////////////////////////////////
+  // TODO:
+  ////////////////////////////////////////////
 
-    // const res = await this.web3Provider.getStorageAt(
-    //   '0xec163986cC9a6593D6AdDcBFf5509430D348030F',
-    //   1,
-    //   9220708
-    // );
-    // const unformatted_rate = new BigNumber(2102400 * parseInt(res, 16));
-    // const rate = unformatted_rate.times(BigNumber(10).pow(-18));
-    // console.log(
-    //   `Compound rate (WRONG): ${Math.round(rate.toNumber() * 100000) / 1000}%`
-    // );
+  // // Returns array of objects for each instance that a address’ rToken balance changes. Object returns:
+  // getTokenBalanceHistoryByAddress(address, timePeriod) {
+  //   // TODO
+  //   return {
+  //     // Amount of balance change
+  //     // Transaction Hash
+  //   };
+  // }
+  //
+  // // Returns all interest accrued within time period no matter where it was sent
+  // getTotalInterestGenerated(address, timePeriod) {
+  //   return {};
+  // }
 
-    // Used to inspect storage on a contract
-    // for (let index = 0; index < 23; index++) {
-    //   const rate = await this.web3Provider.getStorageAt(
-    //     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
-    //     index,
-    //     9220800
-    //   );
-    //   // console.log(`[${index}] ${rate}`);
-    //   console.log(`[${index}] ${parseInt(rate, 16)}`);
-    // }
+  //////////////////////////////////
+  // Deprecated due to dependency on web3 connection
+  /////////////////////////////////
 
-    // Correct, new way to get the rate
-    const COMPOUND_URL =
-      'https://api.compound.finance/api/v2/market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
-    const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
-      blockTimestamp + 1
-    }&num_buckets=1`;
-    const res = await axios.get(`${COMPOUND_URL}${params}`);
-    return res.data.supply_rates[0].rate;
-  }
+  // async receivedSavingsOf(address) {
+  //   const rdai = await getContract('rdai');
+  //   const savings = await rdai.receivedSavingsOf(address);
+  //   return savings;
+  // }
 }
-
-export default Users;

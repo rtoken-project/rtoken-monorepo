@@ -57,9 +57,12 @@ describe('Tests library initialization', () => {
 });
 
 describe('Tests basic user lookup', () => {
-  it('should get a user address', () => {
-    const balance = rutils.user.balance();
-    console.log(user);
+  it('should successfully get a user details', async () => {
+    const user = rutils.user({
+      address: '0xbf44e907c4b6583d2cd3d0a0c403403bb44c4a3c',
+    });
+    const details = await user.details();
+    console.log(details);
   });
 });
 

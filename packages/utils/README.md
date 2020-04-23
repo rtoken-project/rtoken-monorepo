@@ -17,7 +17,7 @@ This library provides tools for getting rDAI and rToken data into your dapp.
 
 # Usage
 
-#### 1. Connect to the Subgraph
+#### 1. Connect to the Data :raised_hands: :rainbow:
 
 This will be your connection to the rToken subgraph (`../packages/subgraph`), which provides the blockchain data.
 
@@ -46,10 +46,9 @@ const rutils = new RTokenUtils(apolloInstance, options);
 
 You can change the default configuration by passing an additional object to the constructor with the following:
 
-| option | default                         | description                       |
-| ------ | ------------------------------- | --------------------------------- |
-| uri    | (URL for mainnet rDAI subgraph) | Location of the rToken subgraph   |
-| debug  | `false`                         | displays log statements on errors |
+| option | default | description  |
+| ------ | ------- | ------------ |
+| debug  | `false` | print errors |
 
 #### 3. Create and use your objects
 
