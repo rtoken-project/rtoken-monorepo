@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
-export const getUserById = gql`
-  query getUser($id: Bytes) {
+export const getAccountById = gql`
+  query account($id: Bytes) {
     account(id: $id) {
       id
       balance
@@ -21,6 +21,20 @@ export const getUserById = gql`
         owner {
           id
         }
+      }
+    }
+  }
+`;
+
+export const getAllUsersWithHat = gql`
+  query allUsersWithHat($id: String) {
+    accounts(
+      where: { id_not: "0x0000000000000000000000000000000000000000", hat: $id }
+    ) {
+      id
+      balance
+      hat {
+        id
       }
     }
   }

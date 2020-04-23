@@ -6,7 +6,7 @@ export const getRutils = () => {
 
   const apolloInstance = getClient({
     uri,
-    debug: true,
+    debug: false,
   });
   const options = { debug: true };
   return new RTokenUtils(apolloInstance, options);
