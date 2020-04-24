@@ -69,8 +69,8 @@ docker-compose up
 In a new terminal, navigate to `@rtoken/contracts` and start running ganache-cli and deploy the contracts.
 
 ```bash
-ganache-cli -h 0.0.0.0 -m sweet
-# using the "sweet" mnemonic helps here so we can hard-code our addresses for testing
+ganache-cli -h 0.0.0.0 -m 'deputy taste judge cave mosquito supply hospital clarify argue aware abuse glory'
+# using the same mnemonic allows for hard-coding the address in `subgraph.yaml` and the test files. It's not the best way, but it works!
 
 # Then in a new terminal
 truffle test --network subgraph test/subgraphDeployment.test.js
