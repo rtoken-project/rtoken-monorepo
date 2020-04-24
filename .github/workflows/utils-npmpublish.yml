@@ -15,9 +15,9 @@ jobs:
           node-version: 12
           registry-url: https://registry.npmjs.org/
       - name: yarn build and publish
-        - working-directory: packages/utils
-        - run: yarn install
-        - run: yarn build
-        - run: yarn publish
+        working-directory: packages/utils
+        run: yarn install
+        run: yarn build
+        run: yarn publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
