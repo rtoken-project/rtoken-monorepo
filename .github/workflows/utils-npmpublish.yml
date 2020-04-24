@@ -17,7 +17,7 @@ jobs:
       - name: yarn build and publish
         working-directory: packages/utils
         run: |
-          yarn bootstrap
+          npx lerna bootstrap
           yarn build
           yarn publish
         env:
