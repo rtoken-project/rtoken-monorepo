@@ -1,14 +1,10 @@
 // var test = require('mocha').describe;
 // var assert = require('chai').assert;
 import { ethers } from 'ethers';
-const {
-  // parseUnits,
-  formatUnits,
-  // bigNumberify,
-} = ethers.utils;
+const { formatUnits } = ethers.utils;
 var expect = require('expect.js');
 
-import { getRutils } from './utils/client';
+import { getRutils } from './utils/general';
 import { getUsers } from './utils/users';
 import { getRTokenContract } from './utils/web3';
 

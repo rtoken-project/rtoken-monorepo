@@ -10,7 +10,6 @@ export default class User {
     this.globalOptions = globalOptions;
   }
 
-  // Returns all interest paid to the user
   async details() {
     const res = await this.client.query({
       query: getAccountById,

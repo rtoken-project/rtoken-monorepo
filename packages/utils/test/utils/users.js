@@ -34,21 +34,3 @@ export const getUsers = () => {
   });
   return users;
 };
-
-// export const deleteTestUsers = async (prisma) => {
-//   await Promise.all(
-//     Object.keys(users).map(async (user) => {
-//       const id = await prisma
-//         .wallet({ address: users[user].address })
-//         .owner()
-//         .id();
-//       if (id) {
-//         await prisma.deleteUser({ id: id });
-//         console.log(`Test user "${user}": Deleted!`);
-//       } else {
-//         console.log(`Test user "${user}": Not found`);
-//       }
-//     })
-//   );
-//   return;
-// };

@@ -2,7 +2,7 @@
 // // var assert = require('chai').assert;
 // var expect = require('expect.js');
 //
-// import { getRutils } from './utils/client';
+// import { getRutils } from './utils/general';
 // import { getUsers } from './utils/users';
 //
 // const rutils = getRutils();
