@@ -2,7 +2,9 @@
 node_modules/
 *.swp
 yarn-error.log
+yarn.lock
 *.swp
 .env
 .env.*
 dist/
+package-lock.json
