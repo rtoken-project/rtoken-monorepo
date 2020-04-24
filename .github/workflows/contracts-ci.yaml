@@ -6,7 +6,9 @@ on:
     - master
   pull_request:
     branches:
-    - master
+      - master
+    paths:
+    - 'packages/contracts/**'
 
 jobs:
 
