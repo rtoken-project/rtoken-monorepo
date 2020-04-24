@@ -17,7 +17,7 @@ jobs:
       - name: yarn build and publish
         working-directory: packages/utils
         run: |
-          yarn install
+          yarn bootstrap
           yarn build
           yarn publish
         env:
