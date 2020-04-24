@@ -1,11 +1,3 @@
-// import axios from 'axios';
-// import { ethers } from 'ethers';
-// const {
-//   // parseUnits,
-//   // formatUnits,
-//   bigNumberify,
-// } = ethers.utils;
-
 import { getAccountById } from '../src/graphql-operations/queries';
 
 export default class User {

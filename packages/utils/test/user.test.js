@@ -1,16 +1,25 @@
 // var test = require('mocha').describe;
 // var assert = require('chai').assert;
+import { ethers } from 'ethers';
+const {
+  // parseUnits,
+  formatUnits,
+  // bigNumberify,
+} = ethers.utils;
 var expect = require('expect.js');
 
 import { getRutils } from './utils/client';
 import { getUsers } from './utils/users';
+import { getRTokenContract } from './utils/web3';
 
 const rutils = getRutils();
 const users = getUsers();
 const { customer1, customer2, customer3 } = users;
+let rtoken;
 
-// before(function () {
-// });
+before(async () => {
+  rtoken = await getRTokenContract();
+});
 
 describe('Tests basic user lookup', () => {
   it('should successfully get a single account details', async () => {
@@ -21,11 +30,13 @@ describe('Tests basic user lookup', () => {
     expect(details.id).to.be(customer1.address);
   });
   it('should successfully get the token balance for an account', async () => {
+    const balanceBn = await rtoken.balanceOf(customer1.address);
+    const balance = formatUnits(balanceBn, 18);
     const user = rutils.user({
       address: customer1.address,
     });
     const details = await user.details();
-    expect(details.id).to.be(customer1.address);
+    expect(details.balance).to.be(balance);
   });
 });
 
