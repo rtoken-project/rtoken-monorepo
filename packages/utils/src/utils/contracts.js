@@ -1,5 +1,5 @@
-const erc20 = require('@rtoken/contracts/build/contracts/ERC20.json');
-const rDAI = require('@rtoken/contracts/build/contracts/rDAI.json');
+import erc20 from '@rtoken/contracts/build/contracts/ERC20.json';
+import rDAI from '@rtoken/contracts/build/contracts/rDAI.json';
 
 const CONTRACTS = {
   sai: {
@@ -23,4 +23,4 @@ const CONTRACTS = {
     homestead: '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0',
   },
 };
-module.exports = CONTRACTS;
+export default CONTRACTS;

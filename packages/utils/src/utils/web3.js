@@ -1,5 +1,5 @@
-const ethers = require('ethers');
-const CONTRACTS = require('../utils/contracts');
+import ethers from 'ethers';
+import CONTRACTS from '../utils/contracts';
 
 const getWeb3Provider = (network, infuraKey) => {
   try {
@@ -23,4 +23,4 @@ const getContract = async (name) => {
   return contract;
 };
 
-module.exports = { getContract, getWeb3Provider };
+export { getContract, getWeb3Provider };

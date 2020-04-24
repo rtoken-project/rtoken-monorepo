@@ -1,45 +1,12 @@
+# Notes for @rtoken/utils
+
+## Todo
+
+- remove unused dependencies
+
 ### General
 
 Call handlers can subscribe to functions rather than events, but not available on Rinkeby or Ganache (due to lack of Parity tracing API)
-
-### Commands
-
-test if the mapping is correct with
-
-`yarn build`
-
-Generate the output with
-
-`yarn codegen`
-
-## Other tools
-
-sweet set up that generates a subgraph.yaml dynamically with a handlebars template
-
-Oh, it's so you can keep multiple subgraphs on the same git branch
-Imagine you want to deploy to both Mainnet and Kovan
-What you normally do is either swap the contract addresses and network name just for deployment purposes and then revert, OR you keep different branches
-Both solutions are janky and slow down development
-With a template, you can run deployments like this:
-
-- yarn run deploy:mainnet
-- yarn run deploy:kovan
-
-https://github.com/sablierhq/sablier-subgraph/blob/master/subgraph.template.yaml
-
-Auto-deploy subgraph
-https://github.com/sablierhq/sablier-subgraph/blob/master/.github/workflows/deploy.yml
-
-
-
-TODO: add the correct ganache address to the truffle config file in this repo.
-Also add the contracts- pull from external or no?
-
-- Add contract to schema.graphql
-- Add user address to `test/rtokenAnalytics.test.js`
-- add
-
-3. Start
 
 ## Discussion on loan tracking with Miao
 

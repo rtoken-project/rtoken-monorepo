@@ -1,4 +1,5 @@
-const RTokenUtils = require('./main');
-const getClient = require('./utils/client');
+import RTokenUtils from './rtokenutils';
+import { getClient } from './utils/client';
 
-module.exports = { RTokenUtils, getClient };
+export default RTokenUtils;
+export { getClient };

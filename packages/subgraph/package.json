@@ -7,7 +7,8 @@
   "version": "1.0.1-rc6",
   "license": "MIT",
   "scripts": {
-    "codegen": "graph codegen",
+    "codegen": "yarn get-abi && graph codegen",
+    "get-abi": "node getAbi",
     "build": "graph build",
     "create-local": "graph create --node http://localhost:8020/ rtoken-test",
     "remove-local": "graph remove --node http://localhost:8020/ rtoken-test",
@@ -16,7 +17,8 @@
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.16.1",
-    "@graphprotocol/graph-ts": "0.16.0"
+    "@graphprotocol/graph-ts": "0.16.0",
+    "@rtoken/contracts": "^1.0.1-rc6"
   },
   "devDependencies": {
     "ganache-cli": "^6.9.1",
