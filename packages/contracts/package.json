@@ -12,6 +12,7 @@
     "dependencies": {
         "@openzeppelin/contracts": "2.4.0",
         "contracts": "^0.4.0",
+        "mocha": "^7.1.2",
         "truffle-hdwallet-provider": "^1.0.17"
     },
     "peerDependencies": {
