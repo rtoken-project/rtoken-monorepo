@@ -7,7 +7,7 @@ const CompoundAllocationStrategy = artifacts.require(
 );
 const RToken = artifacts.require("RToken");
 const Proxy = artifacts.require("Proxy");
-const { time } = require("openzeppelin-test-helpers");
+const { time } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
 contract("RToken", accounts => {

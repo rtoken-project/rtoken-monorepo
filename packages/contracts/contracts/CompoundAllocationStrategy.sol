@@ -65,5 +65,4 @@ contract CompoundAllocationStrategy is IAllocationStrategy, Ownable {
         underlyingAmount = token.balanceOf(address(this));
         token.transfer(msg.sender, underlyingAmount);
     }
-
 }
