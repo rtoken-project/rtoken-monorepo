@@ -29,7 +29,6 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
 
     // initialize AAVE referral code, the code is provided by aave team.
     function setReferralCode(uint16 _aaveReferralCode) public onlyOwner {
-      require(_aaveReferralCode>0);
       aaveReferralCode = _aaveReferralCode;
     }
 
