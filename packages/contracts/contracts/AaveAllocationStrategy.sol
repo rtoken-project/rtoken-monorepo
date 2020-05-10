@@ -6,9 +6,9 @@ import {ERC20Detailed} from "@openzeppelin/contracts/token/ERC20/ERC20Detailed.s
 import {SafeMath} from "@openzeppelin/contracts/math/SafeMath.sol";
 import {CErc20Interface} from "../compound/contracts/CErc20Interface.sol";
 
-import "../aave/contracts/configuration/LendingPoolAddressesProvider.sol";
-import "../aave/contracts/lendingpool/LendingPool.sol";
-import "../aave/contracts/tokenization/AToken.sol";
+import "./aave/contracts/configuration/LendingPoolAddressesProvider.sol";
+import "./aave/contracts/lendingpool/LendingPool.sol";
+import "./aave/contracts/tokenization/AToken.sol";
 
 contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
 
