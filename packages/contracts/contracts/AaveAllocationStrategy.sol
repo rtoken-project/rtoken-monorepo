@@ -16,6 +16,7 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
     IERC20 private token;
     uint256 private totalInvested;
 
+    event TotalInvested(uint indexed totalInvested);
     constructor(AToken aToken_, LendingPoolAddressesProvider lendingPoolAddressesProvider_) public {
         // Aave aToken
         aToken = aToken_;
@@ -70,15 +71,13 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         // Update the total invested amount.
         // No safe math needed since transfer would fail for invalid values
         totalInvested += investAmount;
+        emit TotalInvested(totalInvested);
         // Return the difference in aToken balance
-        return investAmount;
+        return (investAmount * 10**18) / exchangeRateStored();
     }
 
     /// @dev Redeem redeemAmount from Aave
     function redeemUnderlying(uint256 redeemAmount) external onlyOwner returns (uint256) {
-        // Update the total invested amount.
-        // No safe math needed since redeem would fail for invalid values
-        totalInvested -= (redeemAmount * 10**18) / exchangeRateStored();
         // Store the aToken balance of aTokens before deposit
         uint256 aTotalBefore = aToken.balanceOf(address(this));
         // Redeem redeemAmount of underlying asset from Aave
@@ -87,6 +86,9 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         uint256 aTotalAfter = aToken.balanceOf(address(this));
         // Check the aToken balance has decreased after redeem
         require(aTotalAfter <= aTotalBefore, "Aave redeemed negative amount!?");
+        // Update totalInvested
+        totalInvested = (aTotalAfter * totalInvested) / aTotalBefore;
+        emit TotalInvested(totalInvested);
         // Transfer redeemed underlying assets to caller
         token.transfer(msg.sender, redeemAmount);
         // Return the difference in aToken balance
@@ -103,6 +105,7 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         underlyingAmount = token.balanceOf(address(this));
         // Update total invested amount
         totalInvested = 0;
+        emit TotalInvested(totalInvested);
         // Transfer redeemed underlying assets to caller
         token.transfer(msg.sender, underlyingAmount);
     }
