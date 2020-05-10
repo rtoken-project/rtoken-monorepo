@@ -8,7 +8,7 @@ const Proxy = artifacts.require("Proxy");
 const { time, expectRevert } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
-contract("RToken", accounts => {
+contract("RToken with Compound Strategy", accounts => {
     const MAX_UINT256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
     const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 

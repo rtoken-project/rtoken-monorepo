@@ -34,7 +34,7 @@
   },
   "scripts": {
     "build": "run-s build:*",
-    "build:truffle-compile": "rm -f build/contracts/*;truffle compile",
+    "build:truffle-compile": "rm -f build/contracts/*;cp aave/abis/* build/contracts/;truffle compile",
     "test": "run-s lint:* test:*",
     "test:contracts": "truffle test test/contracts.js",
     "test:package": "mocha test/package.test.js",

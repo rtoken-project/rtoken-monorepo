@@ -36,8 +36,8 @@ contract("RToken with Aave Strategy", accounts => {
     })
 
     it("#0 initial test condition", async () => {
-    	await dai.mint(accounts[0],web3.utils.toWei("100"))
-    	await dai.mint(accounts[1],web3.utils.toWei("100"))
+        await dai.mint(accounts[0],web3.utils.toWei("100"))
+        await dai.mint(accounts[1],web3.utils.toWei("100"))
         assert.equal(wad4human(await rdai.totalSupply()), "0.00000")
         assert.equal(wad4human(await adai.balanceOf(accounts[0])), "0.00000")
         assert.equal(wad4human(await dai.balanceOf(accounts[0])), "100.00000")
@@ -45,47 +45,73 @@ contract("RToken with Aave Strategy", accounts => {
     });
 
     it("#1 mint test", async () => {
-    	await expectRevert.unspecified(rdai.mint(web3.utils.toWei("1"),{from: accounts[0]}))
-    	await dai.approve(rdai.address,web3.utils.toWei("1"),{from: accounts[0]})
-    	await rdai.mint(web3.utils.toWei("1"),{from: accounts[0]})
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
-    	await time.advanceBlock();
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
+        await expectRevert.unspecified(rdai.mint(web3.utils.toWei("1"),{from: accounts[0]}))
+        await dai.approve(rdai.address,web3.utils.toWei("1"),{from: accounts[0]})
+        await rdai.mint(web3.utils.toWei("1"),{from: accounts[0]})
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
+        await time.advanceBlock();
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
 
-    	await time.advanceBlock();
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
+        await time.advanceBlock();
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
 
-    	await dai.approve(rdai.address,web3.utils.toWei("1"),{from: accounts[0]})
-    	await rdai.mint(web3.utils.toWei("1"),{from: accounts[0]})
-    	
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
-    	
-    	await time.advanceBlock();
+        await dai.approve(rdai.address,web3.utils.toWei("1"),{from: accounts[0]})
+        await rdai.mint(web3.utils.toWei("1"),{from: accounts[0]})
+        
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
+        
+        await time.advanceBlock();
 
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
 
-    	await rdai.redeem(web3.utils.toWei("0.1"),{from: accounts[0]})
+        await rdai.mint(web3.utils.toWei("0"),{from: accounts[0]})
 
-    	console.log("")
-    	console.log(await aaveAS.exchangeRateStored()/1)
-    	console.log(await adai.balanceOf(aaveAS.address) /1)
-    	console.log(await rdai.getAccountStats(accounts[0]))
+        console.log("")
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        console.log(await rdai.getAccountStats(accounts[0]))
+        console.log(await rdai.balanceOf(accounts[0])/1)
 
+        await dai.approve(rdai.address,web3.utils.toWei("3"),{from: accounts[1]})
+        await rdai.mint(web3.utils.toWei("3"),{from: accounts[1]})
+
+        console.log("")
+        
+        console.log(await aaveAS.exchangeRateStored()/1)
+        console.log(await adai.balanceOf(aaveAS.address) /1)
+        
+        console.log(await rdai.getAccountStats(accounts[0]))
+        console.log(await rdai.getAccountStats(accounts[1]))
+
+        console.log(await rdai.balanceOf(accounts[0])/1)
+        console.log(await rdai.balanceOf(accounts[1])/1)
+
+        await rdai.mint(web3.utils.toWei("0"),{from: accounts[0]})      
+        await rdai.mint(web3.utils.toWei("0"),{from: accounts[1]})
+        console.log(await adai.balanceOf(aaveAS.address)/1)  
+
+        await rdai.redeemAll({from: accounts[1]})
+        await rdai.mint(web3.utils.toWei("0"),{from: accounts[0]})
+        console.log("")
+        console.log(await rdai.balanceOf(accounts[0])/1)
+        console.log(await rdai.balanceOf(accounts[1])/1)
+        console.log(await adai.balanceOf(aaveAS.address)/1)  
+        
     });
 
 })

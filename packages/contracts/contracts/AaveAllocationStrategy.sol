@@ -12,9 +12,7 @@ import "../aave/contracts/tokenization/AToken.sol";
 
 contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
 
-    uint256 public totalRedeemed;
-    uint256 public totalInvested;
-    uint256 public totalInvestedAndInterest;
+    uint256 public totalStaked;
 
     using SafeMath for uint256;
 
@@ -55,84 +53,61 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
     function exchangeRateStored() public view returns (uint256) {
         uint256 newtotalBalance = aToken.balanceOf(address(this));
         uint256 interest = newtotalBalance.sub(lastTotalBalance);
-
-        uint256 staked_amount = totalInvestedAndInterest.sub(totalRedeemed);
-        if(staked_amount > totalInvested) staked_amount = totalInvested;
-
-        if(lastTotalBalance==0) return lastExchangeRate;
-        return lastExchangeRate.add(interest.mul(decimals).div(staked_amount));
+        if(totalStaked==0) return lastExchangeRate;
+        return lastExchangeRate.add(interest.mul(decimals).div(totalStaked));
     }
-
-
 
     /// @dev ISavingStrategy.accrueInterest implementation
     function accrueInterest() public returns (bool) {
         uint256 newtotalBalance = aToken.balanceOf(address(this));
         uint256 interest = newtotalBalance.sub(lastTotalBalance);
-
-        uint256 staked_amount = totalInvestedAndInterest.sub(totalRedeemed);
-        if(staked_amount > totalInvested) staked_amount = totalInvested;
-        if(lastTotalBalance > 0) lastExchangeRate = lastExchangeRate.add(interest.mul(decimals).div(staked_amount));
-
-        totalInvestedAndInterest = totalInvestedAndInterest.add(interest);
+        if(totalStaked > 0) lastExchangeRate = lastExchangeRate.add(interest.mul(decimals).div(totalStaked));
         lastTotalBalance = newtotalBalance;
-        
         return  true;
     }
-
 
     /// @dev ISavingStrategy.investUnderlying implementation
     function investUnderlying(uint256 investAmount) external onlyOwner returns (uint256) {
 
         accrueInterest();
-        
-        totalInvested = totalInvested.add(investAmount);
-        totalInvestedAndInterest = totalInvestedAndInterest.add(investAmount);
         lastTotalBalance = lastTotalBalance.add(investAmount);
-
         token.transferFrom(msg.sender, address(this), investAmount);
-        address aaveLendingPool = aaveAddressesProvider.getLendingPool();
-        token.approve(address(aaveLendingPool), investAmount);
+        token.approve(aaveAddressesProvider.getLendingPoolCore(), investAmount);
         uint256 aTotalBefore = aToken.balanceOf(address(this));
-        LendingPool(aaveLendingPool).deposit(address(token),investAmount,aaveReferralCode);
+        LendingPool(aaveAddressesProvider.getLendingPool()).deposit(address(token),investAmount,aaveReferralCode);
         uint256 aTotalAfter = aToken.balanceOf(address(this));
         uint256 aCreatedAmount;
         aCreatedAmount = aTotalAfter.sub(aTotalBefore,"Aave minted negative amount!?");
-        
-        return aCreatedAmount.mul(decimals).div(lastExchangeRate);  
+        aCreatedAmount = aCreatedAmount.mul(decimals).div(lastExchangeRate); 
+        totalStaked = totalStaked.add(aCreatedAmount);
+        return  aCreatedAmount;
     }
 
     /// @dev ISavingStrategy.redeemUnderlying implementation
     function redeemUnderlying(uint256 redeemAmount) external onlyOwner returns (uint256) {
 
-        // accrueInterest();
-        // totalRedeemed = totalRedeemed.sub(redeemAmount);
-        // lastTotalBalance = lastTotalBalance.sub(redeemAmount);
-        // uint256 aTotalBefore = aToken.balanceOf(address(this));
-        // aToken.redeem(redeemAmount);
-        // uint256 aTotalAfter = aToken.balanceOf(address(this));
-        // uint256 aBurnedAmount = aTotalBefore.sub(aTotalAfter,"Aave redeemed negative amount!?");
-        // token.transfer(msg.sender, redeemAmount);
+        accrueInterest();
+        lastTotalBalance = lastTotalBalance.sub(redeemAmount);
 
-        // return aBurnedAmount.mul(decimals).div(lastExchangeRate);
+        uint256 aTotalBefore = aToken.balanceOf(address(this));
+        aToken.redeem(redeemAmount);
+        uint256 aTotalAfter = aToken.balanceOf(address(this));
+        uint256 aBurnedAmount = aTotalBefore.sub(aTotalAfter,"Aave redeemed negative amount!?");
+        token.transfer(msg.sender, redeemAmount);
+        aBurnedAmount = aBurnedAmount.mul(decimals).div(lastExchangeRate);
+        totalStaked = totalStaked.sub(aBurnedAmount);
+        return aBurnedAmount;
     }
 
     // @dev ISavingStrategy.redeemAll implementation
     function redeemAll() external onlyOwner returns (uint256 savingsAmount, uint256 underlyingAmount) {
-        // accrueInterest();
-        // uint256 redeemAllAmount = aToken.balanceOf(address(this));
-        // totalRedeemed = totalRedeemed.add(redeemAllAmount);
-        // aToken.redeem(redeemAllAmount);
-        // savingsAmount = redeemAllAmount.mul(decimals).div(lastExchangeRate);
-        // underlyingAmount = token.balanceOf(address(this));
-        // token.transfer(msg.sender, underlyingAmount);
+        accrueInterest();
+        uint256 redeemAllAmount = aToken.balanceOf(address(this));
+
+        aToken.redeem(redeemAllAmount);
+        savingsAmount = redeemAllAmount.mul(decimals).div(lastExchangeRate);
+        underlyingAmount = token.balanceOf(address(this));
+        totalStaked = totalStaked.sub(savingsAmount);
+        token.transfer(msg.sender, underlyingAmount);
     }
 }
-
-    // function underlying2Aave(uint256 uAmount_) public view returns (uint256) {
-    //      return uAmount_.mul(decimals).div(exchangeRateStored());
-    // }
-    
-    // function aave2Underlying(uint256 aAmount_) public view returns (uint256) {
-    //     return aAmount_.mul(exchangeRateStored()).div(decimals);
-    // }
