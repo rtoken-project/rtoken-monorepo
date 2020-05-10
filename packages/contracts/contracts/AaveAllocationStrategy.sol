@@ -86,9 +86,16 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         uint256 aTotalAfter = aToken.balanceOf(address(this));
         // Check the aToken balance has decreased after redeem
         require(aTotalAfter <= aTotalBefore, "Aave redeemed negative amount!?");
-        // Update totalInvested
+
+        // Update totalInvested .We want to keep the exchange rate while updating the totalInvested.
+        // We calculate the newTotalInvested value we need to have the same exchange rate as before
+        // oldExchangeRate = newExchangeRate
+        // oldATokenBalance / oldTotalInvested = newATokenBalance / newTotalInvested      // solve for newTotalInvested
+        // newATokenBalance  / (oldATokenBalance / oldTotalInvested) = newTotalInvested
+        // newTotalInvested = (newATokenBalance * oldTotalInvested) / oldATokenBalance
         totalInvested = (aTotalAfter * totalInvested) / aTotalBefore;
         emit TotalInvested(totalInvested);
+
         // Transfer redeemed underlying assets to caller
         token.transfer(msg.sender, redeemAmount);
         // Return the difference in aToken balance
