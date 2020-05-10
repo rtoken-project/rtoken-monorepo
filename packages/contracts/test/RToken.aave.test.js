@@ -17,15 +17,13 @@ const FeeProvider = artifacts.require("FeeProvider");
 const RToken = artifacts.require("RToken");
 const Proxy = artifacts.require("Proxy");
 
-const { web3tx, wad4human, toWad, fromDecimals, toDecimals} = require("@decentral.ee/web3-test-helpers");
+const { web3tx, wad4human, toWad} = require("@decentral.ee/web3-test-helpers");
 
 const {
-  BN, 
-  time,
-  constants,
-  expectEvent,
-  expectRevert,
-} = require('@openzeppelin/test-helpers');
+    BN, 
+    time,
+    expectRevert,
+} = require("@openzeppelin/test-helpers");
 
 contract("RToken with Aave Strategy", accounts => {
 
@@ -49,18 +47,18 @@ contract("RToken with Aave Strategy", accounts => {
 
 
     async function createAaveAllocationStrategy() {
-        const coreLibrary = await CoreLibrary.new()
+        const coreLibrary = await CoreLibrary.new();
         await LendingPoolCore.link("CoreLibrary", coreLibrary.address);
 
         lendingPoolCore = await LendingPoolCore.new({from:admin});
         lendingPool = await LendingPool.new({from:admin});
-        lendingPoolConfigurator = await LendingPoolConfigurator.new({from:admin});
-        lendingPoolDataProvider = await LendingPoolDataProvider.new({from:admin});
-        lendingPoolParametersProvider = await LendingPoolParametersProvider.new({from:admin});
-        lendingRateOracle = await LendingRateOracle.new({from:admin});
-        priceOracle = await PriceOracle.new({from:admin});
-        feeProvider = await FeeProvider.new({from:admin});
-        lendingPoolAddressesProvider = await LendingPoolAddressesProvider.new({from:admin});
+        let lendingPoolConfigurator = await LendingPoolConfigurator.new({from:admin});
+        let lendingPoolDataProvider = await LendingPoolDataProvider.new({from:admin});
+        let lendingPoolParametersProvider = await LendingPoolParametersProvider.new({from:admin});
+        let lendingRateOracle = await LendingRateOracle.new({from:admin});
+        let priceOracle = await PriceOracle.new({from:admin});
+        let feeProvider = await FeeProvider.new({from:admin});
+        let lendingPoolAddressesProvider = await LendingPoolAddressesProvider.new({from:admin});
         
         await lendingPoolAddressesProvider.setLendingRateOracle(lendingRateOracle.address,{from:admin});
         await lendingRateOracle.setMarketBorrowRate(dai.address, "10000000000000000000000000000",{from:admin});
@@ -91,7 +89,7 @@ contract("RToken with Aave Strategy", accounts => {
 
         await lendingPoolConfigurator.refreshLendingPoolCoreConfiguration({from:admin});
 
-        defaultReserveInterestRateStrategy = await DefaultReserveInterestRateStrategy.new(
+        let defaultReserveInterestRateStrategy = await DefaultReserveInterestRateStrategy.new(
             dai.address,
             lendingPoolAddressesProvider.address,
             "1000000000000000000000000000",
@@ -123,7 +121,7 @@ contract("RToken with Aave Strategy", accounts => {
 
     beforeEach(async () => {
 
-        dai = await DaiMock.new("dai token","dai",18,{from: admin})
+        dai = await DaiMock.new("dai token","dai",18,{from: admin});
         dai.mint(customer1,toWad(1000),{from:admin});
         await createAaveAllocationStrategy();
         rdaiLogic = await web3tx(RToken.new, "RToken.new")({from: admin});
@@ -173,17 +171,10 @@ contract("RToken with Aave Strategy", accounts => {
         await dai.approve(lendingPoolCore.address, mintAmount,{from: bingeBorrower });
         await lendingPool.deposit(dai.address, mintAmount, 0,{from: bingeBorrower });
         const rate_type = 2;
-        const tx = await lendingPool.borrow(dai.address, borrowAmount, rate_type , 0,{from: bingeBorrower});
+        await lendingPool.borrow(dai.address, borrowAmount, rate_type , 0,{from: bingeBorrower});
     }
 
-    async function waitForInterest(nBlocks = 200) {
-        console.log(`Wait for ${nBlocks} blocks...`);
-        while(--nBlocks) await time.advanceBlock();
-        await web3tx(aaveAS.accrueInterest, "aaveAS.accrueInterest")({from:admin});
-    }
-
-
-    async function expectAccount(account, balances, decimals, approx = false) {
+    async function expectAccount(account, balances, decimals) {
         let accountName;
         if (account === admin) accountName = "admin";
         else if (account === customer1) accountName = "customer1";
@@ -296,8 +287,8 @@ contract("RToken with Aave Strategy", accounts => {
             from: customer1
         });
         await expectRevert.unspecified(rdai.mint(toWad(100.1),{from: customer1}));
-        console.log(await dai.balanceOf(customer1)/1)
-        console.log(await dai.allowance(customer1,rdai.address)/1)
+        console.log(await dai.balanceOf(customer1)/1);
+        console.log(await dai.allowance(customer1,rdai.address)/1);
 
         await web3tx(rdai.mint, "rdai.mint 100 to customer1", {
             inLogs: [{
@@ -472,7 +463,7 @@ contract("RToken with Aave Strategy", accounts => {
             receivedSavings: "10.00000",
             interestPayable: "0.00000",
         });
-    })
+    });
 
 
     it("#3 normal operations with hat", async () => {
@@ -534,8 +525,8 @@ contract("RToken with Aave Strategy", accounts => {
 
         assert.equal(wad4human(await rdai.totalSupply.call()), "100.00000");
         
-        asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning1 = asBalanceNext.sub(new BN(toWad(100)));
+        var asBalanceNext = await adai.balanceOf(aaveAS.address);
+        var earning1 = asBalanceNext.sub(new BN(toWad(100)));
 
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
@@ -564,7 +555,7 @@ contract("RToken with Aave Strategy", accounts => {
             toWad(10), { from: customer1 });
         
         asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning2 = asBalanceNext.sub(new BN(toWad(90)));
+        var earning2 = asBalanceNext.sub(new BN(toWad(90)));
         
         assert.equal(wad4human(await dai.balanceOf.call(customer1)), "910.00000");
         assert.equal(wad4human(await rdai.totalSupply.call()), "90.00000");
@@ -599,7 +590,7 @@ contract("RToken with Aave Strategy", accounts => {
             customer3, toWad(10), { from: customer1 });
 
         asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning3 = asBalanceNext.sub(new BN(toWad(90)));
+        var earning3 = asBalanceNext.sub(new BN(toWad(90)));
 
         assert.equal(wad4human(await rdai.totalSupply.call()), "90.00000");
         assert.deepEqual(parseHat(await rdai.getHatByAddress.call(customer3)), {
@@ -647,7 +638,7 @@ contract("RToken with Aave Strategy", accounts => {
             admin, { from : admin });
 
         asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning4 = asBalanceNext.sub(new BN(toWad(90)));
+        var earning4 = asBalanceNext.sub(new BN(toWad(90)));
 
         await expectAccount(customer1, {
             tokenBalance: "80.00000",
@@ -705,8 +696,8 @@ contract("RToken with Aave Strategy", accounts => {
         await doBingeBorrowing();
         await time.increase(5*24*3600);
         
-        asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning = asBalanceNext.sub(new BN(toWad(15)));
+        var asBalanceNext = await adai.balanceOf(aaveAS.address);
+        var earning = asBalanceNext.sub(new BN(toWad(15)));
         
         await expectAccount(customer1, {
             tokenBalance: "15.00000",
@@ -715,9 +706,6 @@ contract("RToken with Aave Strategy", accounts => {
             receivedSavings: wad4human(earning.add(new BN(toWad(15)))),
             interestPayable: wad4human(earning),
         });
-
-        asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning4 = asBalanceNext.sub(new BN(toWad(90)));
 
         await validateGlobalInvariants();
     });
@@ -755,8 +743,8 @@ contract("RToken with Aave Strategy", accounts => {
         // STEP 2: binge borrowing
         await doBingeBorrowing();
         await time.increase(5*24*3600);
-        asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning1 = asBalanceNext.sub(new BN(toWad(200)));
+        var asBalanceNext = await adai.balanceOf(aaveAS.address);
+        var earning1 = asBalanceNext.sub(new BN(toWad(200)));
 
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
@@ -779,7 +767,7 @@ contract("RToken with Aave Strategy", accounts => {
             customer2, { from : admin });
         
         asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning2 = asBalanceNext.sub(new BN(toWad(200)));
+        var earning2 = asBalanceNext.sub(new BN(toWad(200)));
 
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
@@ -809,11 +797,11 @@ contract("RToken with Aave Strategy", accounts => {
         
         assert.isTrue((await dai.balanceOf.call(customer2)).eq(customer2RBalance));
 
-        previousCustomer1earning = earning2.muln(10).divn(100);
-        previousCustomer2earning = earning2.muln(90).divn(100);
+        var previousCustomer1earning = earning2.muln(10).divn(100);
+        var previousCustomer2earning = earning2.muln(90).divn(100);
 
         asBalanceNext = await adai.balanceOf(aaveAS.address);
-        earning3 = asBalanceNext.sub(new BN(toWad(100))).sub(previousCustomer1earning);
+        var earning3 = asBalanceNext.sub(new BN(toWad(100))).sub(previousCustomer1earning);
 
         await expectAccount(customer1, {
             tokenBalance: "100.00000",
@@ -848,4 +836,4 @@ contract("RToken with Aave Strategy", accounts => {
             totalSavings: wad4human(earning3.add(earning2).add(new BN(toWad(100)))),
         });
     });
-})
+});

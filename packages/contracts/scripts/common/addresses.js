@@ -9,7 +9,7 @@ module.exports = {
         rDAI: {
             address: "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB",
             creationBlockNumber: 9117143,
-        }
+        },
         aaveAddressesProvider: "0x506B0B2CF20FAA8f38a4E2B524EE43e1f4458Cc5",
         aDAI: "0x58AD4cB396411B691A9AAb6F74545b2C5217FE6a",
         aaveReferralCode: 0,
@@ -24,7 +24,7 @@ module.exports = {
         rDAI: {
             address: "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0",
             creationBlockNumber: 9117143,
-        }
+        },
         aaveAddressesProvider: "0x24a42fD28C976A61Df5D00D0599C34c4f90748c8",
         aDAI: "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d",
         aaveReferralCode: 0,

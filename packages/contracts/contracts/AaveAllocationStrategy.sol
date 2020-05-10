@@ -61,7 +61,9 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         // previous exchange rate added to the interest that occured since the last transaction
         // devided by the total staked amount.
         uint256 interest = newtotalBalance.sub(lastTotalBalance);
-        if(totalStaked==0) return lastExchangeRate;
+        if (totalStaked == 0) {
+            return lastExchangeRate;
+        }
         return lastExchangeRate.add(interest.mul(decimals).div(totalStaked));
     }
 
@@ -71,7 +73,9 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
     function accrueInterest() public returns (bool) {
         uint256 newtotalBalance = aToken.balanceOf(address(this));
         uint256 interest = newtotalBalance.sub(lastTotalBalance);
-        if(totalStaked > 0) lastExchangeRate = lastExchangeRate.add(interest.mul(decimals).div(totalStaked));
+        if (totalStaked > 0) {
+            lastExchangeRate = lastExchangeRate.add(interest.mul(decimals).div(totalStaked));
+        }
         lastTotalBalance = newtotalBalance;
         return  true;
     }
@@ -87,12 +91,12 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         token.approve(aaveAddressesProvider.getLendingPoolCore(), investAmount);
         
         uint256 aTotalBefore = aToken.balanceOf(address(this));
-        LendingPool(aaveAddressesProvider.getLendingPool()).deposit(address(token),investAmount,aaveReferralCode);
+        LendingPool(aaveAddressesProvider.getLendingPool()).deposit(address(token), investAmount, aaveReferralCode);
         uint256 aTotalAfter = aToken.balanceOf(address(this));
         
         uint256 aCreatedAmount;
         // computing the minted amount just as a precaution.
-        aCreatedAmount = aTotalAfter.sub(aTotalBefore,"Aave minted negative amount!?");
+        aCreatedAmount = aTotalAfter.sub(aTotalBefore, "Aave minted negative amount!?");
 
         // computing the shares that are equivalents to cTokens for compound.
         uint256 mintedShares = aCreatedAmount.mul(decimals).div(lastExchangeRate); 
@@ -107,17 +111,15 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         accrueInterest();
         // substract redeemAmount from lastTotalBalance to avoid that it reduce the value interest.
         lastTotalBalance = lastTotalBalance.sub(redeemAmount);
-
         uint256 aTotalBefore = aToken.balanceOf(address(this));
         aToken.redeem(redeemAmount);
         uint256 aTotalAfter = aToken.balanceOf(address(this));
-        uint256 aBurnedAmount = aTotalBefore.sub(aTotalAfter,"Aave redeemed negative amount!?");
-
-        token.transfer(msg.sender, redeemAmount);
+        uint256 aBurnedAmount = aTotalBefore.sub(aTotalAfter, "Aave redeemed negative amount!?");
         // computing the shares that are equivalents to cTokens for compound.
         uint256 burnedShares = aBurnedAmount.mul(decimals).div(lastExchangeRate);
         // keep track of the total staked share at any moment.
         totalStaked = totalStaked.sub(burnedShares);
+        token.transfer(msg.sender, redeemAmount);
         return burnedShares;
     }
 
