@@ -158,5 +158,7 @@ module.exports = {
 
     api_keys: {
         etherscan: process.env.ETHERSCAN_API_KEY
-    }
+    },
+
+    contracts_directory: "./{aave,compound,contracts}/**/*.sol"
 };
