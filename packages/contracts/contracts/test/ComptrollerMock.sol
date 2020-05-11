@@ -1,6 +1,6 @@
 pragma solidity ^0.5.8;
 
-import "../../compound/contracts/ComptrollerInterface.sol";
+import "../compound/contracts/ComptrollerInterface.sol";
 
 contract ComptrollerMock is ComptrollerInterface {
     /**

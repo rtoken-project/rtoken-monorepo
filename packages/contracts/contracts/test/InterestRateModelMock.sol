@@ -1,6 +1,6 @@
 pragma solidity ^0.5.8;
 
-import "../../compound/contracts/InterestRateModel.sol";
+import "../compound/contracts/InterestRateModel.sol";
 
 contract InterestRateModelMock is InterestRateModel {
 

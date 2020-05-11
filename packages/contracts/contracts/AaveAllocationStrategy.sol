@@ -3,10 +3,10 @@ pragma solidity >=0.5.10 <0.6.0;
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
 import {Ownable} from "@openzeppelin/contracts/ownership/Ownable.sol";
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {AToken} from "../aave/contracts/tokenization/AToken.sol";
-import {LendingPool} from "../aave/contracts/lendingpool/LendingPool.sol";
-import {LendingPoolCore} from "../aave/contracts/lendingpool/LendingPoolCore.sol";
-import {LendingPoolAddressesProvider} from "../aave/contracts/configuration/LendingPoolAddressesProvider.sol";
+import {AToken} from "./aave/contracts/tokenization/AToken.sol";
+import {LendingPool} from "./aave/contracts/lendingpool/LendingPool.sol";
+import {LendingPoolCore} from "./aave/contracts/lendingpool/LendingPoolCore.sol";
+import {LendingPoolAddressesProvider} from "./aave/contracts/configuration/LendingPoolAddressesProvider.sol";
 
 contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
 
