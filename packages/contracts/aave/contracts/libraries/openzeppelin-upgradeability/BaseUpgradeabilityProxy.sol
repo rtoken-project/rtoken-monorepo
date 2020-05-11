@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-import "./Proxy.sol";
+import "./OZProxy.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 
 /**
@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/utils/Address.sol";
  * implementation address to which it will delegate.
  * Such a change is called an implementation upgrade.
  */
-contract BaseUpgradeabilityProxy is Proxy {
+contract BaseUpgradeabilityProxy is OZProxy {
     /**
    * @dev Emitted when the implementation is upgraded.
    * @param implementation Address of the new implementation.

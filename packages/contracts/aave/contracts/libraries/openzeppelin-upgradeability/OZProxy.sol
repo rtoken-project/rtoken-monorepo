@@ -7,7 +7,7 @@ pragma solidity ^0.5.0;
  * It defines a fallback function that delegates all calls to the address
  * returned by the abstract _implementation() internal function.
  */
-contract Proxy {
+contract OZProxy {
     /**
    * @dev Fallback function.
    * Implemented entirely in `_fallback`.
