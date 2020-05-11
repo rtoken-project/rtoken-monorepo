@@ -18,6 +18,8 @@ const Proxy = artifacts.require("Proxy");
 const { time, expectRevert } = require("@openzeppelin/test-helpers");
 const { web3tx, wad4human, toWad } = require("@decentral.ee/web3-test-helpers");
 
+const expect = require("chai").expect;
+
 contract("RTokenWithAave", accounts => {
     const MAX_UINT256 = "115792089237316195423570985008687907853269984665640564039457584007913129639935";
     const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -35,11 +37,9 @@ contract("RTokenWithAave", accounts => {
     let aaveAS;
     let rToken;
     let rTokenLogic;
-    let SELF_HAT_ID;
-
 
     async function createAaveAllocationStrategy() {
-        const coreLibrary = await CoreLibrary.new()
+        const coreLibrary = await CoreLibrary.new();
         await LendingPoolCore.link("CoreLibrary", coreLibrary.address);
 
         let lendingPoolCore = await web3tx(LendingPoolCore.new, "LendingPoolCore.new")({ from: admin });
@@ -160,7 +160,6 @@ contract("RTokenWithAave", accounts => {
         rToken = await RToken.at(proxy.address);
 
         await web3tx(aaveAS.transferOwnership, "aaveAS.transferOwnership")(rToken.address);
-        SELF_HAT_ID = await rToken.SELF_HAT_ID.call();
     });
 
     function zeroHatUseCount(u) {
@@ -245,11 +244,11 @@ contract("RTokenWithAave", accounts => {
             "account invariant: rAmount = lRecipientsSum + rInterest");
 
         if (approx) {
-            expect(parseFloat(tokenBalance), "tokenBalance").to.be.closeTo(parseFloat(balances.tokenBalance), 0.001)
-            expect(parseFloat(receivedLoan), "receivedLoan").to.be.closeTo(parseFloat(balances.receivedLoan), 0.001)
-            expect(parseFloat(receivedSavings), "receivedSavings").to.be.closeTo(parseFloat(balances.receivedSavings), 0.001)
-            expect(parseFloat(interestPayable), "interestPayable").to.be.closeTo(parseFloat(balances.interestPayable), 0.001)
-            expect(parseFloat(cumulativeInterest), "cumulativeInterest").to.be.closeTo(parseFloat(balances.cumulativeInterest), 0.001)
+            expect(parseFloat(tokenBalance), "tokenBalance").to.be.closeTo(parseFloat(balances.tokenBalance), 0.001);
+            expect(parseFloat(receivedLoan), "receivedLoan").to.be.closeTo(parseFloat(balances.receivedLoan), 0.001);
+            expect(parseFloat(receivedSavings), "receivedSavings").to.be.closeTo(parseFloat(balances.receivedSavings), 0.001);
+            expect(parseFloat(interestPayable), "interestPayable").to.be.closeTo(parseFloat(balances.interestPayable), 0.001);
+            expect(parseFloat(cumulativeInterest), "cumulativeInterest").to.be.closeTo(parseFloat(balances.cumulativeInterest), 0.001);
         } else {
             assert.deepEqual({
                 tokenBalance,
@@ -264,71 +263,20 @@ contract("RTokenWithAave", accounts => {
 
     async function expectGlobalStats(stats) {
         const parsed = parseGlobalStats(await rToken.getGlobalStats.call());
-        expect(parseFloat(stats.totalSupply), "totalSupply").to.be.closeTo(parseFloat(parsed.totalSupply), 0.001)
-        expect(parseFloat(stats.totalSavingsAmount), "totalSavingsAmount").to.be.closeTo(parseFloat(parsed.totalSavingsAmount), 0.001)
+        expect(parseFloat(stats.totalSupply), "totalSupply").to.be.closeTo(parseFloat(parsed.totalSupply), 0.001);
+        expect(parseFloat(stats.totalSavingsAmount), "totalSavingsAmount").to.be.closeTo(parseFloat(parsed.totalSavingsAmount), 0.001);
 
     }
 
     async function expectHatStats(stats) {
         const parsed = parseHatStats(await rToken.getHatStats(0));
-        expect(parseFloat(stats.useCount), "useCount").to.be.closeTo(parseFloat(parsed.useCount), 0.001)
-        expect(parseFloat(stats.totalLoans), "totalLoans").to.be.closeTo(parseFloat(parsed.totalLoans), 0.001)
-        expect(parseFloat(stats.totalSavings), "totalSavings").to.be.closeTo(parseFloat(parsed.totalSavings), 0.001)
+        expect(parseFloat(stats.useCount), "useCount").to.be.closeTo(parseFloat(parsed.useCount), 0.001);
+        expect(parseFloat(stats.totalLoans), "totalLoans").to.be.closeTo(parseFloat(parsed.totalLoans), 0.001);
+        expect(parseFloat(stats.totalSavings), "totalSavings").to.be.closeTo(parseFloat(parsed.totalSavings), 0.001);
     }
 
     function expectClose(a, b) {
-        expect(parseFloat(a)).to.be.closeTo(parseFloat(b), 0.001)
-    }
-
-    async function validateGlobalInvariants() {
-        const accounts = [admin, customer1, customer2, customer3, customer4];
-        let totalSupplyByAccounts = toWad(0);
-        let totalSavingsAmountByAccounts = toWad(0);
-        let totalReceivedLoansByAccounts = toWad(0);
-        let totalDebtFreeInterestByAccounts = toWad(0);
-
-        for (let i = 0; i < accounts.length; ++i) {
-            const account = accounts[i];
-            const stats = await rToken.getAccountStats.call(account);
-            totalSupplyByAccounts = totalSupplyByAccounts
-                .add(web3.utils.toBN(await rToken.balanceOf.call(account)));
-            totalSavingsAmountByAccounts = totalSavingsAmountByAccounts
-                .add(web3.utils.toBN(await rToken.receivedSavingsOf.call(account)));
-            totalReceivedLoansByAccounts = totalReceivedLoansByAccounts
-                .add(web3.utils.toBN(await rToken.receivedLoanOf.call(account)));
-            totalDebtFreeInterestByAccounts = totalDebtFreeInterestByAccounts
-                .add(web3.utils.toBN(stats.cumulativeInterest))
-                .sub(web3.utils.toBN(stats.rInterest));
-        }
-
-        const globalStats = await rToken.getGlobalStats.call();
-        assert.deepEqual({
-            totalSupply: totalSupplyByAccounts.toString(),
-            totalSavingsAmount: wad4human(totalSavingsAmountByAccounts, 12)
-        }, {
-            totalSupply: globalStats.totalSupply.toString(),
-            totalSavingsAmount: wad4human(globalStats.totalSavingsAmount, 12)
-        }, "invariants: accountStats vs globalStats");
-
-        const nHats = parseInt((await rToken.getMaximumHatID.call()).toString()) + 1;
-        let totalReceivedLoansByHats = toWad(0);
-        let totalSavingsByHats = toWad(0);
-        for (let i = 0; i <= nHats; ++i) {
-            let hatID = i;
-            if (i === nHats) hatID = SELF_HAT_ID;
-            const stats = await rToken.getHatStats.call(hatID);
-            totalReceivedLoansByHats = totalReceivedLoansByHats
-                .add(web3.utils.toBN(stats.totalLoans));
-            totalSavingsByHats = totalSavingsByHats
-                .add(web3.utils.toBN(stats.totalSavings));
-        }
-        assert.deepEqual({
-            totalReceivedLoans: totalReceivedLoansByAccounts.toString(),
-            totalSavings: wad4human(totalSavingsAmountByAccounts.add(totalDebtFreeInterestByAccounts), 6),
-        }, {
-            totalReceivedLoans: totalReceivedLoansByHats.toString(),
-            totalSavings: wad4human(totalSavingsByHats, 6),
-        }, "invariants: accountStats vs hatStats");
+        expect(parseFloat(a)).to.be.closeTo(parseFloat(b), 0.001);
     }
 
     it("#0 initial test condition", async () => {
