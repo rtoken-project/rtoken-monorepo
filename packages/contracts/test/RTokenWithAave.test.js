@@ -6,7 +6,7 @@ const LendingPoolConfigurator = artifacts.require("LendingPoolConfigurator");
 const LendingPoolDataProvider = artifacts.require("LendingPoolDataProvider");
 const LendingPoolParametersProvider = artifacts.require("LendingPoolParametersProvider");
 const LendingRateOracle = artifacts.require("LendingRateOracle");
-const PriceOracle = artifacts.require("PriceOracle");
+const AavePriceOracle = artifacts.require("AavePriceOracle");
 const DefaultReserveInterestRateStrategy = artifacts.require("DefaultReserveInterestRateStrategy");
 const FeeProvider = artifacts.require("FeeProvider");
 const AToken = artifacts.require("AToken");
@@ -48,7 +48,7 @@ contract("RTokenWithAave", accounts => {
         let lendingPoolDataProvider = await web3tx(LendingPoolDataProvider.new, "LendingPoolDataProvider.new")({ from: admin });
         let lendingPoolParametersProvider = await web3tx(LendingPoolParametersProvider.new, "LendingPoolParametersProvider.new")({ from: admin });
         let lendingRateOracle = await web3tx(LendingRateOracle.new, "LendingRateOracle.new")({ from: admin });
-        let priceOracle = await web3tx(PriceOracle.new, "PriceOracle.new")({ from: admin });
+        let priceOracle = await web3tx(AavePriceOracle.new, "PriceOracle.new")({ from: admin });
 
         let feeProvider = await web3tx(FeeProvider.new, "FeeProvider.new")({ from: admin });
 
