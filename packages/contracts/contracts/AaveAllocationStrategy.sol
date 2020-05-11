@@ -109,7 +109,7 @@ contract AaveAllocationStrategy is IAllocationStrategy, Ownable {
         // Transfer redeemed underlying assets to caller
         token.transfer(msg.sender, redeemAmount);
         // Return the difference in aToken balance
-        return redeemAmount;
+        return (redeemAmount * 10**18) / exchangeRateStored();
     }
 
     /// @dev Redeem the entire balance of aToken from Aave
