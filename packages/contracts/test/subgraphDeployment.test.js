@@ -62,22 +62,6 @@ contract("RToken", accounts => {
         )({
             from: admin
         });
-        await web3tx(token.mint, "token.mint 1000 -> customer1")(
-            customer1,
-            toWad(1000),
-            {from: admin}
-        );
-        await web3tx(token.mint, "token.mint 1000 -> customer2")(
-            customer2,
-            toWad(1000),
-            {from: admin}
-        );
-        await web3tx(token.mint, "token.mint 1000 -> customer4")(
-            customer4,
-            toWad(1000),
-            {from: admin}
-        );
-
         {
             const result = await createCompoundAllocationStrategy(toWad(0.1));
             cToken = result.cToken;
@@ -106,6 +90,23 @@ contract("RToken", accounts => {
         );
         // Create the rToken object using the proxy address
         rToken = await RToken.at(proxy.address);
+
+        // Mint some tokens
+        await web3tx(token.mint, "token.mint 1000 -> customer1")(
+            customer1,
+            toWad(1000),
+            {from: admin}
+        );
+        await web3tx(token.mint, "token.mint 1000 -> customer2")(
+            customer2,
+            toWad(1000),
+            {from: admin}
+        );
+        await web3tx(token.mint, "token.mint 1000 -> customer4")(
+            customer4,
+            toWad(1000),
+            {from: admin}
+        );
 
         await web3tx(
             compoundAS.transferOwnership,
@@ -322,7 +323,6 @@ contract("RToken", accounts => {
             receivedSavings: "100.00100",
             interestPayable: "0.00100"
         });
-        await redeemAll(customer1);
     });
     it("#2 Customer2 sends interest to customer3", async () => {
         await web3tx(
@@ -379,21 +379,31 @@ contract("RToken", accounts => {
         await doBingeBorrowing();
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00000",
+            cumulativeInterest: "0.00102",
             receivedLoan: "100.00000",
-            receivedSavings: "100.00102",
-            interestPayable: "0.00102"
+            receivedSavings: "100.00151",
+            interestPayable: "0.00151"
         });
     });
-    it("#5 Customer3 redeems all interest earned so far", async () => {
+    it("#5 Customer4 stops sending interest to customer3", async () => {
+        await redeemAll(customer4);
+        await expectAccount(customer3, {
+            tokenBalance: "0.00000",
+            cumulativeInterest: "0.00102",
+            receivedLoan: "0.00000",
+            receivedSavings: "0.00153",
+            interestPayable: "0.00153"
+        });
+    });
+    it("#6 Customer3 redeems all interest earned so far", async () => {
         await redeemAll(customer3);
         assert.equal(
             wad4human(await token.balanceOf.call(customer3)),
-            "0.00204"
+            "0.00254"
         );
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00000",
+            cumulativeInterest: "0.00254",
             receivedLoan: "0.00000",
             receivedSavings: "0.00000",
             interestPayable: "0.00000"
@@ -401,7 +411,7 @@ contract("RToken", accounts => {
     });
     // So far totals sent to customer3
     // customer2 sent 0.00102
-    // customer4 sent 0.00102
+    // customer4 sent 0.00152
 
     // it("#4 Customer4 starts sending interest to customer3", async () => {
     //     await expectAccount(customer1, {

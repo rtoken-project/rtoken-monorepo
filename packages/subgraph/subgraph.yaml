@@ -10,7 +10,7 @@ dataSources:
     source:
       abi: RToken
       # Local testing
-      address: '0xA0E2aEAd993c21c118324c2BCC214e0f9aCA5796'
+      address: "0x625aD1AA6469568ded0cd0254793Efd0e5C0394F"
       # Mainnet
       # address: '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0'
       # startBlock: 9117140

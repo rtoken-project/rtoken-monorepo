@@ -83,7 +83,7 @@ lerna bootstrap
 truffle test --network subgraph test/subgraphDeployment.test.js
 # Copy the rToken contract address
 > ...
-> The rTOKEN contract (proxy) is deployed at: 0xA0E2aEAd993c21c118324c2BCC214e0f9aCA5796
+> The rTOKEN contract (proxy) is deployed at: 0x625aD1AA6469568ded0cd0254793Efd0e5C0394F
 ```
 
 We also need to build the contracts, for use in the `subgraph` package.
