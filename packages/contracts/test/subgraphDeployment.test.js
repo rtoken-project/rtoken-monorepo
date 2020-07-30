@@ -72,6 +72,11 @@ contract("RToken", accounts => {
             toWad(1000),
             {from: admin}
         );
+        await web3tx(token.mint, "token.mint 1000 -> customer4")(
+            customer4,
+            toWad(1000),
+            {from: admin}
+        );
 
         {
             const result = await createCompoundAllocationStrategy(toWad(0.1));
@@ -317,6 +322,7 @@ contract("RToken", accounts => {
             receivedSavings: "100.00100",
             interestPayable: "0.00100"
         });
+        await redeemAll(customer1);
     });
     it("#2 Customer2 sends interest to customer3", async () => {
         await web3tx(
@@ -358,11 +364,19 @@ contract("RToken", accounts => {
             interestPayable: "0.00102"
         });
     });
-    it("#4 Customer1 starts sending interest to customer3", async () => {
+    it("#4 Customer4 sends interest to customer3", async () => {
+        // Prevent customer3 from earning on their own cDAI stash
+        await redeemAll(customer3);
+
         await web3tx(
-            rToken.changeHat,
-            "rToken changeHat for customer1 to hatID #1"
-        )(1, {from: customer1});
+            token.approve,
+            "token.approve 100 by customer4"
+        )(rToken.address, toWad(100), {from: customer4});
+        await web3tx(
+            rToken.mintWithNewHat,
+            "rToken.mint 100 to customer4 with a hat benefiting customer3(100%)"
+        )(toWad(100), [customer3], [1], {from: customer4});
+        await doBingeBorrowing();
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
             cumulativeInterest: "0.00000",
@@ -370,20 +384,12 @@ contract("RToken", accounts => {
             receivedSavings: "100.00102",
             interestPayable: "0.00102"
         });
-        await doBingeBorrowing();
-        await expectAccount(customer3, {
-            tokenBalance: "0.00000",
-            cumulativeInterest: "0.00000",
-            receivedLoan: "100.00000",
-            receivedSavings: "100.00203",
-            interestPayable: "0.00203"
-        });
     });
     it("#5 Customer3 redeems all interest earned so far", async () => {
         await redeemAll(customer3);
         assert.equal(
             wad4human(await token.balanceOf.call(customer3)),
-            "0.00203"
+            "0.00204"
         );
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
@@ -393,6 +399,43 @@ contract("RToken", accounts => {
             interestPayable: "0.00000"
         });
     });
-    // Customer 2 sent 0.00102
-    // Customer 2 sent 0.00101
+    // So far totals sent to customer3
+    // customer2 sent 0.00102
+    // customer4 sent 0.00102
+
+    // it("#4 Customer4 starts sending interest to customer3", async () => {
+    //     await expectAccount(customer1, {
+    //         tokenBalance: "100.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "100.00000",
+    //         receivedSavings: "100.00204",
+    //         interestPayable: "0.00204"
+    //     });
+    //     await web3tx(
+    //         rToken.changeHat,
+    //         "rToken changeHat for customer1 to hatID #1"
+    //     )(1, {from: customer1});
+    //     await expectAccount(customer1, {
+    //         tokenBalance: "100.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "0.00000",
+    //         receivedSavings: "0.00204",
+    //         interestPayable: "0.00204"
+    //     });
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "100.00000",
+    //         receivedSavings: "100.00102",
+    //         interestPayable: "0.00102"
+    //     });
+    //     await doBingeBorrowing();
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "100.00000",
+    //         receivedSavings: "100.00407",
+    //         interestPayable: "0.00407"
+    //     });
+    // });
 });
