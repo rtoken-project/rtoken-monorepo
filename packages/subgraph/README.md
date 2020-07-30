@@ -170,6 +170,7 @@ sudo rm -rf data && docker-compose up
 3. Re-deploy the new subgraph, whenever subgraph.yaml is changed:
 
 ```bash
+yarn create-local
 yarn deploy-local --watch
 ```
 
