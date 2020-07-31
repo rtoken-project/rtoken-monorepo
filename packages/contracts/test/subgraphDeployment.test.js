@@ -118,6 +118,7 @@ contract("RToken", accounts => {
         console.log("customer1 is", customer1);
         console.log("customer2 is", customer2);
         console.log("customer3 is", customer3);
+        console.log("customer4 is", customer4);
         console.log(
             `The rTOKEN contract (proxy) is deployed at: ${proxy.address}`
         );
@@ -296,35 +297,7 @@ contract("RToken", accounts => {
         )({from: customer});
     }
 
-    it("#1 Customer 1 earns interest with zero hat", async () => {
-        await mint(customer1, 100);
-        assert.equal(
-            wad4human(await token.balanceOf.call(customer1)),
-            "900.00000"
-        );
-        assert.equal(
-            wad4human(await rToken.balanceOf.call(customer1)),
-            "100.00000"
-        );
-        await expectAccount(customer1, {
-            tokenBalance: "100.00000",
-            cumulativeInterest: "0.00000",
-            receivedLoan: "100.00000",
-            totalLoans: "100.00000",
-            totalSavings: "100.00000",
-            receivedSavings: "100.00000",
-            interestPayable: "0.00000"
-        });
-        await doBingeBorrowing();
-        await expectAccount(customer1, {
-            tokenBalance: "100.00000",
-            cumulativeInterest: "0.00000",
-            receivedLoan: "100.00000",
-            receivedSavings: "100.00100",
-            interestPayable: "0.00100"
-        });
-    });
-    it("#2 Customer2 sends interest to customer3", async () => {
+    it("#1 Customer2 sends interest to customer3", async () => {
         await web3tx(
             token.approve,
             "token.approve 100 by customer2"
@@ -350,65 +323,105 @@ contract("RToken", accounts => {
             tokenBalance: "0.00000",
             cumulativeInterest: "0.00000",
             receivedLoan: "100.00000",
-            receivedSavings: "100.00101",
-            interestPayable: "0.00101"
+            receivedSavings: "100.00100",
+            interestPayable: "0.00100"
         });
     });
-    it("#3 Customer2 stops sending interest to customer3", async () => {
-        await redeemAll(customer2);
+    it("#2 Customer2 mints 100 more", async () => {
+        // This triggers LoansTransferred event
+        await mint(customer2, 100);
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
             cumulativeInterest: "0.00000",
-            receivedLoan: "0.00000",
-            receivedSavings: "0.00102",
+            receivedLoan: "200.00000",
+            receivedSavings: "200.00102",
             interestPayable: "0.00102"
         });
     });
-    it("#4 Customer4 sends interest to customer3", async () => {
-        // Prevent customer3 from earning on their own cDAI stash
-        await redeemAll(customer3);
-
-        await web3tx(
-            token.approve,
-            "token.approve 100 by customer4"
-        )(rToken.address, toWad(100), {from: customer4});
-        await web3tx(
-            rToken.mintWithNewHat,
-            "rToken.mint 100 to customer4 with a hat benefiting customer3(100%)"
-        )(toWad(100), [customer3], [1], {from: customer4});
+    it("#3 100 blocks go by", async () => {
         await doBingeBorrowing();
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00102",
-            receivedLoan: "100.00000",
-            receivedSavings: "100.00151",
-            interestPayable: "0.00151"
+            cumulativeInterest: "0.00000",
+            receivedLoan: "200.00000",
+            receivedSavings: "200.00303",
+            interestPayable: "0.00303"
         });
     });
-    it("#5 Customer4 stops sending interest to customer3", async () => {
-        await redeemAll(customer4);
+    it("#4 Customer2 mints 100 more", async () => {
+        // This triggers LoansTransferred event
+        await mint(customer2, 100);
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00102",
-            receivedLoan: "0.00000",
-            receivedSavings: "0.00153",
-            interestPayable: "0.00153"
+            cumulativeInterest: "0.00000",
+            receivedLoan: "300.00000",
+            receivedSavings: "300.00307",
+            interestPayable: "0.00307"
         });
     });
-    it("#6 Customer3 redeems all interest earned so far", async () => {
+    it("#5 Customer3 redeemsAll", async () => {
+        // This triggers LoansTransferred event
         await redeemAll(customer3);
-        assert.equal(
-            wad4human(await token.balanceOf.call(customer3)),
-            "0.00254"
-        );
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00254",
-            receivedLoan: "0.00000",
-            receivedSavings: "0.00000",
+            cumulativeInterest: "0.00308",
+            receivedLoan: "300.00000",
+            receivedSavings: "300.00000",
             interestPayable: "0.00000"
         });
     });
+    // it("#4 Customer4 sends interest to customer3", async () => {
+    //     // Prevent customer3 from earning on their own cDAI stash
+    //     // await redeemAll(customer3);
+    //
+    //     await web3tx(
+    //         token.approve,
+    //         "token.approve 100 by customer4"
+    //     )(rToken.address, toWad(100), {from: customer4});
+    //     await web3tx(
+    //         rToken.mintWithNewHat,
+    //         "rToken.mint 100 to customer4 with a hat benefiting customer3(100%)"
+    //     )(toWad(100), [customer3], [1], {from: customer4});
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "200.00000",
+    //         receivedSavings: "200.00102",
+    //         interestPayable: "0.00102"
+    //     });
+    //     await doBingeBorrowing();
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00000",
+    //         receivedLoan: "200.00000",
+    //         receivedSavings: "200.00303",
+    //         interestPayable: "0.00303"
+    //     });
+    // });
+    // it("#5 Customer3 redeems interest", async () => {
+    //     await redeemAll(customer3);
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00305",
+    //         receivedLoan: "200.00000",
+    //         receivedSavings: "200.00000",
+    //         interestPayable: "0.00000"
+    //     });
+    // });
+    // it("#6 Customer3 redeems all interest earned so far", async () => {
+    //     await redeemAll(customer3);
+    //     assert.equal(
+    //         wad4human(await token.balanceOf.call(customer3)),
+    //         "0.00305"
+    //     );
+    //     await expectAccount(customer3, {
+    //         tokenBalance: "0.00000",
+    //         cumulativeInterest: "0.00305",
+    //         receivedLoan: "200.00000",
+    //         receivedSavings: "200.00000",
+    //         interestPayable: "0.00000"
+    //     });
+    // });
     // So far totals sent to customer3
     // customer2 sent 0.00102
     // customer4 sent 0.00152

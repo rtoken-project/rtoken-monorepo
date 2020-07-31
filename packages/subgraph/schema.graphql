@@ -31,6 +31,8 @@ type Loan @entity {
   recipient: Account!
   amount: BigDecimal! # in rDai (accounts[owner].lRecipients[recipient])
   hat: Hat # todo: case 0 ?
+  sInternalTotal: BigInt!
+  interestEarned: BigDecimal! #in rDAI
   # ---------------------------------- links ----------------------------------
   transfers: [LoanTransferred!]! @derivedFrom(field: "loan")
 }

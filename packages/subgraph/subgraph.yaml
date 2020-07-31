@@ -31,6 +31,8 @@ dataSources:
       abis:
         - name: RToken
           file: ./abis/RToken.json
+        - name: IAllocationStrategy
+          file: ./abis/IAllocationStrategy.json
       eventHandlers:
         - event: AllocationStrategyChanged(address,uint256)
           handler: handleAllocationStrategyChanged

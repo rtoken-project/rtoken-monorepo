@@ -1,4 +1,9 @@
-import { BigDecimal, EthereumEvent } from '@graphprotocol/graph-ts';
+import {
+  BigDecimal,
+  BigInt,
+  EthereumEvent,
+  log
+} from "@graphprotocol/graph-ts";
 
 import {
   RToken,
@@ -11,7 +16,9 @@ import {
   LoansTransferred as LoansTransferredEvent,
   OwnershipTransferred as OwnershipTransferredEvent,
   Transfer as TransferEvent
-} from '../generated/RToken/RToken';
+} from "../generated/RToken/RToken";
+
+import { IAllocationStrategy } from "../generated/RToken/IAllocationStrategy";
 
 import {
   Transaction,
@@ -23,7 +30,7 @@ import {
   LoanTransferred,
   InterestPaid,
   HatChanged
-} from '../generated/schema';
+} from "../generated/schema";
 
 import {
   createEventID,
@@ -31,7 +38,7 @@ import {
   fetchAccount,
   logTransaction,
   toDai
-} from './utils';
+} from "./utils";
 
 // let contract = Contract.bind(event.address)
 //
@@ -118,7 +125,7 @@ export function handleHatCreated(event: HatCreatedEvent): void {
     account.save();
 
     let hatmembership = new HatMembership(
-      hat.id.concat('-').concat(i.toString())
+      hat.id.concat("-").concat(i.toString())
     );
     hatmembership.hat = hat.id;
     hatmembership.account = account.id;
@@ -153,10 +160,23 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
     loan = new Loan(id);
     loan.owner = ownerAccount.id;
     loan.recipient = recipientAccount.id;
-    loan.amount = BigDecimal.fromString('0');
+    loan.amount = BigDecimal.fromString("0");
+    loan.sInternalTotal = BigInt.fromI32(0);
   }
+
+  let rToken = RToken.bind(event.address);
+  let savingAssetConversionRate = rToken.savingAssetConversionRate();
+  let iasAddress = rToken.getCurrentAllocationStrategy();
+  let ias = IAllocationStrategy.bind(iasAddress);
+  let exchangeRateStored = ias.exchangeRateStored();
+  let sInternal = event.params.internalSavingsAmount;
+
+  loan.sInternalTotal = sInternal + loan.sInternalTotal;
   loan.hat = event.params.hatId.toString();
   loan.amount = loan.amount + delta;
+  let earnedInterestBigInt =
+    (loan.sInternalTotal * exchangeRateStored) / savingAssetConversionRate;
+  loan.interestEarned = toDai(earnedInterestBigInt) - loan.amount;
   loan.save();
 
   let ev = new LoanTransferred(createEventID(event));
@@ -164,6 +184,11 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   ev.loan = id;
   ev.value = delta;
   ev.save();
+
+  // log.error("internalSavingsAmount: {}", [sInternal.toString()]);
+  // log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
+  // let iP = rToken.interestPayableOf(event.params.recipient);
+  // log.error("interest Payable Of: {}", [iP.toString()]);
 }
 
 export function handleTransfer(event: TransferEvent): void {
