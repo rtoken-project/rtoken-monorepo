@@ -142,11 +142,14 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   ev.value = toDai(event.params.amount);
   ev.save();
 
+  log.error("====== InterestPaidEvent =======", []);
   let recipientAccount = fetchAccount(event.params.recipient.toHex());
   // let loans = recipientAccount.loansReceived;
-  log.error("Loan amount: {}", [typeof recipientAccount.loansReceived]);
-  // for (let i = 0; i < recipientAccount.loansReceived.length; ++i) {
-  //   log.error("Loans: {}", [i.toString()]);
+
+  // log.error("Loan amount: {}", [typeof recipientAccount.loansReceived]);
+  // for (let i = 0; i < loans.length; ++i) {
+  //   let loan = Loan.load(loans[i]);
+  //   log.error("Loans: {}", [loan.id.toString()]);
   // }
 
   // let loans = recipientAccount.loansReceived;

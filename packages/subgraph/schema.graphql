@@ -17,7 +17,7 @@ type Account @entity {
   cumulativeInterest: BigDecimal! # in rDai (rAmount)
   # ---------------------------------- links ----------------------------------
   loansOwned: [Loan!]! @derivedFrom(field: "owner")
-  loansReceived: [Loan!]! @derivedFrom(field: "recipient")
+  loansReceived: [Loan!]!
   hatMember: [HatMembership!]! @derivedFrom(field: "account")
   transfersFrom: [Transfer!]! @derivedFrom(field: "from")
   transfersTo: [Transfer!]! @derivedFrom(field: "to")

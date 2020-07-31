@@ -1,4 +1,9 @@
-import { BigInt, BigDecimal, EthereumEvent } from "@graphprotocol/graph-ts";
+import {
+  BigInt,
+  BigDecimal,
+  EthereumEvent,
+  log
+} from "@graphprotocol/graph-ts";
 
 import { Account, Loan, Transaction } from "../generated/schema";
 
@@ -15,6 +20,7 @@ export function fetchAccount(id: string): Account {
     account = new Account(id);
     account.balance = BigDecimal.fromString("0");
     account.cumulativeInterest = BigDecimal.fromString("0");
+    account.loansReceived = [];
   }
   return account as Account;
 }
@@ -33,6 +39,15 @@ export function fetchLoan(owner: string, recipient: string): Loan {
     loan.amount = BigDecimal.fromString("0");
     loan.sInternalTotal = BigInt.fromI32(0);
     loan.interestEarned = BigDecimal.fromString("0");
+    // Update the loansReceived array
+    let account = fetchAccount(recipient);
+    let loans = account.loansReceived;
+    log.error("loan exists: {}", [loans.includes(id) ? "true" : "false"]);
+    // for (let i = 0; i < loans.length; ++i) {
+    //   let loan = Loan.load(loans[i]);
+    //   log.error("found loan: {}", [loan.id.toString()]);
+    // }
+    // account.save()
   }
   return loan as Loan;
 }
