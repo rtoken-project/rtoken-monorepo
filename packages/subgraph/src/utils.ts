@@ -32,6 +32,7 @@ export function fetchLoan(owner: string, recipient: string): Loan {
     loan.recipient = recipient;
     loan.amount = BigDecimal.fromString("0");
     loan.sInternalTotal = BigInt.fromI32(0);
+    loan.interestEarned = BigDecimal.fromString("0");
   }
   return loan as Loan;
 }

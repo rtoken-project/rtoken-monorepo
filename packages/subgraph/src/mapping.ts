@@ -141,6 +141,42 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   ev.account = event.params.recipient.toHex();
   ev.value = toDai(event.params.amount);
   ev.save();
+
+  let recipientAccount = fetchAccount(event.params.recipient.toHex());
+  // let loans = recipientAccount.loansReceived;
+  log.error("Loan amount: {}", [typeof recipientAccount.loansReceived]);
+  // for (let i = 0; i < recipientAccount.loansReceived.length; ++i) {
+  //   log.error("Loans: {}", [i.toString()]);
+  // }
+
+  // let loans = recipientAccount.loansReceived;
+  // let loan1 = loans[0];
+  // log.error("Loan amount: {}", [loan1.toString()]);
+  // let loan = fetchLoan(ownerAccount.id, recipientAccount.id);
+
+  // // TODO: figure out how to detect multiple contributors
+  // if (false) {
+  //   // if (toDai(accountStats.lDebt) > loan.amount) {
+  //   // There are multiple current contributors
+  //   log.error("More than one contributor!", []);
+  //   log.error("Loan amount: {}", [loan.amount.toString()]);
+  //   log.error("lDebt: {}", [toDai(accountStats.lDebt).toString()]);
+  // } else {
+  //   // There is only one current contributor
+  //   // log.error("Only 1 contributor!", []);
+  //
+  //   // get the single loan
+  //   let newCumulativeInterest =
+  //     toDai(accountStats.cumulativeInterest) -
+  //     ownerAccount.cumulativeInterest;
+  //   ownerAccount.cumulativeInterest = toDai(accountStats.cumulativeInterest);
+  //   ownerAccount.save();
+  //   log.error("newCumulativeInterest: {}", [
+  //     newCumulativeInterest.toString()
+  //   ]);
+  //   loan.interestEarned = loan.interestEarned + newCumulativeInterest;
+  //   loan.save();
+  // }
 }
 
 export function handleLoansTransferred(event: LoansTransferredEvent): void {
@@ -174,52 +210,38 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   ev.value = delta;
   ev.save();
 
-  log.error("=============", []);
+  log.error("====== LoansTransferEvent =======", []);
   log.error("internalSavingsAmount: {}", [sInternal.toString()]);
   log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
   let iP = rToken.interestPayableOf(event.params.recipient);
-  log.error("interest Payable Of: {}", [iP.toString()]);
+  log.error("interest Payable Of: {}", [toDai(iP).toString()]);
   let interestEarned = toDai(earnedInterestBigInt) - loan.amount;
   log.error("interestEarned: {}", [interestEarned.toString()]);
-  log.error("isDistribution: {}", [
-    event.params.isDistribution ? "true" : "false"
-  ]);
 
   let accountStats = rToken.getAccountStats(event.params.recipient);
 
-  log.error("accountStats rAmount: {}", [accountStats.rAmount.toString()]);
-  log.error("accountStats rInterest: {}", [accountStats.rInterest.toString()]);
-  log.error("accountStats lDebt: {}", [accountStats.lDebt.toString()]);
+  // log.error("accountStats rAmount: {}", [accountStats.rAmount.toString()]);
+  // log.error("accountStats rInterest: {}", [accountStats.rInterest.toString()]);
+  // log.error("accountStats lDebt: {}", [accountStats.lDebt.toString()]);
   log.error("accountStats sInternalAmount: {}", [
     accountStats.sInternalAmount.toString()
   ]);
-  log.error("accountStats rInterestPayable: {}", [
-    accountStats.rInterestPayable.toString()
-  ]);
+  // log.error("accountStats rInterestPayable: {}", [
+  //   accountStats.rInterestPayable.toString()
+  // ]);
   log.error("accountStats cumulativeInterest: {}", [
-    accountStats.cumulativeInterest.toString()
+    toDai(accountStats.cumulativeInterest).toString()
   ]);
 
-  // Only if there is a redeem event
-  // Scenario 1, only one contributor
-  let deltaCumulativeInterest =
-    toDai(accountStats.cumulativeInterest) - ownerAccount.cumulativeInterest;
-  ownerAccount.cumulativeInterest = toDai(accountStats.cumulativeInterest);
-  ownerAccount.save();
-  log.error("deltaCumulativeInterest: {}", [
-    deltaCumulativeInterest.toString()
-  ]);
-  loan.interestEarned =
-    toDai(earnedInterestBigInt) - loan.amount + deltaCumulativeInterest;
-  // loan.interestEarned = loan.interestEarned
-  log.error("loan.interestEarned: {}", [loan.interestEarned.toString()]);
+  if (event.params.isDistribution) {
+    // Not a redeem event
+    log.error("isDistribution: {}", [
+      event.params.isDistribution ? "true" : "false"
+    ]);
+    loan.interestEarned = toDai(earnedInterestBigInt) - loan.amount;
+  }
   loan.save();
-
-  // Scenario 2, multiple current* contributors
-  // Can compare debt is equal to what this loan value is
-
-  // if isDistribution === false then its a redeem event
-  // We must determine the amount of interest earned since last loans transfere
+  log.error("loan.interestEarned: {}", [loan.interestEarned.toString()]);
 }
 
 export function handleTransfer(event: TransferEvent): void {
