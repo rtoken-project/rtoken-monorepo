@@ -185,10 +185,15 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   ev.value = delta;
   ev.save();
 
-  // log.error("internalSavingsAmount: {}", [sInternal.toString()]);
-  // log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
-  // let iP = rToken.interestPayableOf(event.params.recipient);
-  // log.error("interest Payable Of: {}", [iP.toString()]);
+  log.error("internalSavingsAmount: {}", [sInternal.toString()]);
+  log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
+  let iP = rToken.interestPayableOf(event.params.recipient);
+  log.error("interest Payable Of: {}", [iP.toString()]);
+  let interestEarned = toDai(earnedInterestBigInt) - loan.amount;
+  log.error("interestEarned: {}", [interestEarned.toString()]);
+  log.error("isDistribution: {}", [
+    event.params.isDistribution ? "true" : "false"
+  ]);
 }
 
 export function handleTransfer(event: TransferEvent): void {

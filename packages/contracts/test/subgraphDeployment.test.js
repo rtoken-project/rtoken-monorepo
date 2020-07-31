@@ -123,6 +123,7 @@ contract("RToken", accounts => {
             `The rTOKEN contract (proxy) is deployed at: ${proxy.address}`
         );
         console.log(`The compoundAS is deployed at: ${compoundAS.address}`);
+        console.log(`The token is deployed at: ${token.address}`);
         console.log("=============================");
     });
 
@@ -364,7 +365,7 @@ contract("RToken", accounts => {
         await redeemAll(customer3);
         await expectAccount(customer3, {
             tokenBalance: "0.00000",
-            cumulativeInterest: "0.00308",
+            cumulativeInterest: "0.00309",
             receivedLoan: "300.00000",
             receivedSavings: "300.00000",
             interestPayable: "0.00000"
