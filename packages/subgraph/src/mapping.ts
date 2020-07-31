@@ -34,7 +34,7 @@ import {
 
 import {
   createEventID,
-  createLoanID,
+  fetchLoan,
   fetchAccount,
   logTransaction,
   toDai
@@ -145,24 +145,15 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
 
 export function handleLoansTransferred(event: LoansTransferredEvent): void {
   let ownerAccount = fetchAccount(event.params.owner.toHex());
-  ownerAccount.save();
 
   let recipientAccount = fetchAccount(event.params.recipient.toHex());
   recipientAccount.save();
 
-  let id = createLoanID(ownerAccount.id, recipientAccount.id);
+  let loan = fetchLoan(ownerAccount.id, recipientAccount.id);
+
   let delta = event.params.isDistribution
     ? toDai(event.params.redeemableAmount)
     : -toDai(event.params.redeemableAmount);
-
-  let loan = Loan.load(id);
-  if (loan == null) {
-    loan = new Loan(id);
-    loan.owner = ownerAccount.id;
-    loan.recipient = recipientAccount.id;
-    loan.amount = BigDecimal.fromString("0");
-    loan.sInternalTotal = BigInt.fromI32(0);
-  }
 
   let rToken = RToken.bind(event.address);
   let savingAssetConversionRate = rToken.savingAssetConversionRate();
@@ -176,15 +167,14 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   loan.amount = loan.amount + delta;
   let earnedInterestBigInt =
     (loan.sInternalTotal * exchangeRateStored) / savingAssetConversionRate;
-  loan.interestEarned = toDai(earnedInterestBigInt) - loan.amount;
-  loan.save();
 
   let ev = new LoanTransferred(createEventID(event));
   ev.transaction = logTransaction(event).id;
-  ev.loan = id;
+  ev.loan = loan.id;
   ev.value = delta;
   ev.save();
 
+  log.error("=============", []);
   log.error("internalSavingsAmount: {}", [sInternal.toString()]);
   log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
   let iP = rToken.interestPayableOf(event.params.recipient);
@@ -194,6 +184,42 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   log.error("isDistribution: {}", [
     event.params.isDistribution ? "true" : "false"
   ]);
+
+  let accountStats = rToken.getAccountStats(event.params.recipient);
+
+  log.error("accountStats rAmount: {}", [accountStats.rAmount.toString()]);
+  log.error("accountStats rInterest: {}", [accountStats.rInterest.toString()]);
+  log.error("accountStats lDebt: {}", [accountStats.lDebt.toString()]);
+  log.error("accountStats sInternalAmount: {}", [
+    accountStats.sInternalAmount.toString()
+  ]);
+  log.error("accountStats rInterestPayable: {}", [
+    accountStats.rInterestPayable.toString()
+  ]);
+  log.error("accountStats cumulativeInterest: {}", [
+    accountStats.cumulativeInterest.toString()
+  ]);
+
+  // Only if there is a redeem event
+  // Scenario 1, only one contributor
+  let deltaCumulativeInterest =
+    toDai(accountStats.cumulativeInterest) - ownerAccount.cumulativeInterest;
+  ownerAccount.cumulativeInterest = toDai(accountStats.cumulativeInterest);
+  ownerAccount.save();
+  log.error("deltaCumulativeInterest: {}", [
+    deltaCumulativeInterest.toString()
+  ]);
+  loan.interestEarned =
+    toDai(earnedInterestBigInt) - loan.amount + deltaCumulativeInterest;
+  // loan.interestEarned = loan.interestEarned
+  log.error("loan.interestEarned: {}", [loan.interestEarned.toString()]);
+  loan.save();
+
+  // Scenario 2, multiple current* contributors
+  // Can compare debt is equal to what this loan value is
+
+  // if isDistribution === false then its a redeem event
+  // We must determine the amount of interest earned since last loans transfere
 }
 
 export function handleTransfer(event: TransferEvent): void {

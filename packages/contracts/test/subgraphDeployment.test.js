@@ -362,6 +362,10 @@ contract("RToken", accounts => {
     });
     it("#5 Customer3 redeemsAll", async () => {
         // This triggers LoansTransferred event
+        await doBingeBorrowing();
+        await doBingeBorrowing();
+        await doBingeBorrowing();
+        await doBingeBorrowing();
         await redeemAll(customer3);
         await expectAccount(customer3, {
             tokenBalance: "0.00000",

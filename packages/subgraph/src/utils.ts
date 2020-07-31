@@ -1,25 +1,39 @@
-import { BigInt, BigDecimal, EthereumEvent } from '@graphprotocol/graph-ts';
+import { BigInt, BigDecimal, EthereumEvent } from "@graphprotocol/graph-ts";
 
-import { Account, Loan, Transaction } from '../generated/schema';
+import { Account, Loan, Transaction } from "../generated/schema";
 
 export function createEventID(event: EthereumEvent): string {
   return event.block.number
     .toString()
-    .concat('-')
+    .concat("-")
     .concat(event.logIndex.toString());
-}
-
-export function createLoanID(owner: string, recipient: string): string {
-  return owner.concat('-').concat(recipient);
 }
 
 export function fetchAccount(id: string): Account {
   let account = Account.load(id);
   if (account == null) {
     account = new Account(id);
-    account.balance = BigDecimal.fromString('0');
+    account.balance = BigDecimal.fromString("0");
+    account.cumulativeInterest = BigDecimal.fromString("0");
   }
   return account as Account;
+}
+
+function createLoanID(owner: string, recipient: string): string {
+  return owner.concat("-").concat(recipient);
+}
+
+export function fetchLoan(owner: string, recipient: string): Loan {
+  let id = createLoanID(owner, recipient);
+  let loan = Loan.load(id);
+  if (loan == null) {
+    loan = new Loan(id);
+    loan.owner = owner;
+    loan.recipient = recipient;
+    loan.amount = BigDecimal.fromString("0");
+    loan.sInternalTotal = BigInt.fromI32(0);
+  }
+  return loan as Loan;
 }
 
 export function logTransaction(event: EthereumEvent): Transaction {
@@ -31,5 +45,5 @@ export function logTransaction(event: EthereumEvent): Transaction {
 }
 
 export function toDai(value: BigInt): BigDecimal {
-  return value.divDecimal(BigDecimal.fromString('1000000000000000000')); // 18 decimal
+  return value.divDecimal(BigDecimal.fromString("1000000000000000000")); // 18 decimal
 }
