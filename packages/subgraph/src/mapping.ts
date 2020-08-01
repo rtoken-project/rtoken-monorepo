@@ -137,49 +137,45 @@ export function handleHatCreated(event: HatCreatedEvent): void {
 export function handleInterestPaid(event: InterestPaidEvent): void {
   // balance is updated by the transfer event
   let ev = new InterestPaid(createEventID(event));
+  let value = toDai(event.params.amount);
   ev.transaction = logTransaction(event).id;
   ev.account = event.params.recipient.toHex();
-  ev.value = toDai(event.params.amount);
+  ev.value = value;
   ev.save();
 
   log.error("====== InterestPaidEvent =======", []);
   let recipientAccount = fetchAccount(event.params.recipient.toHex());
-  // let loans = recipientAccount.loansReceived;
+  let loans = recipientAccount.loansReceived;
+  let interestEarnedSum = BigDecimal.fromString("0");
+  for (let i = 0; i < loans.length; ++i) {
+    let loan = Loan.load(loans[i]);
+    if (loan.amount === BigDecimal.fromString("0")) return;
+    interestEarnedSum = interestEarnedSum + loan.interestEarned;
+  }
 
-  // log.error("Loan amount: {}", [typeof recipientAccount.loansReceived]);
-  // for (let i = 0; i < loans.length; ++i) {
-  //   let loan = Loan.load(loans[i]);
-  //   log.error("Loans: {}", [loan.id.toString()]);
-  // }
+  let rToken = RToken.bind(event.address);
+  let savingAssetConversionRate = rToken.savingAssetConversionRate();
+  let iasAddress = rToken.getCurrentAllocationStrategy();
+  let ias = IAllocationStrategy.bind(iasAddress);
+  let exchangeRateStored = ias.exchangeRateStored();
 
-  // let loans = recipientAccount.loansReceived;
-  // let loan1 = loans[0];
-  // log.error("Loan amount: {}", [loan1.toString()]);
-  // let loan = fetchLoan(ownerAccount.id, recipientAccount.id);
+  let newInterestEarned = value - interestEarnedSum;
 
-  // // TODO: figure out how to detect multiple contributors
-  // if (false) {
-  //   // if (toDai(accountStats.lDebt) > loan.amount) {
-  //   // There are multiple current contributors
-  //   log.error("More than one contributor!", []);
-  //   log.error("Loan amount: {}", [loan.amount.toString()]);
-  //   log.error("lDebt: {}", [toDai(accountStats.lDebt).toString()]);
-  // } else {
-  //   // There is only one current contributor
-  //   // log.error("Only 1 contributor!", []);
-  //
-  //   // get the single loan
-  //   let newCumulativeInterest =
-  //     toDai(accountStats.cumulativeInterest) -
-  //     ownerAccount.cumulativeInterest;
-  //   ownerAccount.cumulativeInterest = toDai(accountStats.cumulativeInterest);
-  //   ownerAccount.save();
-  //   log.error("newCumulativeInterest: {}", [
-  //     newCumulativeInterest.toString()
-  //   ]);
-  //   loan.interestEarned = loan.interestEarned + newCumulativeInterest;
-  //   loan.save();
-  // }
+  for (let i = 0; i < loans.length; ++i) {
+    let loan = Loan.load(loans[i]);
+    if (loan.amount === BigDecimal.fromString("0")) return;
+
+    // Get the relative proportion of this loan to others
+    let proportion = loan.interestEarned / interestEarnedSum;
+    // Calculate the proportion of new interest from this loan & update the loan
+    let interestEarnedProportion = newInterestEarned * proportion;
+    loan.interestEarned = loan.interestEarned + interestEarnedProportion;
+    // calculate the proportion of new interest in sInternal & update the loan
+    let weightedInterestEarnedInS =
+      (event.params.amount * savingAssetConversionRate) / exchangeRateStored;
+    loan.sInternalTotal = loan.sInternalTotal - weightedInterestEarnedInS;
+    loan.save();
+  }
 }
 
 export function handleLoansTransferred(event: LoansTransferredEvent): void {

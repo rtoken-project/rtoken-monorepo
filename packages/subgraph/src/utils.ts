@@ -42,12 +42,9 @@ export function fetchLoan(owner: string, recipient: string): Loan {
     // Update the loansReceived array
     let account = fetchAccount(recipient);
     let loans = account.loansReceived;
-    log.error("loan exists: {}", [loans.includes(id) ? "true" : "false"]);
-    // for (let i = 0; i < loans.length; ++i) {
-    //   let loan = Loan.load(loans[i]);
-    //   log.error("found loan: {}", [loan.id.toString()]);
-    // }
-    // account.save()
+    loans.push(id);
+    account.loansReceived = loans;
+    account.save();
   }
   return loan as Loan;
 }

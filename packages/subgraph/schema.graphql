@@ -14,7 +14,7 @@ type Account @entity {
   # ---------------------------------- state ----------------------------------
   hat: Hat # todo: case 0 ?
   balance: BigDecimal! # in rDai (rAmount)
-  cumulativeInterest: BigDecimal! # in rDai (rAmount)
+  # cumulativeInterest: BigDecimal! # in rDai (rAmount)
   # ---------------------------------- links ----------------------------------
   loansOwned: [Loan!]! @derivedFrom(field: "owner")
   loansReceived: [Loan!]!
