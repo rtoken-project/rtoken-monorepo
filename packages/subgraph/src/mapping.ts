@@ -216,7 +216,6 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
 
   let iP = rToken.interestPayableOf(event.params.recipient);
   let interestEarned = interest - loan.amount;
-  let accountStats = rToken.getAccountStats(event.params.recipient);
   if (event.params.isDistribution) {
     // Not a redeem event
     loan.interestEarned = interest - loan.amount;
