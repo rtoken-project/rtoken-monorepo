@@ -33,6 +33,7 @@ type Loan @entity {
   hat: Hat # todo: case 0 ?
   sInternalTotal: BigDecimal!
   interestEarned: BigDecimal! #in rDAI
+  interestRedeemed: BigDecimal!
   # ---------------------------------- links ----------------------------------
   transfers: [LoanTransferred!]! @derivedFrom(field: "loan")
 }

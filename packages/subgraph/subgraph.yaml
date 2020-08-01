@@ -10,10 +10,10 @@ dataSources:
     source:
       abi: RToken
       # Local testing
-      address: "0x625aD1AA6469568ded0cd0254793Efd0e5C0394F"
+      # address: "0x625aD1AA6469568ded0cd0254793Efd0e5C0394F"
       # Mainnet
-      # address: '0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0'
-      # startBlock: 9117140
+      address: "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0"
+      startBlock: 9117140
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3

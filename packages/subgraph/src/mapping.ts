@@ -143,14 +143,17 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   ev.value = value;
   ev.save();
 
-  log.error("====== InterestPaidEvent =======", []);
+  // log.error("====== InterestPaidEvent =======", []);
   let recipientAccount = fetchAccount(event.params.recipient.toHex());
   let loans = recipientAccount.loansReceived;
-  let interestEarnedSum = BigDecimal.fromString("0");
+
+  // Total all unclaimed interest for relevant loans
+  let interestSum = BigDecimal.fromString("0");
   for (let i = 0; i < loans.length; ++i) {
     let loan = Loan.load(loans[i]);
     if (loan.amount === BigDecimal.fromString("0")) return;
-    interestEarnedSum = interestEarnedSum + loan.interestEarned;
+    let unredeemedInterest = loan.interestEarned - loan.interestRedeemed;
+    interestSum = interestSum + unredeemedInterest;
   }
 
   let rToken = RToken.bind(event.address);
@@ -159,19 +162,18 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   let ias = IAllocationStrategy.bind(iasAddress);
   let exchangeRateStored = ias.exchangeRateStored();
 
-  let newInterestEarned = value - interestEarnedSum;
+  let newInterestEarned = value - interestSum;
 
   for (let i = 0; i < loans.length; ++i) {
     let loan = Loan.load(loans[i]);
     if (loan.amount === BigDecimal.fromString("0")) return;
 
     // Get the relative proportion of this loan to others
-    let proportion = loan.interestEarned / interestEarnedSum;
-    log.error("Proportion: {}", [proportion.toString()]);
-    let proportionBigInt = proportion.toString();
+    let proportion = loan.interestEarned / interestSum;
     // Calculate the proportion of new interest from this loan & update the loan
     let interestEarnedProportion = newInterestEarned * proportion;
     loan.interestEarned = loan.interestEarned + interestEarnedProportion;
+    loan.interestRedeemed = loan.interestRedeemed + interestEarnedProportion;
     // calculate the proportion of new interest in sInternal & update the loan
     let interestEarnedInS =
       (value * toDai(savingAssetConversionRate)) / toDai(exchangeRateStored);
@@ -202,7 +204,7 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   loan.sInternalTotal = sInternal + loan.sInternalTotal;
   loan.hat = event.params.hatId.toString();
   loan.amount = loan.amount + delta;
-  let earnedInterest =
+  let interest =
     (loan.sInternalTotal * toDai(exchangeRateStored)) /
     toDai(savingAssetConversionRate);
 
@@ -212,38 +214,14 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   ev.value = delta;
   ev.save();
 
-  log.error("====== LoansTransferEvent =======", []);
-  log.error("internalSavingsAmount: {}", [sInternal.toString()]);
-  log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
   let iP = rToken.interestPayableOf(event.params.recipient);
-  log.error("interest Payable Of: {}", [toDai(iP).toString()]);
-  let interestEarned = earnedInterest - loan.amount;
-  log.error("interestEarned: {}", [interestEarned.toString()]);
-
+  let interestEarned = interest - loan.amount;
   let accountStats = rToken.getAccountStats(event.params.recipient);
-
-  // log.error("accountStats rAmount: {}", [accountStats.rAmount.toString()]);
-  // log.error("accountStats rInterest: {}", [accountStats.rInterest.toString()]);
-  // log.error("accountStats lDebt: {}", [accountStats.lDebt.toString()]);
-  log.error("accountStats sInternalAmount: {}", [
-    accountStats.sInternalAmount.toString()
-  ]);
-  // log.error("accountStats rInterestPayable: {}", [
-  //   accountStats.rInterestPayable.toString()
-  // ]);
-  log.error("accountStats cumulativeInterest: {}", [
-    toDai(accountStats.cumulativeInterest).toString()
-  ]);
-
   if (event.params.isDistribution) {
     // Not a redeem event
-    log.error("isDistribution: {}", [
-      event.params.isDistribution ? "true" : "false"
-    ]);
-    loan.interestEarned = earnedInterest - loan.amount;
+    loan.interestEarned = interest - loan.amount;
   }
   loan.save();
-  log.error("loan.interestEarned: {}", [loan.interestEarned.toString()]);
 }
 
 export function handleTransfer(event: TransferEvent): void {
