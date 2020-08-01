@@ -19,7 +19,6 @@ export function fetchAccount(id: string): Account {
   if (account == null) {
     account = new Account(id);
     account.balance = BigDecimal.fromString("0");
-    account.cumulativeInterest = BigDecimal.fromString("0");
     account.loansReceived = [];
   }
   return account as Account;
@@ -37,7 +36,7 @@ export function fetchLoan(owner: string, recipient: string): Loan {
     loan.owner = owner;
     loan.recipient = recipient;
     loan.amount = BigDecimal.fromString("0");
-    loan.sInternalTotal = BigInt.fromI32(0);
+    loan.sInternalTotal = BigDecimal.fromString("0");
     loan.interestEarned = BigDecimal.fromString("0");
     // Update the loansReceived array
     let account = fetchAccount(recipient);

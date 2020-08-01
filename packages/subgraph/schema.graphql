@@ -14,7 +14,6 @@ type Account @entity {
   # ---------------------------------- state ----------------------------------
   hat: Hat # todo: case 0 ?
   balance: BigDecimal! # in rDai (rAmount)
-  # cumulativeInterest: BigDecimal! # in rDai (rAmount)
   # ---------------------------------- links ----------------------------------
   loansOwned: [Loan!]! @derivedFrom(field: "owner")
   loansReceived: [Loan!]!
@@ -32,7 +31,7 @@ type Loan @entity {
   recipient: Account!
   amount: BigDecimal! # in rDai (accounts[owner].lRecipients[recipient])
   hat: Hat # todo: case 0 ?
-  sInternalTotal: BigInt!
+  sInternalTotal: BigDecimal!
   interestEarned: BigDecimal! #in rDAI
   # ---------------------------------- links ----------------------------------
   transfers: [LoanTransferred!]! @derivedFrom(field: "loan")

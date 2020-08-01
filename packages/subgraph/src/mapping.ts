@@ -167,13 +167,15 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
 
     // Get the relative proportion of this loan to others
     let proportion = loan.interestEarned / interestEarnedSum;
+    log.error("Proportion: {}", [proportion.toString()]);
+    let proportionBigInt = proportion.toString();
     // Calculate the proportion of new interest from this loan & update the loan
     let interestEarnedProportion = newInterestEarned * proportion;
     loan.interestEarned = loan.interestEarned + interestEarnedProportion;
     // calculate the proportion of new interest in sInternal & update the loan
-    let weightedInterestEarnedInS =
-      (event.params.amount * savingAssetConversionRate) / exchangeRateStored;
-    loan.sInternalTotal = loan.sInternalTotal - weightedInterestEarnedInS;
+    let interestEarnedInS =
+      (value * toDai(savingAssetConversionRate)) / toDai(exchangeRateStored);
+    loan.sInternalTotal = loan.sInternalTotal - interestEarnedInS * proportion;
     loan.save();
   }
 }
@@ -195,13 +197,14 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   let iasAddress = rToken.getCurrentAllocationStrategy();
   let ias = IAllocationStrategy.bind(iasAddress);
   let exchangeRateStored = ias.exchangeRateStored();
-  let sInternal = event.params.internalSavingsAmount;
+  let sInternal = toDai(event.params.internalSavingsAmount);
 
   loan.sInternalTotal = sInternal + loan.sInternalTotal;
   loan.hat = event.params.hatId.toString();
   loan.amount = loan.amount + delta;
-  let earnedInterestBigInt =
-    (loan.sInternalTotal * exchangeRateStored) / savingAssetConversionRate;
+  let earnedInterest =
+    (loan.sInternalTotal * toDai(exchangeRateStored)) /
+    toDai(savingAssetConversionRate);
 
   let ev = new LoanTransferred(createEventID(event));
   ev.transaction = logTransaction(event).id;
@@ -214,7 +217,7 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   log.error("exchangeRateStored: {}", [exchangeRateStored.toString()]);
   let iP = rToken.interestPayableOf(event.params.recipient);
   log.error("interest Payable Of: {}", [toDai(iP).toString()]);
-  let interestEarned = toDai(earnedInterestBigInt) - loan.amount;
+  let interestEarned = earnedInterest - loan.amount;
   log.error("interestEarned: {}", [interestEarned.toString()]);
 
   let accountStats = rToken.getAccountStats(event.params.recipient);
@@ -237,7 +240,7 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
     log.error("isDistribution: {}", [
       event.params.isDistribution ? "true" : "false"
     ]);
-    loan.interestEarned = toDai(earnedInterestBigInt) - loan.amount;
+    loan.interestEarned = earnedInterest - loan.amount;
   }
   loan.save();
   log.error("loan.interestEarned: {}", [loan.interestEarned.toString()]);
