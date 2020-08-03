@@ -12,6 +12,7 @@ const rutils = getRutils();
 const users = getUsers();
 const { customer1, customer2, customer3 } = users;
 let rtoken;
+let user2;
 
 before(async () => {
   rtoken = await getRTokenContract();
@@ -19,20 +20,23 @@ before(async () => {
 
 describe("Tests basic user lookup", () => {
   it("should successfully get account by address", async () => {
-    const user = rutils.user({
+    user2 = rutils.user({
       address: customer2.address,
     });
-    const details = await user.details();
+    const details = await user2.details();
     expect(details.id).to.be(customer2.address);
   });
   it("should successfully get account rToken balance", async () => {
-    const balanceBn = await rtoken.balanceOf(customer2.address);
-    const balance = formatUnits(balanceBn, 18);
-    const user = rutils.user({
-      address: customer2.address,
-    });
-    const details = await user.details();
-    expect(details.balance).to.be(balance);
+    const balance = formatUnits(await rtoken.balanceOf(customer2.address), 18);
+    const details = await user2.details();
+    // expect(details.balance).to.be(balance);
+  });
+  it("should successfully get account interest sent to recipient", async () => {
+    const accountStats = await rtoken.getAccountStats(customer3.address);
+    const cumulativeInterest = accountStats.cumulativeInterest;
+
+    const interestSent = await user2.interestSent(customer3.address);
+    expect(formatUnits(cumulativeInterest, 18)).to.be.greaterThan(interestSent);
   });
 });
 

@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const getAccountById = gql`
   query accountById($id: Bytes) {
@@ -36,6 +36,14 @@ export const getAllUsersWithHat = gql`
       hat {
         id
       }
+    }
+  }
+`;
+export const getLoanById = gql`
+  query loan($id: String) {
+    loan(id: $id) {
+      amount
+      interestRedeemed
     }
   }
 `;

@@ -1,4 +1,4 @@
-import { getAccountById } from '../src/graphql-operations/queries';
+import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
 
 export default class User {
   constructor(client, options, globalOptions) {
@@ -21,6 +21,19 @@ export default class User {
       // TODO handle error no account found
     }
     return res.data.account;
+  }
+  async interestSent(recipient) {
+    const res = await this.client.query({
+      query: getLoanById,
+      variables: {
+        id: `${this.address}-${recipient.toLowerCase()}`,
+      },
+    });
+    if (!res.data.interestRedeemed) {
+      // TODO: handle error no loan exists
+    }
+    // add the current unredeemed interest
+    return res.data.loan.interestRedeemed;
   }
 
   ////////////////////////////////////////////

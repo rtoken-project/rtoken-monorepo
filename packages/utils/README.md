@@ -28,29 +28,34 @@ const allUsersOfHat = myHat.allUsers();
 
 #### 1. Connect to the Data :raised_hands: :rainbow:
 
-This will be your connection to the rToken subgraph (`../packages/subgraph`), which provides the blockchain data. Use the helper function to set it up.
+This will be your connection to the rToken subgraph, which provides the blockchain data. Use the helper function to set it up, or see [Using your own Apollo client](#Using-your-own-Apollo-client).
 
 ```js
-import { getClient } from '@rtoken/utils';
+import { getClient } from "@rtoken/utils";
 
 const apolloInstance = getClient();
 ```
 
 Optionally, configure your client by passing an object to `getClient()` with the following:
 
-| option | default                     | description                      |
-| ------ | --------------------------- | -------------------------------- |
-| uri    | (mainnet rDAI subgraph URL) | Location of your rToken subgraph |
-| debug  | `false`                     | Display logs on Apollo errors    |
+| option | default                                                     | description                      |
+| ------ | ----------------------------------------------------------- | -------------------------------- |
+| uri    | https://api.thegraph.com/subgraphs/name/rtoken-project/rdai | Location of your rToken subgraph |
+| debug  | `false`                                                     | Display logs on Apollo errors    |
 
-You can also bring your own client if you want more control (see [Using your own Apollo client](#Using-your-own-Apollo-client)).
+You will also need an Ethers.js v5 instance
+
+TODO: upgrade to ethers.js V5
+
+```js
+```
 
 #### 2. Instantiate the @rtoken/utils library
 
 Pass the `apolloInstance` to create the `RTokenUtils` object.
 
 ```js
-import RTokenUtils, { getClient } from '@rtoken/utils';
+import RTokenUtils, { getClient } from "@rtoken/utils";
 
 const apolloInstance = getClient();
 const rutils = new RTokenUtils(apolloInstance);
@@ -71,7 +76,7 @@ Users, Hats, and Global entities are now available for inspecting.
 
 ```js
 // Users
-const user = rutils.user({ address: '0xabc...' });
+const user = rutils.user({ address: "0xabc..." });
 const userDetails = user.details();
 
 // Hats
@@ -115,14 +120,14 @@ If you have any questions, please contact us via Discord.
 This might be helpful if you want more control over the apollo-client, such as custom caching options or authentication of a private client. See `/src/utils/client` for how we instantiate the client.
 
 ```js
-const { ApolloClient } = require('apollo-client');
-const { InMemoryCache } = require('apollo-cache-inmemory');
-const { HttpLink } = require('apollo-link-http');
-const fetch = require('cross-fetch');
+const { ApolloClient } = require("apollo-client");
+const { InMemoryCache } = require("apollo-cache-inmemory");
+const { HttpLink } = require("apollo-link-http");
+const fetch = require("cross-fetch");
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
-  uri: 'http://localhost:4000/',
+  uri: "http://localhost:4000/",
   fetch,
 });
 
@@ -134,7 +139,7 @@ const apolloInstance = new ApolloClient({
   },
   defaultOptions: {
     query: {
-      fetchPolicy: 'network-only',
+      fetchPolicy: "network-only",
     },
   },
 });
