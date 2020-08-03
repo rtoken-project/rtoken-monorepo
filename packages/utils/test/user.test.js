@@ -18,7 +18,7 @@ before(async () => {
 });
 
 describe("Tests basic user lookup", () => {
-  it("should successfully get account id", async () => {
+  it("should successfully get account by address", async () => {
     const user = rutils.user({
       address: customer2.address,
     });

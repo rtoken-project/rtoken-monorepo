@@ -1,10 +1,10 @@
-import User from './user';
-import Hat from './hat';
+import User from "./user";
+import Hat from "./hat";
 
 export default class RTokenUtils {
   constructor(apolloInstance, options = {}) {
     if (!apolloInstance) {
-      throw new Error('Please pass an Apollo Instance');
+      throw new Error("Please pass an Apollo Instance");
     }
     this.client = apolloInstance;
 
@@ -14,18 +14,18 @@ export default class RTokenUtils {
 
   user(options) {
     if (!options || !options.address) {
-      throw new Error('Please pass an address');
+      throw new Error("Please pass an address");
     }
-    // TODO: deepmerge options & this.options
+    // TODO: simplify by deepmerge options & this.options
     const user = new User(this.client, options, this.options);
     return user;
   }
 
   hat(options) {
     if (!options || !options.id) {
-      throw new Error('Please pass a hat ID');
+      throw new Error("Please pass a hat ID");
     }
-    if (typeof options.id === 'number') options.id = options.id.toString();
+    if (typeof options.id === "number") options.id = options.id.toString();
     const hat = new Hat(this.client, options, this.options);
     return hat;
   }
