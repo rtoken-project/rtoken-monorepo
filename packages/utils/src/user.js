@@ -1,9 +1,8 @@
-import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
-import { getContract } from "./utils/web3";
-
-import { BigNumber } from "@ethersproject/bignumber";
+// import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits, formatUnits } from "@ethersproject/units";
 
+import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
+import { getContract } from "./utils/web3";
 import DEFAULT_NETWORK from "./utils/constants";
 
 const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
@@ -41,12 +40,10 @@ export default class User {
     interestSent = interestRedeemed;
 
     if (!redeemedOnly) {
-      const rtoken = await getContract(
-        "rdai",
-        this.options.network,
-        this.provider
-      );
-      // const ias = await getContract("ias");
+      console.log(DEFAULT_NETWORK);
+      console.log(this.options.network);
+      // const rtoken = await getContract("rdai", "homestead", this.provider);
+      const ias = await getContract("ias");
       // let exchangeRateStored = this.ias.exchangeRateStored();
       //
       // const sInDai = (interestSent = interestSent + sInDai - loanAmount);
