@@ -75,11 +75,11 @@ Users, Hats, and Global entities are now available for inspecting.
 ```js
 // Users
 const user = rutils.user("0xabc...");
-const userDetails = user.details();
+const userDetails = await user.details();
 
 // Hats
 const myHat = rutils.hat({ id: 11 });
-const allUsers = myHat.allUsers();
+const allUsers = await myHat.allUsers();
 
 // Global
 // (under development)
