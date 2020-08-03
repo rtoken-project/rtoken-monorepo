@@ -58,7 +58,6 @@ Pass the `apolloInstance` to create the `RTokenUtils` object.
 ```js
 import RTokenUtils, { getClient } from "@rtoken/utils";
 
-const apolloInstance = getClient();
 const rutils = new RTokenUtils(apolloInstance, web3Provider, options);
 ```
 
