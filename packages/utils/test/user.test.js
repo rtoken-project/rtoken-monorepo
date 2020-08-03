@@ -1,12 +1,12 @@
 // var test = require('mocha').describe;
 // var assert = require('chai').assert;
-import { ethers } from 'ethers';
+import { ethers } from "ethers";
 const { formatUnits } = ethers.utils;
-var expect = require('expect.js');
+var expect = require("expect.js");
 
-import { getRutils } from './utils/general';
-import { getUsers } from './utils/users';
-import { getRTokenContract } from './utils/web3';
+import { getRutils } from "./utils/general";
+import { getUsers } from "./utils/users";
+import { getRTokenContract } from "./utils/web3";
 
 const rutils = getRutils();
 const users = getUsers();
@@ -17,19 +17,19 @@ before(async () => {
   rtoken = await getRTokenContract();
 });
 
-describe('Tests basic user lookup', () => {
-  it('should successfully get a single account details', async () => {
+describe("Tests basic user lookup", () => {
+  it("should successfully get account id", async () => {
     const user = rutils.user({
-      address: customer1.address,
+      address: customer2.address,
     });
     const details = await user.details();
-    expect(details.id).to.be(customer1.address);
+    expect(details.id).to.be(customer2.address);
   });
-  it('should successfully get the token balance for an account', async () => {
-    const balanceBn = await rtoken.balanceOf(customer1.address);
+  it("should successfully get account rToken balance", async () => {
+    const balanceBn = await rtoken.balanceOf(customer2.address);
     const balance = formatUnits(balanceBn, 18);
     const user = rutils.user({
-      address: customer1.address,
+      address: customer2.address,
     });
     const details = await user.details();
     expect(details.balance).to.be(balance);

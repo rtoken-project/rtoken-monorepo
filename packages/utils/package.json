@@ -10,16 +10,15 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test-local": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test --require @babel/register",
-    "test": "SUBGRAPH_ID=$npm_package_subgraph_mainnet_id SUBGRAPH_URL=$npm_package_subgraph_mainnet_url mocha --timeout 7000 test --require @babel/register",
+    "test": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test --require @babel/register",
     "build": "babel ./src --out-dir dist",
     "lint": "eslint . --fix"
   },
   "predeploy": "npm version patch",
   "subgraph": {
     "mainnet": {
-      "url": "https://api.thegraph.com/subgraphs/id/",
-      "id": "QmfUZ16H2GBxQ4eULAELDJjjVZcZ36TcDkwhoZ9cjF2WNc",
+      "url": "https://api.thegraph.com/subgraphs/name/rtoken-project/rdai",
+      "id": "",
       "contractAddress": "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0"
     },
     "local": {

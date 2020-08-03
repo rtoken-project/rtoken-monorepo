@@ -388,13 +388,6 @@ contract("RToken", accounts => {
         )(toWad(100), [customer3], [1], {from: customer4});
         await doBingeBorrowing();
         await redeemAll(customer3);
-        // await expectAccount(customer3, {
-        //     tokenBalance: "0.00000",
-        //     cumulativeInterest: "0.00000",
-        //     receivedLoan: "100.00000",
-        //     receivedSavings: "100.00100",
-        //     interestPayable: "0.00100"
-        // });
     });
     it("#7 Kitchen sink", async () => {
         await mint(customer2, 100);
