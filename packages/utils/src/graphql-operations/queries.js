@@ -44,6 +44,7 @@ export const getLoanById = gql`
     loan(id: $id) {
       amount
       interestRedeemed
+      sInternal
     }
   }
 `;

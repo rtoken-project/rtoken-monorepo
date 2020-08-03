@@ -43,11 +43,12 @@ Optionally, configure your client by passing an object to `getClient()` with the
 | uri    | https://api.thegraph.com/subgraphs/name/rtoken-project/rdai | Location of your rToken subgraph |
 | debug  | `false`                                                     | Display logs on Apollo errors    |
 
-You will also need an Ethers.js v5 instance
-
-TODO: upgrade to ethers.js V5
+You may also need an Ethers.js v5 provider instance. If you're only interest in redeemed interest data, you may not need this.
 
 ```js
+import { InfuraProvider } from "@ethersproject/providers";
+
+const web3Provider = new InfuraProvider("homestead", process.env.INFURA_KEY);
 ```
 
 #### 2. Instantiate the @rtoken/utils library
@@ -58,17 +59,15 @@ Pass the `apolloInstance` to create the `RTokenUtils` object.
 import RTokenUtils, { getClient } from "@rtoken/utils";
 
 const apolloInstance = getClient();
-const rutils = new RTokenUtils(apolloInstance);
-
-// Alternatively with options
-const rutils = new RTokenUtils(apolloInstance, options);
+const rutils = new RTokenUtils(apolloInstance, web3Provider, options);
 ```
 
 Options are an object type with the following properties:
 
-| option | default | description  |
-| ------ | ------- | ------------ |
-| debug  | `false` | print errors |
+| option  | default     | description      |
+| ------- | ----------- | ---------------- |
+| network | `homestead` | Ethereum network |
+| debug   | `false`     | print errors     |
 
 #### 3. Create and use your entities
 
@@ -76,7 +75,7 @@ Users, Hats, and Global entities are now available for inspecting.
 
 ```js
 // Users
-const user = rutils.user({ address: "0xabc..." });
+const user = rutils.user("0xabc...");
 const userDetails = user.details();
 
 // Hats
@@ -89,17 +88,25 @@ const allUsers = myHat.allUsers();
 
 If you have any questions, please contact us via Discord.
 
-## Methods
+## API
 
 ### :bust_in_silhouette: User
 
-#### Available
+#### `details()`
 
-- `details`
+Returns details about an account, including balance.
+
+#### `interestSent(recipient[, redeemedOnly])`
+
+Returns amount of interest sent to a particular address. If `redeemedOnly` is true, it only includes the amount which has been redeemed, which may be 0.
+
+| Argument     | Type    | default  |
+| :----------- | :------ | -------- |
+| recipient    | Address | required |
+| redeemedOnly | Boolean | false    |
 
 #### Planned
 
-- `interestSentTo`
 - `totalInterestReceived`
 - `totalInterestSent`
 

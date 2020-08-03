@@ -1,13 +1,19 @@
 import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
+import { getContract } from "./utils/web3";
+
+import { BigNumber } from "@ethersproject/bignumber";
+import { parseUnits, formatUnits } from "@ethersproject/units";
+
+import DEFAULT_NETWORK from "./utils/constants";
+
+const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
 
 export default class User {
-  constructor(client, options, globalOptions) {
+  constructor(client, provider, address, options) {
     this.client = client;
-
-    this.options = options;
-    this.address = options.address;
-
-    this.globalOptions = globalOptions;
+    this.provider = provider;
+    this.address = address;
+    this.options = { ...options, network: DEFAULT_NETWORK };
   }
 
   async details() {
@@ -22,18 +28,30 @@ export default class User {
     }
     return res.data.account;
   }
-  async interestSent(recipient) {
+  async interestSent(recipient, redeemedOnly) {
+    let interestSent = 0;
     const res = await this.client.query({
       query: getLoanById,
       variables: {
         id: `${this.address}-${recipient.toLowerCase()}`,
       },
     });
-    if (!res.data.interestRedeemed) {
-      // TODO: handle error no loan exists
+    // TODO: handle error no loan exists
+    const { amount: loanAmount, sInternal, interestRedeemed } = res.data.loan;
+    interestSent = interestRedeemed;
+
+    if (!redeemedOnly) {
+      const rtoken = await getContract(
+        "rdai",
+        this.options.network,
+        this.provider
+      );
+      // const ias = await getContract("ias");
+      // let exchangeRateStored = this.ias.exchangeRateStored();
+      //
+      // const sInDai = (interestSent = interestSent + sInDai - loanAmount);
     }
-    // add the current unredeemed interest
-    return res.data.loan.interestRedeemed;
+    return interestSent;
   }
 
   ////////////////////////////////////////////

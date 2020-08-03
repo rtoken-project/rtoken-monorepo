@@ -2,23 +2,18 @@ import User from "./user";
 import Hat from "./hat";
 
 export default class RTokenUtils {
-  constructor(apolloInstance, options = {}) {
+  constructor(apolloInstance, provider, options) {
     if (!apolloInstance) {
       throw new Error("Please pass an Apollo Instance");
     }
     this.client = apolloInstance;
-
-    this.options = {};
-    this.options.deubug = options.debug;
+    this.provider = provider;
+    this.options = options;
   }
 
-  user(options) {
-    if (!options || !options.address) {
-      throw new Error("Please pass an address");
-    }
-    // TODO: simplify by deepmerge options & this.options
-    const user = new User(this.client, options, this.options);
-    return user;
+  user(address) {
+    if (!address) throw new Error("Please pass an address");
+    return new User(this.client, this.provider, address, this.options);
   }
 
   hat(options) {

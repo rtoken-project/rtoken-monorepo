@@ -1,7 +1,8 @@
 // var test = require('mocha').describe;
 // var assert = require('chai').assert;
-import { ethers } from "ethers";
-const { formatUnits } = ethers.utils;
+
+import { InfuraProvider } from "@ethersproject/providers";
+import { parseUnits, formatUnits } from "@ethersproject/units";
 var expect = require("expect.js");
 
 import { getRutils } from "./utils/general";
@@ -14,22 +15,22 @@ const { customer1, customer2, customer3 } = users;
 let rtoken;
 let user2;
 
+const web3Provider = new InfuraProvider("homestead", process.env.INFURA_KEY);
+
 before(async () => {
   rtoken = await getRTokenContract();
 });
 
 describe("Tests basic user lookup", () => {
   it("should successfully get account by address", async () => {
-    user2 = rutils.user({
-      address: customer2.address,
-    });
+    user2 = rutils.user(customer2.address);
     const details = await user2.details();
     expect(details.id).to.be(customer2.address);
   });
   it("should successfully get account rToken balance", async () => {
     const balance = formatUnits(await rtoken.balanceOf(customer2.address), 18);
     const details = await user2.details();
-    // expect(details.balance).to.be(balance);
+    expect(details.balance).to.be(balance);
   });
   it("should successfully get account interest sent to recipient", async () => {
     const accountStats = await rtoken.getAccountStats(customer3.address);

@@ -1,26 +1,13 @@
-import ethers from 'ethers';
-import CONTRACTS from '../utils/contracts';
+import { Contract } from "@ethersproject/contracts";
+import CONTRACTS from "./contracts";
 
-const getWeb3Provider = (network, infuraKey) => {
-  try {
-    const web3Provider = new ethers.providers.InfuraProvider(
-      network,
-      infuraKey
-    );
-    return web3Provider;
-  } catch (error) {
-    console.log('error setting up web3 provider: ', error);
-    return;
-  }
-};
-
-const getContract = async (name) => {
-  const contract = new ethers.Contract(
-    CONTRACTS[name][this.network],
+const getContract = async (name, network, provider) => {
+  const contract = new Contract(
+    CONTRACTS[name][network],
     CONTRACTS[name].abi,
-    this.web3Provider
+    provider
   );
   return contract;
 };
 
-export { getContract, getWeb3Provider };
+export { getContract };
