@@ -36,8 +36,7 @@ export function fetchLoan(owner: string, recipient: string): Loan {
     loan.owner = owner;
     loan.recipient = recipient;
     loan.amount = BigDecimal.fromString("0");
-    loan.sInternalTotal = BigDecimal.fromString("0");
-    loan.interestEarned = BigDecimal.fromString("0");
+    loan.sInternal = BigDecimal.fromString("0");
     loan.interestRedeemed = BigDecimal.fromString("0");
     // Update the loansReceived array
     let account = fetchAccount(recipient);

@@ -143,18 +143,8 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   ev.value = value;
   ev.save();
 
-  // log.error("====== InterestPaidEvent =======", []);
   let recipientAccount = fetchAccount(event.params.recipient.toHex());
   let loans = recipientAccount.loansReceived;
-
-  // Total all unclaimed interest for relevant loans
-  let interestSum = BigDecimal.fromString("0");
-  for (let i = 0; i < loans.length; ++i) {
-    let loan = Loan.load(loans[i]);
-    if (loan.amount === BigDecimal.fromString("0")) return;
-    let unredeemedInterest = loan.interestEarned - loan.interestRedeemed;
-    interestSum = interestSum + unredeemedInterest;
-  }
 
   let rToken = RToken.bind(event.address);
   let savingAssetConversionRate = rToken.savingAssetConversionRate();
@@ -162,22 +152,34 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
   let ias = IAllocationStrategy.bind(iasAddress);
   let exchangeRateStored = ias.exchangeRateStored();
 
-  let newInterestEarned = value - interestSum;
-
+  let sUnredeemed: BigDecimal[];
+  // Get total unredeemed interest
+  let sUnredeemedSum = BigDecimal.fromString("0");
   for (let i = 0; i < loans.length; ++i) {
     let loan = Loan.load(loans[i]);
-    if (loan.amount === BigDecimal.fromString("0")) return;
+    let loanInS =
+      (loan.amount * toDai(savingAssetConversionRate)) /
+      toDai(exchangeRateStored);
+    sUnredeemed[i] = loan.sInternal - loanInS;
+    sUnredeemedSum = sUnredeemedSum + sUnredeemed[i];
+  }
 
-    // Get the relative proportion of this loan to others
-    let proportion = loan.interestEarned / interestSum;
-    // Calculate the proportion of new interest from this loan & update the loan
-    let interestEarnedProportion = newInterestEarned * proportion;
-    loan.interestEarned = loan.interestEarned + interestEarnedProportion;
-    loan.interestRedeemed = loan.interestRedeemed + interestEarnedProportion;
-    // calculate the proportion of new interest in sInternal & update the loan
-    let interestEarnedInS =
-      (value * toDai(savingAssetConversionRate)) / toDai(exchangeRateStored);
-    loan.sInternalTotal = loan.sInternalTotal - interestEarnedInS * proportion;
+  let redeemedAmountInS =
+    (value * toDai(savingAssetConversionRate)) / toDai(exchangeRateStored);
+  if (redeemedAmountInS > sUnredeemedSum)
+    log.error("Redeemed amount is greater than undredeemd S for all loans", []);
+
+  // Reduce each sInternal by redeemed amount * unredeemed interest for loan / total unredeemed interest
+  for (let i = 0; i < loans.length; ++i) {
+    let loan = Loan.load(loans[i]);
+    let loanContributionInS =
+      (sUnredeemed[i] * redeemedAmountInS) / sUnredeemedSum;
+    loan.sInternal = loan.sInternal - loanContributionInS;
+    let loanContribution =
+      (loanContributionInS * toDai(exchangeRateStored)) /
+      toDai(savingAssetConversionRate);
+    // Add the amount earned to interestRedeemed
+    loan.interestRedeemed = loan.interestRedeemed + loanContribution;
     loan.save();
   }
 }
@@ -190,23 +192,15 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
 
   let loan = fetchLoan(ownerAccount.id, recipientAccount.id);
 
-  let delta = event.params.isDistribution
-    ? toDai(event.params.redeemableAmount)
-    : -toDai(event.params.redeemableAmount);
+  let sign = event.params.isDistribution
+    ? BigDecimal.fromString("1")
+    : BigDecimal.fromString("-1");
+  let delta = sign * toDai(event.params.redeemableAmount);
+  let deltaInS = sign * toDai(event.params.internalSavingsAmount);
 
-  let rToken = RToken.bind(event.address);
-  let savingAssetConversionRate = rToken.savingAssetConversionRate();
-  let iasAddress = rToken.getCurrentAllocationStrategy();
-  let ias = IAllocationStrategy.bind(iasAddress);
-  let exchangeRateStored = ias.exchangeRateStored();
-  let sInternal = toDai(event.params.internalSavingsAmount);
-
-  loan.sInternalTotal = sInternal + loan.sInternalTotal;
-  loan.hat = event.params.hatId.toString();
+  loan.sInternal = loan.sInternal + deltaInS;
   loan.amount = loan.amount + delta;
-  let interest =
-    (loan.sInternalTotal * toDai(exchangeRateStored)) /
-    toDai(savingAssetConversionRate);
+  loan.hat = event.params.hatId.toString();
 
   let ev = new LoanTransferred(createEventID(event));
   ev.transaction = logTransaction(event).id;
@@ -214,12 +208,6 @@ export function handleLoansTransferred(event: LoansTransferredEvent): void {
   ev.value = delta;
   ev.save();
 
-  let iP = rToken.interestPayableOf(event.params.recipient);
-  let interestEarned = interest - loan.amount;
-  if (event.params.isDistribution) {
-    // Not a redeem event
-    loan.interestEarned = interest - loan.amount;
-  }
   loan.save();
 }
 
