@@ -41,14 +41,12 @@ describe("Tests basic user lookup", () => {
   it("should successfully get account interest sent by multiple contributors", async () => {
     const user1 = rutils.user(customer1.address);
     const interestSentBy1 = await user1.interestSent(customer3.address, true);
-
     const interestSentBy2 = await user2.interestSent(customer3.address, true);
 
     const accountStats = await rtoken.getAccountStats(customer3.address);
     const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
-    expect((interestSentBy1 + interestSentBy2).toFixed(16)).to.be(
-      Number(cumulativeInterest).toFixed(16)
-    );
+
+    expect(interestSentBy1 + interestSentBy2).to.be(Number(cumulativeInterest));
   });
   it("should successfully get account interest, including unredeemed portion", async () => {
     const user1 = rutils.user(customer1.address);
@@ -64,7 +62,7 @@ describe("Tests basic user lookup", () => {
     const interest = await user3.interestReceived(true);
     const accountStats = await rtoken.getAccountStats(customer3.address);
     const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
-    expect(interest.toFixed(18)).to.be(Number(cumulativeInterest).toFixed(18));
+    expect(interest).to.be(Number(cumulativeInterest));
   });
   it("should successfully get all interest received, including unredeemed portion", async () => {
     const interest = await user3.interestReceived();

@@ -104,6 +104,14 @@ Returns amount of interest sent to a particular address. If `redeemedOnly` is tr
 | recipient    | Address | required |
 | redeemedOnly | Boolean | false    |
 
+#### `interestReceived([redeemedOnly])`
+
+Returns amount of interest received. If `redeemedOnly` is true, it only includes the amount which has been redeemed, which may be 0.
+
+| Argument     | Type    | default |
+| :----------- | :------ | ------- |
+| redeemedOnly | Boolean | false   |
+
 #### Planned
 
 - `totalInterestReceived`
