@@ -1,7 +1,11 @@
 // import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits, formatUnits } from "@ethersproject/units";
 
-import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
+import {
+  getAccountById,
+  getLoanById,
+  allReceivedLoans,
+} from "../src/graphql-operations/queries";
 import { getContract } from "./utils/web3";
 import { DEFAULT_NETWORK } from "./utils/constants";
 
@@ -28,16 +32,15 @@ export default class User {
     return res.data.account;
   }
   async interestSent(recipient, redeemedOnly) {
-    let interestSent = 0;
-    const res = await this.client.query({
+    const { data, error } = await this.client.query({
       query: getLoanById,
       variables: {
         id: `${this.address}-${recipient.toLowerCase()}`,
       },
     });
-    // TODO: handle error no loan exists
-    const { amount: loanAmount, sInternal, interestRedeemed } = res.data.loan;
-    interestSent = Number(interestRedeemed);
+    if (!data.loan) return 0;
+    const { amount: loanAmount, sInternal, interestRedeemed } = data.loan;
+    let interestSent = Number(interestRedeemed);
 
     if (!redeemedOnly) {
       const ias = await getContract("ias", this.options.network, this.provider);
@@ -48,6 +51,34 @@ export default class User {
       interestSent = interestSent + sInDai - Number(loanAmount);
     }
     return interestSent;
+  }
+  async interestReceived(redeemedOnly) {
+    const { data, error } = await this.client.query({
+      query: allReceivedLoans,
+      variables: {
+        recipient: this.address,
+      },
+    });
+    if (data.loans.length === 0) return 0;
+
+    let interestRedeemed = 0;
+    data.loans.map((loan) => {
+      const { interestRedeemed } = loan;
+      interestReceived += Number(interestRedeemed);
+    });
+
+    if (!redeemedOnly) {
+      const ias = await getContract("ias", this.options.network, this.provider);
+      let exchangeRateStored = Number(
+        formatUnits(await ias.exchangeRateStored(), 18)
+      );
+      data.loans.map((loan) => {
+        const { sInternal } = loan;
+        const sInDai = Number(sInternal) * exchangeRateStored;
+        interestReceived += sInDai - Number(loanAmount);
+      });
+    }
+    return interestReceived;
   }
 
   ////////////////////////////////////////////

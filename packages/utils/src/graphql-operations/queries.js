@@ -40,8 +40,17 @@ export const getAllUsersWithHat = gql`
   }
 `;
 export const getLoanById = gql`
-  query loan($id: String) {
+  query loanById($id: String) {
     loan(id: $id) {
+      amount
+      interestRedeemed
+      sInternal
+    }
+  }
+`;
+export const allReceivedLoans = gql`
+  query allReceivedLoans($recipient: String) {
+    loans(where: { recipient: $recipient }) {
       amount
       interestRedeemed
       sInternal
