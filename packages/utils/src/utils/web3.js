@@ -19,8 +19,8 @@ const CONTRACTS = {
   },
   ias: {
     abi: ias.abi,
-    kovan: "",
-    homestead: "",
+    kovan: "0x2F3633118bc278d22Af58474c0a047dFC85aB31D",
+    homestead: "0xbb16307aaed1e070b3c4465d4fda5e518bdc2433",
     local: "0x25eedC456AE0744FF6D04CeCf8423D9c9200cd24",
   },
 };
