@@ -63,6 +63,7 @@ export const allOwnedLoans = gql`
       amount
       interestRedeemed
       sInternal
+      recipient
     }
   }
 `;
