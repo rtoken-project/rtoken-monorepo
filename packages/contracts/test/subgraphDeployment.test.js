@@ -63,7 +63,7 @@ contract("RToken", accounts => {
             from: admin
         });
         {
-            const result = await createCompoundAllocationStrategy(toWad(0.1));
+            const result = await createCompoundAllocationStrategy(toWad(1000));
             cToken = result.cToken;
             compoundAS = result.compoundAS;
         }
@@ -94,17 +94,12 @@ contract("RToken", accounts => {
         // Mint some tokens
         await web3tx(token.mint, "token.mint 1000 -> customer1")(
             customer1,
-            toWad(1000),
+            toWad(10000),
             {from: admin}
         );
         await web3tx(token.mint, "token.mint 1000 -> customer2")(
             customer2,
-            toWad(1000),
-            {from: admin}
-        );
-        await web3tx(token.mint, "token.mint 1000 -> customer4")(
-            customer4,
-            toWad(1000),
+            toWad(10000),
             {from: admin}
         );
 
@@ -380,7 +375,7 @@ contract("RToken", accounts => {
     it("#6 Customer1 sends interest to customer3", async () => {
         await web3tx(
             token.approve,
-            "token.approve 100 by customer4"
+            "token.approve 100 by customer1"
         )(rToken.address, toWad(100), {from: customer1});
         await web3tx(
             rToken.mintWithNewHat,
@@ -411,10 +406,18 @@ contract("RToken", accounts => {
         );
     });
     it("#7 Leave unredeemed interest", async () => {
-        await mint(customer2, 100);
-        await mint(customer1, 100);
+        await mint(customer2, 1000);
+        await mint(customer1, 1000);
         await doBingeBorrowing();
         await doBingeBorrowing();
         await doBingeBorrowing();
+        await doBingeBorrowing();
+        await doBingeBorrowing();
+        // await redeemAll(customer3);
+        const accountStats = await rToken.getAccountStats.call(customer3);
+        console.log(
+            "Total interest earned should be:",
+            accountStats.cumulativeInterest
+        );
     });
 });

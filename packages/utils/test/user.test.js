@@ -35,13 +35,26 @@ describe("Tests basic user lookup", () => {
   });
   it("should successfully get account interest sent by multiple contributors", async () => {
     const user1 = rutils.user(customer1.address);
-    const interestSentBy1 = Number(await user1.interestSent(customer3.address));
-    const interestSentBy2 = Number(await user2.interestSent(customer3.address));
-
+    const interestSentBy1 = Number(
+      await user1.interestSent(customer3.address, true)
+    );
+    const interestSentBy2 = Number(
+      await user2.interestSent(customer3.address, true)
+    );
     const accountStats = await rtoken.getAccountStats(customer3.address);
     const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
-    expect((interestSentBy1 + interestSentBy2).toFixed(8)).to.be(
-      Number(cumulativeInterest).toFixed(8)
+    expect((interestSentBy1 + interestSentBy2).toFixed(16)).to.be(
+      Number(cumulativeInterest).toFixed(16)
+    );
+  });
+  it("should successfully get account interest, including unredeemed portion", async () => {
+    const user1 = rutils.user(customer1.address);
+    const interestSentBy1 = Number(await user1.interestSent(customer3.address));
+    const interestSentBy2 = Number(await user2.interestSent(customer3.address));
+    const accountStats = await rtoken.getAccountStats(customer3.address);
+    const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
+    expect((interestSentBy1 + interestSentBy2).toFixed(3)).to.be(
+      (0.15634568565138592).toFixed(3)
     );
   });
 });

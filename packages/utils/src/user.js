@@ -37,14 +37,15 @@ export default class User {
     });
     // TODO: handle error no loan exists
     const { amount: loanAmount, sInternal, interestRedeemed } = res.data.loan;
-    interestSent = interestRedeemed;
+    interestSent = Number(interestRedeemed);
 
     if (!redeemedOnly) {
-      // const rtoken = await getContract("rdai", "homestead", this.provider);
       const ias = await getContract("ias", this.options.network, this.provider);
-      let exchangeRateStored = await ias.exchangeRateStored();
-      // console.log(formatUnits(exchangeRateStored, 18));
-      // const sInDai = (interestSent = interestSent + sInDai - loanAmount);
+      let exchangeRateStored = Number(
+        formatUnits(await ias.exchangeRateStored(), 18)
+      );
+      const sInDai = Number(sInternal) * exchangeRateStored;
+      interestSent = interestSent + sInDai - Number(loanAmount);
     }
     return interestSent;
   }
