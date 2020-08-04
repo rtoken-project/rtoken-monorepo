@@ -60,64 +60,14 @@ describe("Tests basic user lookup", () => {
       (0.15634568565138592).toFixed(3)
     );
   });
-  // it("should successfully get all interest received", async () => {
-  //   const interest = await user3.interestReceived(true);
-  //   const accountStats = await rtoken.getAccountStats(customer3.address);
-  //   const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
-  //   expect(interestSent.toFixed(18)).to.be(cumulativeInterest.toFixed(18));
-  // });
+  it("should successfully get all interest received", async () => {
+    const interest = await user3.interestReceived(true);
+    const accountStats = await rtoken.getAccountStats(customer3.address);
+    const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
+    expect(interest.toFixed(18)).to.be(Number(cumulativeInterest).toFixed(18));
+  });
+  it("should successfully get all interest received, including unredeemed portion", async () => {
+    const interest = await user3.interestReceived();
+    expect(interest.toFixed(3)).to.be((0.15634568565138592).toFixed(3));
+  });
 });
-
-// test('RTokenAnalytics', async (accounts) => {
-//   let rtokenAnalytics;
-//
-//   before(async () => {
-//     let compoundRate = debug.hardCodeInterestRate;
-//     if (!debug.hardCodeInterestRate) {
-//       compoundRate = await getCompoundRate();
-//     }
-//
-//     console.log('Subgraph URL     : ', subgraphURL);
-//     console.log('Subgraph ID rDAI : ', rdaiSubgraphId);
-//     console.log(
-//       'Local test       : ',
-//       typeof isLocal === 'undefined' ? false : true
-//     );
-//
-//     const web3Provider = new ethers.providers.InfuraProvider(
-//       'homestead',
-//       process.env.INFURA_ENDPOINT_KEY
-//     );
-//
-//     const options = {
-//       interestRate: compoundRate, // Currently unused
-//       interestTolerance, // Currently unused
-//       rdaiSubgraphId,
-//       subgraphURL,
-//       web3Provider,
-//     };
-//     rtokenAnalytics = new RTokenUtils(options);
-//   });
-//
-//   it('getAllOutgoing()', async () => {
-//     let outgoing = await rtokenAnalytics.getAllOutgoing(userA);
-//     assert.isAbove(outgoing.length, 0, 'no outgoing were returned');
-//   });
-//
-//   it('getAllIncoming()', async () => {
-//     let incoming = await rtokenAnalytics.getAllIncoming(userB);
-//     assert.isAbove(incoming.length, 0, 'no incoming were returned');
-//   });
-
-// it('getInterestSent()', async () => {
-//   let interestSent = await rtokenAnalytics.getInterestSent(userA, userB);
-//   let interest = new BigNumber(interestSent);
-//   console.log('interest sent    : ', interest.toNumber());
-//   assert.isOk(interest.isGreaterThan(0), 'no interest has been paid');
-// });
-
-// it('getTotalInterestPaid()', async () => {
-//   let totalInterestPaid = await rtokenAnalytics.getTotalInterestPaid(userC);
-//   let interest = new BigNumber(totalInterestPaid);
-//   assert.isOk(interest.isGreaterThan(0), 'no interest has been paid');
-// });

@@ -39,7 +39,7 @@ export default class User {
       },
     });
     if (!data.loan) return 0;
-    const { amount: loanAmount, sInternal, interestRedeemed } = data.loan;
+    const { amount, sInternal, interestRedeemed } = data.loan;
     let interestSent = Number(interestRedeemed);
 
     if (!redeemedOnly) {
@@ -48,7 +48,7 @@ export default class User {
         formatUnits(await ias.exchangeRateStored(), 18)
       );
       const sInDai = Number(sInternal) * exchangeRateStored;
-      interestSent = interestSent + sInDai - Number(loanAmount);
+      interestSent = interestSent + sInDai - Number(amount);
     }
     return interestSent;
   }
@@ -61,7 +61,7 @@ export default class User {
     });
     if (data.loans.length === 0) return 0;
 
-    let interestRedeemed = 0;
+    let interestReceived = 0;
     data.loans.map((loan) => {
       const { interestRedeemed } = loan;
       interestReceived += Number(interestRedeemed);
@@ -73,9 +73,9 @@ export default class User {
         formatUnits(await ias.exchangeRateStored(), 18)
       );
       data.loans.map((loan) => {
-        const { sInternal } = loan;
+        const { sInternal, amount } = loan;
         const sInDai = Number(sInternal) * exchangeRateStored;
-        interestReceived += sInDai - Number(loanAmount);
+        interestReceived += sInDai - Number(amount);
       });
     }
     return interestReceived;
