@@ -1,3 +1,5 @@
+import { throwError } from "./error";
+
 export const getCompoundRate = async (blockTimestamp) => {
   const COMPOUND_URL =
     "https://api.compound.finance/api/v2/market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643";
@@ -6,4 +8,17 @@ export const getCompoundRate = async (blockTimestamp) => {
   }&num_buckets=1`;
   const res = await axios.get(`${COMPOUND_URL}${params}`);
   return res.data.supply_rates[0].rate;
+};
+
+const validateAddress = (address) => {
+  if (!isAddress(address)) throwError("input", "address");
+};
+
+const isAddress = (address) => {
+  return /^(0x)?[0-9a-f]{40}$/i.test(address);
+};
+
+export const getCleanAddress = (address) => {
+  validateAddress(address);
+  return address.toLowerCase();
 };

@@ -8,6 +8,7 @@ import {
 } from "../src/graphql-operations/queries";
 import { getContract } from "./utils/web3";
 import { DEFAULT_NETWORK } from "./utils/constants";
+import { getErrorResponse } from "./utils/error";
 
 const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
 
@@ -32,53 +33,73 @@ export default class User {
     return res.data.account;
   }
   async interestSent(recipient, redeemedOnly) {
-    const { data, error } = await this.client.query({
-      query: getLoanById,
-      variables: {
-        id: `${this.address}-${recipient.toLowerCase()}`,
-      },
-    });
-    if (!data.loan) return 0;
-    const { amount, sInternal, interestRedeemed } = data.loan;
-    let interestSent = Number(interestRedeemed);
+    try {
+      const { data, error } = await this.client.query({
+        query: getLoanById,
+        variables: {
+          id: `${this.address}-${getCleanAddress(recipient)}`,
+        },
+      });
+      if (!data.loan) return 0;
+      const { amount, sInternal, interestRedeemed } = data.loan;
+      let interestSent = Number(interestRedeemed);
 
-    if (!redeemedOnly) {
-      const ias = await getContract("ias", this.options.network, this.provider);
-      let exchangeRateStored = Number(
-        formatUnits(await ias.exchangeRateStored(), 18)
-      );
-      const sInDai = Number(sInternal) * exchangeRateStored;
-      interestSent = interestSent + sInDai - Number(amount);
+      if (!redeemedOnly) {
+        const ias = await getContract(
+          "ias",
+          this.options.network,
+          this.provider
+        );
+        let exchangeRateStored = Number(
+          formatUnits(await ias.exchangeRateStored(), 18)
+        );
+        const sInDai = Number(sInternal) * exchangeRateStored;
+        interestSent = interestSent + sInDai - Number(amount);
+      }
+      return interestSent;
+    } catch (error) {
+      if (this.options.debug)
+        console.log(getErrorResponse(error, "interestSent").error.message);
+      return 0;
     }
-    return interestSent;
   }
   async interestReceived(redeemedOnly) {
-    const { data, error } = await this.client.query({
-      query: allReceivedLoans,
-      variables: {
-        recipient: this.address,
-      },
-    });
-    if (data.loans.length === 0) return 0;
-
-    let interestReceived = 0;
-    data.loans.map((loan) => {
-      const { interestRedeemed } = loan;
-      interestReceived += Number(interestRedeemed);
-    });
-
-    if (!redeemedOnly) {
-      const ias = await getContract("ias", this.options.network, this.provider);
-      let exchangeRateStored = Number(
-        formatUnits(await ias.exchangeRateStored(), 18)
-      );
-      data.loans.map((loan) => {
-        const { sInternal, amount } = loan;
-        const sInDai = Number(sInternal) * exchangeRateStored;
-        interestReceived += sInDai - Number(amount);
+    try {
+      const { data, error } = await this.client.query({
+        query: allReceivedLoans,
+        variables: {
+          recipient: this.address,
+        },
       });
+      if (data.loans.length === 0) return 0;
+
+      let interestReceived = 0;
+      data.loans.map((loan) => {
+        const { interestRedeemed } = loan;
+        interestReceived += Number(interestRedeemed);
+      });
+
+      if (!redeemedOnly) {
+        const ias = await getContract(
+          "ias",
+          this.options.network,
+          this.provider
+        );
+        let exchangeRateStored = Number(
+          formatUnits(await ias.exchangeRateStored(), 18)
+        );
+        data.loans.map((loan) => {
+          const { sInternal, amount } = loan;
+          const sInDai = Number(sInternal) * exchangeRateStored;
+          interestReceived += sInDai - Number(amount);
+        });
+      }
+      return interestReceived;
+    } catch (error) {
+      if (this.options.debug)
+        console.log(getErrorResponse(error, "interestReceived").error.message);
+      return 0;
     }
-    return interestReceived;
   }
 
   ////////////////////////////////////////////
