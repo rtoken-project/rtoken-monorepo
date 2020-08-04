@@ -87,6 +87,7 @@ export default class User {
           const sInDai = Number(sInternal) * exchangeRateStored;
           loans[i].interestSent =
             Number(interestRedeemed) + sInDai - Number(amount);
+          loans[i].recipient = loans[i].recipient.id;
         });
       }
       return loans;
@@ -132,6 +133,7 @@ export default class User {
           const sInDai = Number(sInternal) * exchangeRateStored;
           loans[i].interestSent =
             Number(interestRedeemed) + sInDai - Number(amount);
+          loans[i].sender = loans[i].owner.id;
         });
       }
       return loans;
