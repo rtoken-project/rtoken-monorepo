@@ -58,11 +58,7 @@ export default class User {
       }
       return interestSent;
     } catch (error) {
-      if (this.options.debug)
-        console.log(
-          getErrorResponse(error, "user", "interestSent").error.message
-        );
-      return 0;
+      throw getErrorResponse(error, "user", "interestSent");
     }
   }
   async allInterestSent(redeemedOnly) {
@@ -95,11 +91,7 @@ export default class User {
       }
       return loans;
     } catch (error) {
-      if (this.options.debug)
-        console.log(
-          getErrorResponse(error, "user", "allInterestSent").error.message
-        );
-      return 0;
+      throw getErrorResponse(error, "user", "allInterestSent");
     }
   }
   async interestReceived(redeemedOnly) {
@@ -136,11 +128,7 @@ export default class User {
       }
       return interestReceived;
     } catch (error) {
-      if (this.options.debug)
-        console.log(
-          getErrorResponse(error, "user", "interestReceived").error.message
-        );
-      return 0;
+      throw getErrorResponse(error, "user", "interestReceived");
     }
   }
 
