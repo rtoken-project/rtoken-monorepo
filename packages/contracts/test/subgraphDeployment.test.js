@@ -239,16 +239,6 @@ contract("RToken", accounts => {
         );
     }
 
-    function parseHat({hatID, recipients, proportions}) {
-        const hatObj = {
-            recipients: recipients,
-            proportions: proportions.map(i => i.toNumber())
-        };
-        if (typeof hatID !== "undefined") {
-            hatObj.hatID = hatID.toNumber();
-        }
-        return hatObj;
-    }
     // rDAI helpers
     async function mint(customer, amount) {
         await web3tx(
@@ -269,21 +259,6 @@ contract("RToken", accounts => {
         })(toWad(amount), {
             from: customer
         });
-    }
-
-    async function redeem(customer, amount) {
-        await web3tx(rToken.redeem, `rToken.redeem ${amount} by ${customer}`, {
-            inLogs: [
-                {
-                    name: "Transfer",
-                    args: {
-                        from: customer,
-                        to: ZERO_ADDRESS,
-                        value: toWad(amount)
-                    }
-                }
-            ]
-        })(toWad(amount), {from: customer});
     }
 
     async function redeemAll(customer) {
