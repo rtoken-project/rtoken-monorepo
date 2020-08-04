@@ -26,13 +26,7 @@ const CONTRACTS = {
 };
 
 const getContract = async (name, network, provider) => {
-  // handle local network name
-  const contract = new Contract(
-    CONTRACTS[name][network],
-    CONTRACTS[name].abi,
-    provider
-  );
-  return contract;
+  return new Contract(CONTRACTS[name][network], CONTRACTS[name].abi, provider);
 };
 
 export { getContract };

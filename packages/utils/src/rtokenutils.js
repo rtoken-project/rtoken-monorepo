@@ -3,9 +3,7 @@ import Hat from "./hat";
 
 export default class RTokenUtils {
   constructor(apolloInstance, provider, options) {
-    if (!apolloInstance) {
-      throw new Error("Please pass an Apollo Instance");
-    }
+    if (!apolloInstance) throw new Error("Please pass an Apollo Instance");
     this.client = apolloInstance;
     this.provider = provider;
     this.options = options;

@@ -377,37 +377,44 @@ contract("RToken", accounts => {
     });
 
     // Further testing
-    it("#6 Customer4 sends interest to customer3", async () => {
+    it("#6 Customer1 sends interest to customer3", async () => {
         await web3tx(
             token.approve,
             "token.approve 100 by customer4"
-        )(rToken.address, toWad(100), {from: customer4});
+        )(rToken.address, toWad(100), {from: customer1});
         await web3tx(
             rToken.mintWithNewHat,
             "rToken.mint 100 to customer2 with a hat benefiting customer3(100%)"
-        )(toWad(100), [customer3], [1], {from: customer4});
+        )(toWad(100), [customer3], [1], {from: customer1});
         await doBingeBorrowing();
         await redeemAll(customer3);
     });
     it("#7 Kitchen sink", async () => {
         await mint(customer2, 100);
-        await mint(customer4, 100);
+        await mint(customer1, 100);
         await doBingeBorrowing();
         await doBingeBorrowing();
         await doBingeBorrowing();
         await redeemAll(customer3);
-        await redeemAll(customer4);
+        await redeemAll(customer1);
         await mint(customer2, 100);
-        await mint(customer4, 100);
+        await mint(customer1, 100);
         await doBingeBorrowing();
         await doBingeBorrowing();
         await doBingeBorrowing();
-        await redeemAll(customer4);
+        await redeemAll(customer1);
         await redeemAll(customer3);
         const accountStats = await rToken.getAccountStats.call(customer3);
         console.log(
             "Total interest earned should be:",
             accountStats.cumulativeInterest
         );
+    });
+    it("#7 Leave unredeemed interest", async () => {
+        await mint(customer2, 100);
+        await mint(customer1, 100);
+        await doBingeBorrowing();
+        await doBingeBorrowing();
+        await doBingeBorrowing();
     });
 });

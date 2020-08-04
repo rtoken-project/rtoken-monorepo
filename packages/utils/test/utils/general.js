@@ -1,15 +1,19 @@
+import { InfuraProvider, JsonRpcProvider } from "@ethersproject/providers";
 import RTokenUtils, { getClient } from "../../src";
 
-import { getWeb3Provider } from "./web3";
+export const getWeb3Provider = () => {
+  if (process.env.LOCAL) return new JsonRpcProvider("http://localhost:8545");
+  return new InfuraProvider("homestead", process.env.INFURA_KEY);
+};
 
 export const getRutils = () => {
-  const web3Provider = getWeb3Provider();
-
   const apolloInstance = getClient({
     uri: process.env.SUBGRAPH_URL,
     debug: false,
   });
 
-  const options = { debug: true, network: "local" };
-  return new RTokenUtils(apolloInstance, web3Provider, options);
+  return new RTokenUtils(apolloInstance, getWeb3Provider(), {
+    debug: true,
+    network: process.env.LOCAL ? "local" : "homestead",
+  });
 };

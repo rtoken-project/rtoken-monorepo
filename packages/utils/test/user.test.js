@@ -1,21 +1,21 @@
 // var test = require('mocha').describe;
 // var assert = require('chai').assert;
-
+import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits, formatUnits } from "@ethersproject/units";
 var expect = require("expect.js");
 
-import { getRutils } from "./utils/general";
+import { getContract } from "../src/utils/web3";
+
+import { getRutils, getWeb3Provider } from "./utils/general";
 import { getUsers } from "./utils/users";
-import { getRTokenContract } from "./utils/web3";
 
 const rutils = getRutils();
-const users = getUsers();
-const { customer1, customer2, customer3 } = users;
+const { customer1, customer2, customer3 } = getUsers();
 let rtoken;
 let user2;
 
 before(async () => {
-  rtoken = await getRTokenContract();
+  rtoken = await getContract("rdai", "local", getWeb3Provider());
 });
 
 describe("Tests basic user lookup", () => {
@@ -30,11 +30,19 @@ describe("Tests basic user lookup", () => {
     expect(details.balance).to.be(Math.round(balance).toString());
   });
   it("should successfully get account interest sent to recipient", async () => {
-    const accountStats = await rtoken.getAccountStats(customer3.address);
-    const cumulativeInterest = accountStats.cumulativeInterest;
-
     const interestSent = await user2.interestSent(customer3.address);
-    expect(formatUnits(cumulativeInterest, 18)).to.be.greaterThan(interestSent);
+    expect(interestSent).to.be.greaterThan(0);
+  });
+  it("should successfully get account interest sent by multiple contributors", async () => {
+    const user1 = rutils.user(customer1.address);
+    const interestSentBy1 = Number(await user1.interestSent(customer3.address));
+    const interestSentBy2 = Number(await user2.interestSent(customer3.address));
+
+    const accountStats = await rtoken.getAccountStats(customer3.address);
+    const cumulativeInterest = formatUnits(accountStats.cumulativeInterest, 18);
+    expect((interestSentBy1 + interestSentBy2).toFixed(8)).to.be(
+      Number(cumulativeInterest).toFixed(8)
+    );
   });
 });
 

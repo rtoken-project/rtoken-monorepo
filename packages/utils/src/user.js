@@ -3,7 +3,7 @@ import { parseUnits, formatUnits } from "@ethersproject/units";
 
 import { getAccountById, getLoanById } from "../src/graphql-operations/queries";
 import { getContract } from "./utils/web3";
-import DEFAULT_NETWORK from "./utils/constants";
+import { DEFAULT_NETWORK } from "./utils/constants";
 
 const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
 
@@ -12,7 +12,7 @@ export default class User {
     this.client = client;
     this.provider = provider;
     this.address = address;
-    this.options = { ...options, network: DEFAULT_NETWORK };
+    this.options = { ...options, network: options.network || DEFAULT_NETWORK };
   }
 
   async details() {
@@ -40,12 +40,10 @@ export default class User {
     interestSent = interestRedeemed;
 
     if (!redeemedOnly) {
-      console.log(DEFAULT_NETWORK);
-      console.log(this.options.network);
       // const rtoken = await getContract("rdai", "homestead", this.provider);
-      const ias = await getContract("ias");
-      // let exchangeRateStored = this.ias.exchangeRateStored();
-      //
+      const ias = await getContract("ias", this.options.network, this.provider);
+      let exchangeRateStored = await ias.exchangeRateStored();
+      // console.log(formatUnits(exchangeRateStored, 18));
       // const sInDai = (interestSent = interestSent + sInDai - loanAmount);
     }
     return interestSent;
