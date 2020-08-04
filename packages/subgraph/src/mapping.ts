@@ -166,9 +166,14 @@ export function handleInterestPaid(event: InterestPaidEvent): void {
 
   let redeemedAmountInS =
     (value * toDai(savingAssetConversionRate)) / toDai(exchangeRateStored);
-  if (redeemedAmountInS > sUnredeemedSum)
-    log.error("Redeemed amount is greater than undredeemd S for all loans", []);
-
+  if (redeemedAmountInS > sUnredeemedSum) {
+    // TODO: determine if this is an issue
+    const diff = redeemedAmountInS - sUnredeemedSum;
+    log.error(
+      "Redeemed amount is greater than undredeemd S for all loans by {}",
+      [diff.toString()]
+    );
+  }
   // Reduce each sInternal by redeemed amount * unredeemed interest for loan / total unredeemed interest
   for (let i = 0; i < loans.length; ++i) {
     let loan = Loan.load(loans[i]);
