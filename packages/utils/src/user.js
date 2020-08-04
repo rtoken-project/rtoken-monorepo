@@ -1,5 +1,4 @@
-// import { BigNumber } from "@ethersproject/bignumber";
-import { parseUnits, formatUnits } from "@ethersproject/units";
+import { formatUnits } from "@ethersproject/units";
 
 import {
   getAccountById,
@@ -10,8 +9,6 @@ import { getContract } from "./utils/web3";
 import { DEFAULT_NETWORK } from "./utils/constants";
 import { getErrorResponse } from "./utils/error";
 import { getCleanAddress } from "./utils/general";
-
-const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
 
 export default class User {
   constructor(client, provider, address, options) {
@@ -41,6 +38,7 @@ export default class User {
           id: `${this.address}-${getCleanAddress(recipient)}`,
         },
       });
+      if (error) throw error;
       if (!data.loan) return 0;
       const { amount, sInternal, interestRedeemed } = data.loan;
       let interestSent = Number(interestRedeemed);
@@ -74,6 +72,7 @@ export default class User {
           recipient: this.address,
         },
       });
+      if (error) throw error;
       if (data.loans.length === 0) return 0;
 
       let interestReceived = 0;

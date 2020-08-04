@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { throwError } from "./error";
 
 export const getCompoundRate = async (blockTimestamp) => {

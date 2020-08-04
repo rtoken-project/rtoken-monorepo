@@ -14,7 +14,6 @@ const HAT_ID = "hatId";
 // ###### USER INPUT VALIDATION #####
 
 const inputErrorMessage = (type) => {
-  const validationErrors = {};
   if (type === ADDRESS) return INVALID_ADDRESS;
   if (type === HAT_ID) return INVALID_HAT_ID;
 };
