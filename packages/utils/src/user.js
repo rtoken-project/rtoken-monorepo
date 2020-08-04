@@ -4,6 +4,7 @@ import {
   getAccountById,
   getLoanById,
   allReceivedLoans,
+  allOwnedLoans,
 } from "../src/graphql-operations/queries";
 import { getContract } from "./utils/web3";
 import { DEFAULT_NETWORK } from "./utils/constants";
@@ -60,6 +61,43 @@ export default class User {
       if (this.options.debug)
         console.log(
           getErrorResponse(error, "user", "interestSent").error.message
+        );
+      return 0;
+    }
+  }
+  async allInterestSent(redeemedOnly) {
+    try {
+      const { data, error } = await this.client.query({
+        query: allOwnedLoans,
+        variables: {
+          owner: this.address,
+        },
+      });
+      if (error) throw error;
+      // TODO: handle no loans
+      if (!data.loans) return [];
+      let loans = data.loans;
+      if (!redeemedOnly) {
+        const ias = await getContract(
+          "ias",
+          this.options.network,
+          this.provider
+        );
+        const exchangeRateStored = Number(
+          formatUnits(await ias.exchangeRateStored(), 18)
+        );
+        data.loans.map((loan, i) => {
+          const { amount, sInternal, interestRedeemed } = loan;
+          const sInDai = Number(sInternal) * exchangeRateStored;
+          loans[i].interestSent =
+            Number(interestRedeemed) + sInDai - Number(amount);
+        });
+      }
+      return loans;
+    } catch (error) {
+      if (this.options.debug)
+        console.log(
+          getErrorResponse(error, "user", "allInterestSent").error.message
         );
       return 0;
     }

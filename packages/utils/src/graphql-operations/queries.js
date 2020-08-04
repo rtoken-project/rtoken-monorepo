@@ -57,3 +57,12 @@ export const allReceivedLoans = gql`
     }
   }
 `;
+export const allOwnedLoans = gql`
+  query allOwnedLoans($owner: String) {
+    loans(where: { owner: $owner }) {
+      amount
+      interestRedeemed
+      sInternal
+    }
+  }
+`;
