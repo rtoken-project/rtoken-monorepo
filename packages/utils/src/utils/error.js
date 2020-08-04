@@ -1,34 +1,27 @@
-// General messages
-const USER_INPUT_ERROR = "Input is invalid";
-
 // Reasons
-const INVALID_ADDRESS = "Wallet address is invalid";
+const INVALID_ADDRESS = "Ethereum address is invalid";
 // const USER_NOT_FOUND = "User not found";
 // const INTERNAL_ERROR = "Something went wrong";
 
 // Categories
-INPUT = "input";
+const INPUT = "input";
 // Types
-ADDRESS = "address";
+const ADDRESS = "address";
 
 // ###### USER INPUT VALIDATION #####
 
-const getInputError = (type) => {
+const inputErrorMessage = (type) => {
   const validationErrors = {};
   if (type === ADDRESS) return INVALID_ADDRESS;
 };
 
 const throwError = (category, type) => {
-  if (type === INPUT) throw getInputError(error);
+  if (category === INPUT) throw inputErrorMessage(type);
 };
 
-export const getErrorResponse = (error, functionName) => {
+export const getErrorResponse = (error, className, functionName) => {
   const errorText = typeof error === "string" ? error : error.message;
-  return {
-    error: {
-      message: `Error @rtoken/utils.${functionName}(): ${errorText}`,
-    },
-  };
+  return `Error @rtoken/utils ${className}.${functionName}(): ${errorText}`;
 };
 
 module.exports = { getErrorResponse, throwError };

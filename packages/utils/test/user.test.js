@@ -3,6 +3,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { parseUnits, formatUnits } from "@ethersproject/units";
 var expect = require("expect.js");
+import chai from "chai";
+const { assert } = chai;
 
 import { getContract } from "../src/utils/web3";
 
@@ -21,6 +23,18 @@ before(async () => {
 });
 
 describe("Tests basic user lookup", () => {
+  it("should throw an error if address is not provided", () => {
+    assert.throws(
+      () => rutils.user(),
+      "Error @rtoken/utils RTokenUtils.user(): Please provide an address"
+    );
+  });
+  it("should throw an error if address is malformed", () => {
+    assert.throws(
+      () => rutils.user("0xabc"),
+      "Error @rtoken/utils RTokenUtils.user(): Ethereum address is invalid"
+    );
+  });
   it("should successfully get account by address", async () => {
     const details = await user2.details();
     expect(details.id).to.be(customer2.address);

@@ -1,6 +1,7 @@
 import RTokenUtils, { getClient } from "../src";
 var expect = require("expect.js");
-
+import chai from "chai";
+const { assert } = chai;
 let apolloInstance;
 let rutils;
 
@@ -26,5 +27,11 @@ describe("Tests library initialization", () => {
     };
     rutils = new RTokenUtils(apolloInstance, null, options);
     expect(rutils).to.be.an("object");
+  });
+  it("should throw an error if client is null", () => {
+    assert.throws(
+      () => new RTokenUtils(null, null),
+      "Error @rtoken/utils RTokenUtils.user(): Please pass an Apollo Instance"
+    );
   });
 });

@@ -9,6 +9,7 @@ import {
 import { getContract } from "./utils/web3";
 import { DEFAULT_NETWORK } from "./utils/constants";
 import { getErrorResponse } from "./utils/error";
+import { getCleanAddress } from "./utils/general";
 
 const SAVINGS_ASSET_CONVERSION_RATE = formatUnits(1, 18);
 
@@ -59,7 +60,9 @@ export default class User {
       return interestSent;
     } catch (error) {
       if (this.options.debug)
-        console.log(getErrorResponse(error, "interestSent").error.message);
+        console.log(
+          getErrorResponse(error, "user", "interestSent").error.message
+        );
       return 0;
     }
   }
@@ -97,7 +100,9 @@ export default class User {
       return interestReceived;
     } catch (error) {
       if (this.options.debug)
-        console.log(getErrorResponse(error, "interestReceived").error.message);
+        console.log(
+          getErrorResponse(error, "user", "interestReceived").error.message
+        );
       return 0;
     }
   }
