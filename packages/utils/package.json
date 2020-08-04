@@ -1,6 +1,6 @@
 {
   "name": "@rtoken/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Data and analytics utility for rToken",
   "module": "src/index.js",
   "main": "dist/index.js",
@@ -31,6 +31,7 @@
     "@babel/runtime": "^7.9.2",
     "@ethersproject/bignumber": "^5.0.5",
     "@ethersproject/contracts": "^5.0.2",
+    "@ethersproject/units": "^5.0.2",
     "@rtoken/contracts": "^1.0.1-rc6",
     "apollo-cache-inmemory": "^1.6.5",
     "apollo-client": "^2.6.8",

@@ -18,7 +18,7 @@ const inputErrorMessage = (type) => {
   if (type === HAT_ID) return INVALID_HAT_ID;
 };
 
-const throwError = (category, type) => {
+export const throwError = (category, type) => {
   if (category === INPUT) throw inputErrorMessage(type);
 };
 
@@ -26,5 +26,3 @@ export const getErrorResponse = (error, className, functionName) => {
   const errorText = typeof error === "string" ? error : error.message;
   return `Error @rtoken/utils ${className}.${functionName}(): ${errorText}`;
 };
-
-module.exports = { getErrorResponse, throwError };
