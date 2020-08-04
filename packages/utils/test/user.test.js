@@ -83,6 +83,10 @@ describe("Tests basic user lookup", () => {
     expect(interest.toFixed(3)).to.be((0.15634568565138592).toFixed(3));
   });
   it("should successfully get all interest sent", async () => {
+    const interestList = await user2.allInterestSent(true);
+    expect(interestList[0]).to.have.property("interestRedeemed");
+  });
+  it("should successfully get all interest sent, including unredeemed portion", async () => {
     const interestList = await user2.allInterestSent();
     expect(interestList[0]).to.have.property("interestSent");
   });
