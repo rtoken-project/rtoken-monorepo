@@ -1,7 +1,7 @@
 import User from "./user";
 import Hat from "./hat";
 import { getErrorResponse } from "./utils/error";
-import { getCleanAddress } from "./utils/general";
+import { getCleanAddress, getCleanHatId } from "./utils/general";
 
 export default class RTokenUtils {
   constructor(apolloInstance, provider, options) {
@@ -30,11 +30,15 @@ export default class RTokenUtils {
     }
   }
 
-  hat(options) {
+  hat(id) {
     try {
-      if (!options || !options.id) throw "Please provide a hat ID";
-      if (typeof options.id === "number") options.id = options.id.toString();
-      return new Hat(this.client, options, this.options);
+      if (!id) throw "Please provide a hat ID";
+      return new Hat(
+        this.client,
+        this.provider,
+        getCleanHatId(id),
+        this.options
+      );
     } catch (error) {
       throw getErrorResponse(error, "RTokenUtils", "hat");
     }

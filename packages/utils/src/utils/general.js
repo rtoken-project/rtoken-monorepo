@@ -22,3 +22,13 @@ export const getCleanAddress = (address) => {
   validateAddress(address);
   return address.toLowerCase();
 };
+
+export const getCleanHatId = (id) => {
+  try {
+    let cleanId = typeof id === "string" ? Number(id) : id;
+    if (cleanId < 0) throw Error;
+    return cleanId.toString();
+  } catch (error) {
+    throwError("input", "hatId");
+  }
+};

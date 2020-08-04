@@ -2,6 +2,7 @@ import RTokenUtils, { getClient } from "../src";
 var expect = require("expect.js");
 import chai from "chai";
 const { assert } = chai;
+
 let apolloInstance;
 let rutils;
 

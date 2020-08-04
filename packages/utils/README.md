@@ -78,7 +78,7 @@ const user = rutils.user("0xabc...");
 const userDetails = await user.details();
 
 // Hats
-const myHat = rutils.hat({ id: 11 });
+const myHat = rutils.hat(11);
 const allUsers = await myHat.allUsers();
 
 // Global
@@ -89,13 +89,19 @@ If you have any questions, please contact us via Discord.
 
 ## API
 
+### Major Entities
+
+#### `rutils.user(address)`
+
+#### `rutils.hat(hatID)`
+
 ### :bust_in_silhouette: User
 
-#### `details()`
+#### `user.details()`
 
 Returns details about an account, including balance.
 
-#### `interestSent(recipient[, redeemedOnly])`
+#### `user.interestSent(recipient[, redeemedOnly])`
 
 Returns amount of interest sent to a particular address. If `redeemedOnly` is true, it only includes the amount which has been redeemed, which may be 0.
 
@@ -104,7 +110,7 @@ Returns amount of interest sent to a particular address. If `redeemedOnly` is tr
 | recipient    | Address | required |
 | redeemedOnly | Boolean | false    |
 
-#### `interestReceived([redeemedOnly])`
+#### `user.interestReceived([redeemedOnly])`
 
 Returns amount of interest received. If `redeemedOnly` is true, it only includes the amount which has been redeemed, which may be 0.
 
@@ -121,7 +127,7 @@ Returns amount of interest received. If `redeemedOnly` is true, it only includes
 
 #### Available
 
-- `allUsers`
+- `hat.allUsers()`
 
 #### Planned
 
