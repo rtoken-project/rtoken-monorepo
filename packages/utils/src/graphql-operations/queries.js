@@ -54,6 +54,9 @@ export const allReceivedLoans = gql`
       amount
       interestRedeemed
       sInternal
+      owner {
+        id
+      }
     }
   }
 `;

@@ -31,7 +31,7 @@ export default class User {
     }
     return res.data.account;
   }
-  async interestSent(recipient, redeemedOnly) {
+  async interestSentTo(recipient, redeemedOnly) {
     try {
       const { data, error } = await this.client.query({
         query: getLoanById,
@@ -61,7 +61,7 @@ export default class User {
       throw getErrorResponse(error, "user", "interestSent");
     }
   }
-  async allInterestSent(redeemedOnly) {
+  async interestSentList(redeemedOnly) {
     try {
       const { data, error } = await this.client.query({
         query: allOwnedLoans,
@@ -91,10 +91,22 @@ export default class User {
       }
       return loans;
     } catch (error) {
-      throw getErrorResponse(error, "user", "allInterestSent");
+      throw getErrorResponse(error, "user", "interestSentList");
     }
   }
-  async interestReceived(redeemedOnly) {
+  async interestSentSum(redeemedOnly) {
+    try {
+      let sum = 0;
+      const interestSentList = await this.interestSentList(redeemedOnly);
+      interestSentList.map((loan) => {
+        sum += redeemedOnly ? loan.interestRedeemed : loan.interestSent;
+      });
+      return sum;
+    } catch (error) {
+      throw getErrorResponse(error, "user", "interestSentSum");
+    }
+  }
+  async interestReceivedList(redeemedOnly) {
     try {
       const { data, error } = await this.client.query({
         query: allReceivedLoans,
@@ -103,32 +115,42 @@ export default class User {
         },
       });
       if (error) throw error;
-      if (data.loans.length === 0) return 0;
-
-      let interestReceived = 0;
-      data.loans.map((loan) => {
-        const { interestRedeemed } = loan;
-        interestReceived += Number(interestRedeemed);
-      });
-
+      // TODO: handle no loans
+      if (!data.loans) return [];
+      let loans = data.loans;
       if (!redeemedOnly) {
         const ias = await getContract(
           "ias",
           this.options.network,
           this.provider
         );
-        let exchangeRateStored = Number(
+        const exchangeRateStored = Number(
           formatUnits(await ias.exchangeRateStored(), 18)
         );
-        data.loans.map((loan) => {
-          const { sInternal, amount } = loan;
+        data.loans.map((loan, i) => {
+          const { amount, sInternal, interestRedeemed } = loan;
           const sInDai = Number(sInternal) * exchangeRateStored;
-          interestReceived += sInDai - Number(amount);
+          loans[i].interestSent =
+            Number(interestRedeemed) + sInDai - Number(amount);
         });
       }
-      return interestReceived;
+      return loans;
     } catch (error) {
-      throw getErrorResponse(error, "user", "interestReceived");
+      throw getErrorResponse(error, "user", "interestReceivedList");
+    }
+  }
+  async interestReceivedSum(redeemedOnly) {
+    try {
+      let sum = 0;
+      const interestReceivedList = await this.interestReceivedList(
+        redeemedOnly
+      );
+      interestReceivedList.map((loan) => {
+        sum += redeemedOnly ? loan.interestRedeemed : loan.interestSent;
+      });
+      return sum;
+    } catch (error) {
+      throw getErrorResponse(error, "user", "interestReceivedSum");
     }
   }
 
