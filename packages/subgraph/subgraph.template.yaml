@@ -1,16 +1,16 @@
 specVersion: 0.0.2
-description: Tracking interest on rDAI (kovan)
+description: Tracking interest on rDAI ({{network}})
 repository: https://github.com/rtoken-project/rtoken-monorepo
 schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: RToken
-    network: kovan
+    network: {{ network }}
     source:
       abi: RToken
-      address: "0x462303f77a3f17Dbd95eb7bab412FE4937F9B9CB"
-      startBlock: 15362035
+      address: "{{ address }}"
+      startBlock: {{ startBlock }}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.3
