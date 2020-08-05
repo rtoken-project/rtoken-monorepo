@@ -44,22 +44,27 @@ This will be your connection to the rToken subgraph, which provides the blockcha
 ```js
 import { getClient } from "@rtoken/utils";
 
-const apolloInstance = getClient();
+const apolloInstance = getClient(); // Defaults to mainnet/homestead
+
+// OR
+
+const apolloInstance = getClient({ network: "kovan" });
 ```
 
-Optionally, configure your client by passing an object to `getClient()` with the following:
+Available options:
 
-| option | default                                                     | description                      |
-| ------ | ----------------------------------------------------------- | -------------------------------- |
-| uri    | https://api.thegraph.com/subgraphs/name/rtoken-project/rdai | Location of your rToken subgraph |
-| debug  | `false`                                                     | Display logs on Apollo errors    |
+| option    | default   | description                                 |
+| --------- | --------- | ------------------------------------------- |
+| `network` | homestead | Must be homestead or kovan                  |
+| `url`     | n/a       | Useful if you have your own custom subgraph |
+| `debug`   | false     | Display logs on Apollo errors               |
 
-You may also need an Ethers.js v5 provider instance. If you're only interest in redeemed interest data, you may not need this.
+You also need an `Ethers.js v5` web3 provider instance. If you only care about the interest that's actually been redeemed, then you do not need this.
 
 ```js
 import { InfuraProvider } from "@ethersproject/providers";
 
-const web3Provider = new InfuraProvider("homestead", process.env.INFURA_KEY);
+const web3Provider = new InfuraProvider("kovan", process.env.INFURA_KEY);
 ```
 
 #### 2. Instantiate the @rtoken/utils library
@@ -69,15 +74,17 @@ Pass the `apolloInstance` to create the `RTokenUtils` object.
 ```js
 import RTokenUtils, { getClient } from "@rtoken/utils";
 
-const rutils = new RTokenUtils(apolloInstance, web3Provider, options);
+const rutils = new RTokenUtils(apolloInstance, web3Provider, {
+  network: "kovan",
+});
 ```
 
-Options are an object type with the following properties:
+Available options:
 
-| option  | default     | description      |
-| ------- | ----------- | ---------------- |
-| network | `homestead` | Ethereum network |
-| debug   | `false`     | print errors     |
+| option    | default   | description                |
+| --------- | --------- | -------------------------- |
+| `network` | homestead | Must be homestead or kovan |
+| `debug`   | false     | Display logs               |
 
 #### 3. Create and use your entities
 
@@ -105,7 +112,9 @@ If you have any questions, please contact us via Discord.
 
 ### :bust_in_silhouette: User
 
-> Note that, if `redeemedOnly` is `true`, the response will only include the amount of redeemed interest, and the list responses (eg. `interestSentList`) will not include `interestSent`. You do not need to provide a Web3 Provider if you always use this flag.
+If you are not using a Web3 Provider, then you must always set `redeemedOnly` to `true`.
+
+When `redeemedOnly` is `true` the response will only include the amount of redeemed interest. The list response (eg. `interestSentList`) will not include `interestSent`.
 
 #### `user.details()`
 
