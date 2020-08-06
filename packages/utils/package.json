@@ -1,6 +1,6 @@
 {
   "name": "@rtoken/utils",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Easy to use library for fetching rDAI / rToken data for your Dapp.",
   "module": "src/index.js",
   "main": "dist/index.js",
@@ -12,7 +12,8 @@
   "scripts": {
     "get-abi": "node getAbi",
     "build": "babel ./src --out-dir dist",
-    "test": "mocha --timeout 7000 test --require @babel/register",
+    "test": "mocha test --require @babel/register",
+    "test-package": "yarn test -g package",
     "lint": "eslint . --fix"
   },
   "predeploy": "npm version patch",
