@@ -239,7 +239,7 @@ const rutils = new RTokenUtils(apolloInstance);
 
 # Developing
 
-After installing packages, run the command `yarn get-abis` to pull in the latest contract abis from `@rtoken/contracts`
+After installing packages, run the command `yarn get-abi` to pull in the latest contract abis from `@rtoken/contracts`
 
 # Contributing
 

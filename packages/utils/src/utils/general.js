@@ -1,3 +1,5 @@
+import { Contract } from "@ethersproject/contracts";
+import { formatUnits } from "@ethersproject/units";
 import { throwError, getErrorResponse } from "./error";
 
 const COMPOUND_API_URL = "https://api.compound.finance/api/v2/";
@@ -8,8 +10,9 @@ const DAI_INTEREST_RATE_HISTORIC_PARAMS =
 
 export const getCompoundRate = async () => {
   try {
-    const res = await fetch(COMPOUND_API_URL + CDAI_RATE_PARAMETERS);
-    const rate = res.data.cToken[0].supply_rate.value;
+    const res = await fetch(COMPOUND_API_URL + DAI_INTEREST_RATE_PARAMS);
+    const data = await res.json();
+    const rate = data.cToken[0].supply_rate.value;
     return { rate, formattedRate: Math.round(rate * 10000) / 100 };
   } catch (error) {
     throw getErrorResponse(error, "getCompoundRate");
@@ -24,7 +27,8 @@ export const getCompoundRateAtBlock = async (blockTimestamp) => {
     const res = await fetch(
       COMPOUND_API_URL + DAI_INTEREST_RATE_HISTORIC_PARAMS + params
     );
-    const rate = res.data.supply_rates[0].rate;
+    const data = await res.json();
+    const rate = data.supply_rates[0].rate;
     return { rate, formattedRate: Math.round(rate * 10000) / 100 };
   } catch (error) {
     throw getErrorResponse(error, "getCompoundRateAtBlock");
