@@ -11,18 +11,6 @@ before(function () {
 });
 
 describe("Tests basic hat lookup", () => {
-  it("should throw an error if ID is not provided", () => {
-    assert.throws(
-      () => rutils.hat(),
-      "Error @rtoken/utils RTokenUtils.hat(): Please provide a hat ID"
-    );
-  });
-  it("should throw an error if ID is malformed", () => {
-    assert.throws(
-      () => rutils.hat("-1"),
-      "Error @rtoken/utils RTokenUtils.hat(): Hat ID must be a whole number, of type Number or String"
-    );
-  });
   it("should successfully query allUsers", async () => {
     const hat = rutils.hat({
       id: "1",

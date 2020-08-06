@@ -22,20 +22,6 @@ before(async () => {
   rtoken = await getContract("rdai", "local", getWeb3Provider());
 });
 
-describe("Tests user instantiation", () => {
-  it("should throw an error if address is not provided", () => {
-    assert.throws(
-      () => rutils.user(),
-      "Error @rtoken/utils RTokenUtils.user(): Please provide an address"
-    );
-  });
-  it("should throw an error if address is malformed", () => {
-    assert.throws(
-      () => rutils.user("0xabc"),
-      "Error @rtoken/utils RTokenUtils.user(): Ethereum address is invalid"
-    );
-  });
-});
 describe("Tests user basic functions", () => {
   it("should successfully get account by address", async () => {
     const details = await user2.details();
