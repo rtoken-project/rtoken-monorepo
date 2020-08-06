@@ -6,7 +6,7 @@ const { assert } = chai;
 let apolloInstance;
 let rutils;
 
-describe("Tests library instantiation", () => {
+describe("Tests library instantiation - package", () => {
   it("should successfully create a new apollo-client instance", () => {
     apolloInstance = getClient();
     expect(apolloInstance).to.be.an("object");
@@ -37,7 +37,7 @@ describe("Tests library instantiation", () => {
   });
 });
 
-describe("Tests user instantiation", () => {
+describe("Tests user instantiation - package", () => {
   it("should throw an error if address is not provided", () => {
     assert.throws(
       () => rutils.user(),
@@ -55,7 +55,7 @@ describe("Tests user instantiation", () => {
     expect(user).to.be.an("object");
   });
 });
-describe("Tests user instantiation", () => {
+describe("Tests user instantiation - package", () => {
   it("should throw an error if ID is not provided", () => {
     assert.throws(
       () => rutils.hat(),
