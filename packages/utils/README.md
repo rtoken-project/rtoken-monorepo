@@ -1,8 +1,8 @@
 <p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
 
 <p align="center">
-    <a href="https://www.npmjs.com/package/@rtoken/contracts">
-        <img alt="npm" src="https://img.shields.io/npm/v/@rtoken/contracts">
+    <a href="https://www.npmjs.com/package/@rtoken/utils">
+        <img alt="npm" src="https://img.shields.io/npm/v/@rtoken/utils">
     </a>
     <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
 </p>
@@ -185,13 +185,14 @@ Returns amount of interest received.
 
 Returns the current interest rate for DAI on Compound using the Compound API.
 
-Example return:
+Example:
 
 ```js
-{
+import {getCompoundRate} from "@rtoken/utils";
+const {
   rate, // 0.0015121234345343435345
-    formattedRate; // 15.12
-}
+  formattedRate // 15.12
+} = getCompoundRate();
 ```
 
 #### `getCompoundRateAtBlock()`

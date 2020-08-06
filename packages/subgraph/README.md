@@ -1,8 +1,12 @@
+<p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
+
+<p align="center">
+    <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
+</p>
+
 # rToken Subgraph
 
 > Data provider for rDAI / rToken dapps
-
-:warning: Warning: While the deployed version is stable, the code in this package may be under development. Please contact the team if you have questions via twitter/discord.
 
 ## What you can do:
 
@@ -14,7 +18,7 @@
 
 ## Local development
 
-> Hold up :exclamation: You probably don't need this section. If you are using rToken on `Mainnet` or `Ropsten` you should just use an existing subgraph from The Graph's website.
+> Hold on :exclamation: You probably don't need this section. If you are using rToken on `Mainnet` or `Ropsten` you should just use an existing subgraph from The Graph's website.
 
 The rToken team uses this local subgraph deployment flow to enable rapid development and testing of the tools provided here. In this section we will do the following:
 
