@@ -177,13 +177,30 @@ Returns amount of interest received.
 
 ### :tophat: Hat
 
-#### Available
-
 - `hat.allUsers()`
 
-#### Planned
+### Price / Compound Rate data
 
-- `interestEarned`
+#### `getCompoundRate()`
+
+Returns the current interest rate for DAI on Compound using the Compound API.
+
+Example return:
+
+```js
+{
+  rate, // 0.0015121234345343435345
+    formattedRate; // 15.12
+}
+```
+
+#### `getCompoundRateAtBlock()`
+
+Returns the interest rate at a specific block for DAI on Compound using the Compound API.
+
+#### `getEthPrice(web3Provider)`
+
+Returns the current Ethereum price in DAI, using the [Medianizer Contract](https://etherscan.io/address/0x729D19f657BD0614b4985Cf1D82531c67569197B#code). A Web3 Provider is required.
 
 # Additional options
 

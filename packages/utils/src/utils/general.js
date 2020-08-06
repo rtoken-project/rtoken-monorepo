@@ -1,16 +1,48 @@
-import axios from "axios";
+import { throwError, getErrorResponse } from "./error";
 
-import { throwError } from "./error";
+const COMPOUND_API_URL = "https://api.compound.finance/api/v2/";
+const DAI_INTEREST_RATE_PARAMS =
+  "ctoken?addresses[]=0x5d3a536e4d6dbd6114cc1ead35777bab948e3643";
+const DAI_INTEREST_RATE_HISTORIC_PARAMS =
+  "market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643";
 
-export const getCompoundRate = async (blockTimestamp) => {
-  const COMPOUND_URL =
-    "https://api.compound.finance/api/v2/market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643";
-  const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
-    blockTimestamp + 1
-  }&num_buckets=1`;
-  const res = await axios.get(`${COMPOUND_URL}${params}`);
-  return res.data.supply_rates[0].rate;
+export const getCompoundRate = async () => {
+  try {
+    const res = await fetch(COMPOUND_API_URL + CDAI_RATE_PARAMETERS);
+    const rate = res.data.cToken[0].supply_rate.value;
+    return { rate, formattedRate: Math.round(rate * 10000) / 100 };
+  } catch (error) {
+    throw getErrorResponse(error, "getCompoundRate");
+  }
 };
+
+export const getCompoundRateAtBlock = async (blockTimestamp) => {
+  try {
+    const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
+      blockTimestamp + 1
+    }&num_buckets=1`;
+    const res = await fetch(
+      COMPOUND_API_URL + DAI_INTEREST_RATE_HISTORIC_PARAMS + params
+    );
+    const rate = res.data.supply_rates[0].rate;
+    return { rate, formattedRate: Math.round(rate * 10000) / 100 };
+  } catch (error) {
+    throw getErrorResponse(error, "getCompoundRateAtBlock");
+  }
+};
+
+export const getEthPrice = async (provider) => {
+  if (provider.network !== "homestead") return 204;
+  const medianizerContract = new Contract(
+    "0x729D19f657BD0614b4985Cf1D82531c67569197B",
+    `[{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"}]`,
+    provider
+  );
+  const ethPrice = await medianizerContract.read();
+  return Number(formatUnits(ethPrice, 18));
+};
+
+// Internal
 
 const validateAddress = (address) => {
   if (!isAddress(address)) throwError("input", "address");
