@@ -9,18 +9,15 @@
 
 # @rtoken/utils
 
-This library provides tools for getting rDAI and rToken data into your dapp.
-
-> NOTE: This package was formerly named `rtoken-analytics`. See the archived repo [here](https://github.com/rtoken-project/rtoken-analytics).
-
-> :warning: Warning: the code in this package is under active development. Please contact the team if you have questions via twitter/discord.
+> Easy to use library for fetching rDAI / rToken data for your Dapp.
 
 # What does it do?
 
-This library wraps the rToken subgraph, so you can easily gain insight about rToken users, without needing to learn or use GraphQL.
+This library wraps the rDAI subgraph, so you can make simple calls. It supports rDAI on Mainnet, Kovan, but you can also bring your own subgraph.
 
 ```js
-console.log(await user.interestSentTo("0xabc...123"));
+const user = rutils.user("0xaaa...");
+console.log(await user.interestSentTo("0xbbb..."));
 // > 1.230495
 console.log(await user.interestReceivedList());
 // >
@@ -30,8 +27,8 @@ console.log(await user.interestReceivedList());
     amount: "100.000000000000000000", // Amount of rDAI the sender is using to generate interest for this user
     interestRedeemed: "0.07179777866578322382540442607287171", // Amount of rDAI this user has redeemed from the sender
     interestSent: 2.683831612180583, // Sum of interestRedeemd and all outstanding interest (unredeemed) from the sender
-    sInternal: "10.000000012701007569669278674669046802622", // Internal rDAI stuff (probably don't need this)
-  },
+    sInternal: "10.000000012701007569669278674669046802622" // Internal Savings Asset for this loan
+  }
 ];
 ```
 
@@ -42,13 +39,13 @@ console.log(await user.interestReceivedList());
 This will be your connection to the rToken subgraph, which provides the blockchain data. Use the helper function to set it up, or see [Using your own Apollo client](#Using-your-own-Apollo-client).
 
 ```js
-import { getClient } from "@rtoken/utils";
+import {getClient} from "@rtoken/utils";
 
 const apolloInstance = getClient(); // Defaults to mainnet/homestead
 
 // OR
 
-const apolloInstance = getClient({ network: "kovan" });
+const apolloInstance = getClient({network: "kovan"});
 ```
 
 Available options:
@@ -62,7 +59,7 @@ Available options:
 You also need an `Ethers.js v5` web3 provider instance. If you only care about the interest that's actually been redeemed, then you do not need this.
 
 ```js
-import { InfuraProvider } from "@ethersproject/providers";
+import {InfuraProvider} from "@ethersproject/providers";
 
 const web3Provider = new InfuraProvider("kovan", process.env.INFURA_KEY);
 ```
@@ -72,10 +69,10 @@ const web3Provider = new InfuraProvider("kovan", process.env.INFURA_KEY);
 Pass the `apolloInstance` to create the `RTokenUtils` object.
 
 ```js
-import RTokenUtils, { getClient } from "@rtoken/utils";
+import RTokenUtils, {getClient} from "@rtoken/utils";
 
 const rutils = new RTokenUtils(apolloInstance, web3Provider, {
-  network: "kovan",
+  network: "kovan"
 });
 ```
 
@@ -195,32 +192,36 @@ Returns amount of interest received.
 This might be helpful if you want more control over the apollo-client, such as custom caching options or authentication of a private client. See `/src/utils/client` for how we instantiate the client.
 
 ```js
-const { ApolloClient } = require("apollo-client");
-const { InMemoryCache } = require("apollo-cache-inmemory");
-const { HttpLink } = require("apollo-link-http");
+const {ApolloClient} = require("apollo-client");
+const {InMemoryCache} = require("apollo-cache-inmemory");
+const {HttpLink} = require("apollo-link-http");
 const fetch = require("cross-fetch");
 
 const cache = new InMemoryCache();
 const link = new HttpLink({
   uri: "http://localhost:4000/",
-  fetch,
+  fetch
 });
 
 const apolloInstance = new ApolloClient({
   link,
   cache,
-  onError: (e) => {
+  onError: e => {
     console.log(e);
   },
   defaultOptions: {
     query: {
-      fetchPolicy: "network-only",
-    },
-  },
+      fetchPolicy: "network-only"
+    }
+  }
 });
 
 const rutils = new RTokenUtils(apolloInstance);
 ```
+
+# Developing
+
+After installing packages, run the command `yarn get-abis` to pull in the latest contract abis from `@rtoken/contracts`
 
 # Contributing
 
