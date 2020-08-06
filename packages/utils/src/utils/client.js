@@ -9,7 +9,7 @@ export const getClient = ({
   url = SUBGRAPH_URLS.homestead,
   network,
   debug,
-}) => {
+} = {}) => {
   let subgraphURL = url;
   if (network) subgraphURL = SUBGRAPH_URLS[network];
   const cache = new InMemoryCache();
