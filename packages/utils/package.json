@@ -1,7 +1,7 @@
 {
   "name": "@rtoken/utils",
   "version": "1.1.1",
-  "description": "Data and analytics utility for rToken",
+  "description": "Easy to use library for fetching rDAI / rToken data for your Dapp.",
   "module": "src/index.js",
   "main": "dist/index.js",
   "repository": "https://github.com/rtoken-project/rtoken-monorepo",
@@ -10,24 +10,12 @@
   "license": "MIT",
   "private": false,
   "scripts": {
-    "test": "LOCAL=true SUBGRAPH_URL=$npm_package_subgraph_local_url mocha --timeout 7000 test --require @babel/register",
+    "get-abi": "node getAbi",
     "build": "babel ./src --out-dir dist",
-    "lint": "eslint . --fix",
-    "get-abi": "node getAbi"
+    "test": "mocha --timeout 7000 test --require @babel/register",
+    "lint": "eslint . --fix"
   },
   "predeploy": "npm version patch",
-  "subgraph": {
-    "mainnet": {
-      "url": "https://api.thegraph.com/subgraphs/name/rtoken-project/rdai",
-      "id": "",
-      "contractAddress": "0x261b45D85cCFeAbb11F022eBa346ee8D1cd488c0"
-    },
-    "local": {
-      "url": "http://localhost:8000/subgraphs/name/rtoken-test",
-      "id": "",
-      "contractAddress": ""
-    }
-  },
   "dependencies": {
     "@babel/runtime": "^7.9.2",
     "@ethersproject/bignumber": "^5.0.5",
