@@ -102,6 +102,9 @@ yarn build
 Now in `rtoken-monorepo` navigate to `packages/subgraph` and paste the contract address in `subgraph.yaml`. We are ready to deploy our subgraph.
 
 ```bash
+# Generate the subgraph.yaml file from the template
+yarn prepare:local
+
 # Copy the abis from packages/contracts and generate the subgraph schema
 yarn codegen
 
