@@ -1,0 +1,23 @@
+name: rtoken/utils Node.js Package
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  yarn-test-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: https://registry.npmjs.org/
+      - name: yarn test-package
+        working-directory: packages/utils
+        run: |
+          npx lerna bootstrap
+          yarn test-package
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}

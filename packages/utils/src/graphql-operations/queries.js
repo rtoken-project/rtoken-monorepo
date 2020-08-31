@@ -1,4 +1,4 @@
-import gql from 'graphql-tag';
+import gql from "graphql-tag";
 
 export const getAccountById = gql`
   query accountById($id: Bytes) {
@@ -34,6 +34,39 @@ export const getAllUsersWithHat = gql`
       id
       balance
       hat {
+        id
+      }
+    }
+  }
+`;
+export const getLoanById = gql`
+  query loanById($id: String) {
+    loan(id: $id) {
+      amount
+      interestRedeemed
+      sInternal
+    }
+  }
+`;
+export const allReceivedLoans = gql`
+  query allReceivedLoans($recipient: String) {
+    loans(where: { recipient: $recipient }) {
+      amount
+      interestRedeemed
+      sInternal
+      owner {
+        id
+      }
+    }
+  }
+`;
+export const allOwnedLoans = gql`
+  query allOwnedLoans($owner: String) {
+    loans(where: { owner: $owner }) {
+      amount
+      interestRedeemed
+      sInternal
+      recipient {
         id
       }
     }

@@ -1,26 +1,26 @@
+<p align="center"><img src="https://rdai.money/images/logo.svg" width="160"/></p>
+
+<p align="center">
+    <img alt="GitHub" src="https://img.shields.io/github/license/rtoken-project/rtoken-contracts">
+</p>
+
 # rToken Subgraph
 
-> :warning: Warning: While the deployed version is stable, the code in this package is under active development. Please contact the team if you have questions via twitter/discord.
+> Data provider for rDAI / rToken dapps
 
 ## What you can do:
 
-#### Use it now
+- **Use the Official rDAI subgraph** provided by TheGraph - see [link](https://thegraph.com/explorer/subgraph/rtoken-project/rdai).
 
-Subgraph for rDAI on mainnet is provided by TheGraph, and can be found [at this link](https://thegraph.com/explorer/subgraph/pi0neerpat/mcd-rdai).
+- **Develop and improve the subgraph** - see [Local development](#local-development).
 
-#### Develop it
-
-See [Local development](#local-development).
-
-#### Use it with your own rToken
-
-See [Bring-your-own rToken](#bring-your-own-rtoken).
+- **Implement your own rToken subgraph** - see [Bring-your-own rToken](#bring-your-own-rtoken).
 
 ## Local development
 
-> :warning: You probably don't need to do this! If your rToken is deployed to `Mainnet` or `Ropsten`, and you are using the standard rToken contracts, then you should just use the hosted version provided by The Graph.
+> Hold on :exclamation: You probably don't need this section. If you are using rToken on `Mainnet` or `Ropsten` you should just use an existing subgraph from The Graph's website.
 
-The rToken team uses a local subgraph deployment to enable rapid development and testing of the tools provided here. In this section we will do the following:
+The rToken team uses this local subgraph deployment flow to enable rapid development and testing of the tools provided here. In this section we will do the following:
 
 1. Deploy the subgraph to a `docker container`.
 2. Deploy the rToken contracts to `Ganache`.
@@ -41,56 +41,77 @@ Install the necessary packages:
 yarn global add truffle ganache-cli @graphprotocol/graph-cli
 ```
 
+Start ganache. It's helpful to specify a mnemonic, so you can hard-code the address in `subgraph.yaml` and the test files.
+
+```bash
+ganache-cli -h 0.0.0.0 -m 'deputy taste judge cave mosquito supply hospital clarify argue aware abuse glory'
+```
+
 Download the `graph-node` Docker instance.
 
 ```bash
 git clone https://github.com/graphprotocol/graph-node/
-cd graph-node/docker
 ```
+
+Then navigate to `graph-node/docker`
 
 If on Linux, run the following script.
 
-> Note I had problems here, so you may need to troubleshoot by first running `docker-compose create` or `docker-compose up`. If you get a "version" error, update your docker-compose with [these instructions](https://docs.docker.com/compose/install/). If you get an error like `ERROR: could not find an available, non-overlapping IPv4 address...` then try turning off OpenVPN, or follow [this tutorial](https://stackoverflow.com/questions/45692255/how-make-openvpn-work-with-docker).
+> Note I had problems here. If you get a "version" error, update your docker-compose with [these instructions](https://docs.docker.com/compose/install/). If you get an error like `ERROR: could not find an available, non-overlapping IPv4 address...` then try turning off OpenVPN, or follow [this tutorial](https://stackoverflow.com/questions/45692255/how-make-openvpn-work-with-docker).
 
 ```bash
-sudo apt install jq # if necessary
-./setup.sh
+# For Linux machines
+sudo apt install jq
+./setup.sh # writes the host IP to the docker-compose file
 ```
 
-Now lets start our subgraph Docker instance.
+Now start the necessary subgraph Docker containers.
 
 ```bash
 docker-compose up
-# leave running
+# or to run in background
+docker-compose up -d
+
+# Check its running
+docker logs docker_graph-node_1
 ```
 
 #### Deploy the contracts to Ganache
 
-In a new terminal, navigate to `@rtoken/contracts` and start running ganache-cli and deploy the contracts.
+Now in `rtoken-monorepo` navigate to `packages/contracts`, deploy the contracts, and copy the address for `rTOKEN contract (proxy)`.
 
 ```bash
-ganache-cli -h 0.0.0.0 -m 'deputy taste judge cave mosquito supply hospital clarify argue aware abuse glory'
-# using the same mnemonic allows for hard-coding the address in `subgraph.yaml` and the test files. It's not the best way, but it works!
-
-# Then in a new terminal
+# Install dependencies
+lerna bootstrap
+# Deploy contracts
 truffle test --network subgraph test/subgraphDeployment.test.js
+# Copy the rToken contract address
+> ...
+> The rTOKEN contract (proxy) is deployed at: 0x625aD1AA6469568ded0cd0254793Efd0e5C0394F
 ```
 
-Copy the deployed rToken contract address printed at the start of the deployment process. If you used the same mnemonic, then this step isn't necessary
+We also need to build the contracts, for use in the `subgraph` package.
 
-```
-> truffle test --network subgraph test/subgraphDeployment.test.js
-...
-The rTOKEN contract (proxy) is deployed at: 0xc97EeFc57dD8E74A30AC2cC52E8785B40a14a30c
+```bash
+# Build and save the contracts
+yarn build
 ```
 
 #### Deploy the Subgraph
 
-Navigate back to this package and paste the contract address in `subgraph.yaml`. We are now ready to deploy our subgraph.
+Now in `rtoken-monorepo` navigate to `packages/subgraph` and paste the contract address in `subgraph.yaml`. We are ready to deploy our subgraph.
 
 ```bash
+# Generate the subgraph.yaml file from the template
+yarn prepare:local
+
+# Copy the abis from packages/contracts and generate the subgraph schema
 yarn codegen
-yarn create-local  # Only run once
+
+# Create the subgraph node "rtoken-test" (only run once)
+yarn create-local
+
+# Deploy the subgraph to "rtoken-test" node
 yarn deploy-local
 ```
 
@@ -156,6 +177,7 @@ sudo rm -rf data && docker-compose up
 3. Re-deploy the new subgraph, whenever subgraph.yaml is changed:
 
 ```bash
+yarn create-local
 yarn deploy-local --watch
 ```
 

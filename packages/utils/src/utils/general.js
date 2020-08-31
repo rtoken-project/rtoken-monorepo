@@ -1,35 +1,72 @@
-export const getCompoundRate = async (blockTimestamp) => {
-  // Note: This is incorrect. Calculating rate is much more complex than just getting it from storage.
-  // I was trying to avoid using compoiund historic data API, since its so slow...
+import { Contract } from "@ethersproject/contracts";
+import { formatUnits } from "@ethersproject/units";
+import { throwError, getErrorResponse } from "./error";
 
-  // const res = await this.web3Provider.getStorageAt(
-  //   '0xec163986cC9a6593D6AdDcBFf5509430D348030F',
-  //   1,
-  //   9220708
-  // );
-  // const unformatted_rate = new BigNumber(2102400 * parseInt(res, 16));
-  // const rate = unformatted_rate.times(BigNumber(10).pow(-18));
-  // console.log(
-  //   `Compound rate (WRONG): ${Math.round(rate.toNumber() * 100000) / 1000}%`
-  // );
+const COMPOUND_API_URL = "https://api.compound.finance/api/v2/";
+const DAI_INTEREST_RATE_PARAMS =
+  "ctoken?addresses[]=0x5d3a536e4d6dbd6114cc1ead35777bab948e3643";
+const DAI_INTEREST_RATE_HISTORIC_PARAMS =
+  "market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643";
 
-  // Used to inspect storage on a contract
-  // for (let index = 0; index < 23; index++) {
-  //   const rate = await this.web3Provider.getStorageAt(
-  //     '0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643',
-  //     index,
-  //     9220800
-  //   );
-  //   // console.log(`[${index}] ${rate}`);
-  //   console.log(`[${index}] ${parseInt(rate, 16)}`);
-  // }
+export const getCompoundRate = async () => {
+  try {
+    const res = await fetch(COMPOUND_API_URL + DAI_INTEREST_RATE_PARAMS);
+    const data = await res.json();
+    const rate = data.cToken[0].supply_rate.value;
+    return { rate, formattedRate: Math.round(rate * 10000) / 100 };
+  } catch (error) {
+    throw getErrorResponse(error, "getCompoundRate");
+  }
+};
 
-  // Correct, new way to get the rate
-  const COMPOUND_URL =
-    'https://api.compound.finance/api/v2/market_history/graph?asset=0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643';
-  const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
-    blockTimestamp + 1
-  }&num_buckets=1`;
-  const res = await axios.get(`${COMPOUND_URL}${params}`);
-  return res.data.supply_rates[0].rate;
+export const getCompoundRateAtBlock = async (blockTimestamp) => {
+  try {
+    const params = `&min_block_timestamp=${blockTimestamp}&max_block_timestamp=${
+      blockTimestamp + 1
+    }&num_buckets=1`;
+    const res = await fetch(
+      COMPOUND_API_URL + DAI_INTEREST_RATE_HISTORIC_PARAMS + params
+    );
+    const data = await res.json();
+    const rate = data.supply_rates[0].rate;
+    return { rate, formattedRate: Math.round(rate * 10000) / 100 };
+  } catch (error) {
+    throw getErrorResponse(error, "getCompoundRateAtBlock");
+  }
+};
+
+export const getEthPrice = async (provider) => {
+  if (provider.network !== "homestead") return 204;
+  const medianizerContract = new Contract(
+    "0x729D19f657BD0614b4985Cf1D82531c67569197B",
+    `[{"constant":true,"inputs":[],"name":"read","outputs":[{"name":"","type":"bytes32"}],"payable":false,"type":"function"}]`,
+    provider
+  );
+  const ethPrice = await medianizerContract.read();
+  return Number(formatUnits(ethPrice, 18));
+};
+
+// Internal
+
+const validateAddress = (address) => {
+  if (!isAddress(address)) throwError("input", "address");
+};
+
+const isAddress = (address) => {
+  return /^(0x)?[0-9a-f]{40}$/i.test(address);
+};
+
+export const getCleanAddress = (address) => {
+  validateAddress(address);
+  return address.toLowerCase();
+};
+
+export const getCleanHatId = (id) => {
+  try {
+    let cleanId = typeof id === "string" ? Number(id) : id;
+    if (cleanId < 0) throw Error;
+    return cleanId.toString();
+  } catch (error) {
+    throwError("input", "hatId");
+  }
 };

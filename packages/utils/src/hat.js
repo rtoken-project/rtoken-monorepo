@@ -1,12 +1,11 @@
-import { getAllUsersWithHat } from '../src/graphql-operations/queries';
+import { getAllUsersWithHat } from "../src/graphql-operations/queries";
 
 export default class Hat {
-  constructor(client, options, globalOptions) {
+  constructor(client, provider, id, options) {
     this.client = client;
-
+    this.provider = provider;
     this.options = options;
-    this.id = options.id;
-    this.globalOptions = globalOptions;
+    this.id = id;
   }
 
   async allUsers() {
@@ -25,7 +24,7 @@ export default class Hat {
     const accounts = this.allUsers();
     let topDonor = {
       balance: 0,
-      id: '',
+      id: "",
     };
     if (accounts) {
       for (let i = 0; i < accounts.length; i++) {

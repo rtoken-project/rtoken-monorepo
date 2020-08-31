@@ -1,13 +1,20 @@
-import RTokenUtils, { getClient } from '../../src';
+import { JsonRpcProvider } from "@ethersproject/providers";
+import RTokenUtils, { getClient } from "../../src";
+
+export const getWeb3Provider = () => {
+  return new JsonRpcProvider("http://localhost:8545");
+};
 
 export const getRutils = () => {
-  const uri = 'http://localhost:8000/subgraphs/name/rtoken-test';
-  // TODO: set uri based on process.env for local/production testing
-
-  const apolloInstance = getClient({
-    uri,
-    debug: false,
-  });
-  const options = { debug: true };
-  return new RTokenUtils(apolloInstance, options);
+  return new RTokenUtils(
+    getClient({
+      network: "local",
+      debug: true,
+    }),
+    getWeb3Provider(),
+    {
+      network: "local",
+      debug: true,
+    }
+  );
 };

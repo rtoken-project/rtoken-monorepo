@@ -1,32 +1,46 @@
-import User from './user';
-import Hat from './hat';
+import User from "./user";
+import Hat from "./hat";
+import { getErrorResponse } from "./utils/error";
+import { getCleanAddress, getCleanHatId } from "./utils/general";
 
 export default class RTokenUtils {
-  constructor(apolloInstance, options = {}) {
-    if (!apolloInstance) {
-      throw new Error('Please pass an Apollo Instance');
-    }
+  constructor(apolloInstance, provider, options) {
+    if (!apolloInstance)
+      throw getErrorResponse(
+        "Please pass an Apollo Instance",
+        "RTokenUtils",
+        "user"
+      );
     this.client = apolloInstance;
-
-    this.options = {};
-    this.options.deubug = options.debug;
+    this.provider = provider;
+    this.options = options;
   }
 
-  user(options) {
-    if (!options || !options.address) {
-      throw new Error('Please pass an address');
+  user(address) {
+    try {
+      if (!address) throw "Please provide an address";
+      return new User(
+        this.client,
+        this.provider,
+        getCleanAddress(address),
+        this.options
+      );
+    } catch (error) {
+      throw getErrorResponse(error, "RTokenUtils", "user");
     }
-    // TODO: deepmerge options & this.options
-    const user = new User(this.client, options, this.options);
-    return user;
   }
 
-  hat(options) {
-    if (!options || !options.id) {
-      throw new Error('Please pass a hat ID');
+  hat(id) {
+    try {
+      if (!id) throw "Please provide a hat ID";
+      return new Hat(
+        this.client,
+        this.provider,
+        getCleanHatId(id),
+        this.options
+      );
+    } catch (error) {
+      throw getErrorResponse(error, "RTokenUtils", "hat");
     }
-    if (typeof options.id === 'number') options.id = options.id.toString();
-    const hat = new Hat(this.client, options, this.options);
-    return hat;
   }
 }
