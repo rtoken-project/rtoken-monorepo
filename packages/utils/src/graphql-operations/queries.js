@@ -50,7 +50,7 @@ export const getLoanById = gql`
 `;
 export const allReceivedLoans = gql`
   query allReceivedLoans($recipient: String) {
-    loans(where: { recipient: $recipient }) {
+    loans(where: { recipient: $recipient }, first: 1000) {
       amount
       interestRedeemed
       sInternal
@@ -62,7 +62,7 @@ export const allReceivedLoans = gql`
 `;
 export const allOwnedLoans = gql`
   query allOwnedLoans($owner: String) {
-    loans(where: { owner: $owner }) {
+    loans(where: { owner: $owner }, first: 100) {
       amount
       interestRedeemed
       sInternal
