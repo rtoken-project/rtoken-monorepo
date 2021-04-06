@@ -51,4 +51,10 @@ contract RTokenStorage is RTokenStructs, IERC20 {
     mapping(address => AccountStatsStored) public accountStats;
     /// @dev HatStats mapping
     mapping(uint256 => HatStatsStored) public hatStats;
+	/// @dev Token Manager
+	address internal tokenManager;
+	/// @dev Dai Address
+	address internal dai;
+	/// @dev cDai dai
+	address internal cDai;
 }

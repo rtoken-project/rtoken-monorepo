@@ -13,17 +13,13 @@ import { IERC20 } from "../IRToken.sol";
  * @notice RToken instantiation for rSAI (Redeemable SAI)
  */
 contract rDAI is RToken {
-
-	address private _tokenManager;
-	address private constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
-	address private constant cDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
 	
-	function tokenManager() public view returns (address) {
-		return _tokenManager;
+	function getTokenManager() public view returns (address) {
+		return tokenManager;
 	}
 	
 	modifier onlyTokenManager() {
-		require(msg.sender == _tokenManager, "Only token manager can call this function");
+		require(msg.sender == tokenManager, "Only token manager can call this function");
 		_;
 	}
 	
@@ -32,13 +28,25 @@ contract rDAI is RToken {
 				newManager != address(0),
 				"New token manager is the zero address"
 			);
-		_tokenManager = newManager;
+		tokenManager = newManager;
+	}
+	
+	function ownerSetTokenManager(address newManager) onlyOwner external {
+		require(
+				newManager != address(0),
+				"New token manager is the zero address"
+			);
+		require(
+				tokenManager == address(0),
+				"Token manager is already set"
+			);
+		tokenManager = newManager;		
 	}
 	
 	function sweepTokens(IERC20 token) external {
-		require(address(token) != DAI, "You can't sweep DAI");
-		require(address(token) != cDAI, "You can't sweep cDAI");
-		token.transfer(_tokenManager, token.balanceOf(address(this)));
+		require(address(token) != dai, "You can't sweep DAI");
+		require(address(token) != cDai, "You can't sweep cDAI");
+		token.transfer(tokenManager, token.balanceOf(address(this)));
 	}
 
     function initialize (
@@ -47,7 +55,10 @@ contract rDAI is RToken {
             "Redeemable DAI",
             "rDAI",
             18);
-		_tokenManager = msg.sender;
     }
 
+	constructor(address _dai, address _cdai) public {
+		dai = _dai;
+		cDai = _cdai;
+	}
 }
