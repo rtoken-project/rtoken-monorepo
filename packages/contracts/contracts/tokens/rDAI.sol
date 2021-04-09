@@ -7,7 +7,6 @@ pragma solidity >=0.5.10 <0.6.0;
 pragma experimental ABIEncoderV2;
 
 import { RToken, IAllocationStrategy } from "../RToken.sol";
-import { IERC20 } from "../IRToken.sol";
 
 /**
  * @notice RToken instantiation for rSAI (Redeemable SAI)

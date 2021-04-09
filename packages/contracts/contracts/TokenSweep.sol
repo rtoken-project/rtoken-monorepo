@@ -2,8 +2,9 @@ pragma solidity ^0.5.0;
 
 import {Ownable} from "./Ownable.sol";
 import {RTokenStorage} from "./RTokenStorage.sol";
+import {IERC20} from "./IRToken.sol";
 
-contract TokenSweep is Ownable, RTokenStorage {
+contract TokenSweep is RTokenStorage, Ownable {
     address private constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address private constant cDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
 
@@ -14,18 +15,6 @@ contract TokenSweep is Ownable, RTokenStorage {
         );
         _;
     }
-
-    function ownerSetTokenManager(address newManager) onlyOwner external {
-		require(
-				newManager != address(0),
-				"New token manager is the zero address"
-			);
-		require(
-				tokenManager == address(0),
-				"Token manager is already set"
-			);
-		tokenManager = newManager;
-	}
 
     function getTokenManager() public view returns (address) {
         return tokenManager;
@@ -40,17 +29,17 @@ contract TokenSweep is Ownable, RTokenStorage {
     }
 
     function ownerSetTokenManager(address newManager) external onlyOwner {
+        require(tokenManager == address(0), "Token manager is already set");
         require(
             newManager != address(0),
             "New token manager is the zero address"
         );
-        require(tokenManager == address(0), "Token manager is already set");
         tokenManager = newManager;
     }
 
-    function sweepTokens(IERC20 token) external {
-        require(address(token) != dai, "You can't sweep DAI");
-        require(address(token) != cDai, "You can't sweep cDAI");
+    function sweepERC20(IERC20 token) external {
+        require(address(token) != DAI, "You can't sweep the underlying token");
+        require(address(token) != cDAI, "You can't sweep the allocation token");
         token.transfer(tokenManager, token.balanceOf(address(this)));
     }
 }
