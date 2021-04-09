@@ -13,42 +13,6 @@ import { IERC20 } from "../IRToken.sol";
  * @notice RToken instantiation for rSAI (Redeemable SAI)
  */
 contract rDAI is RToken {
-	
-	function getTokenManager() public view returns (address) {
-		return tokenManager;
-	}
-	
-	modifier onlyTokenManager() {
-		require(msg.sender == tokenManager, "Only token manager can call this function");
-		_;
-	}
-	
-	function setTokenManager(address newManager) onlyTokenManager external {
-		require(
-				newManager != address(0),
-				"New token manager is the zero address"
-			);
-		tokenManager = newManager;
-	}
-	
-	function ownerSetTokenManager(address newManager) onlyOwner external {
-		require(
-				newManager != address(0),
-				"New token manager is the zero address"
-			);
-		require(
-				tokenManager == address(0),
-				"Token manager is already set"
-			);
-		tokenManager = newManager;		
-	}
-	
-	function sweepTokens(IERC20 token) external {
-		require(address(token) != dai, "You can't sweep DAI");
-		require(address(token) != cDai, "You can't sweep cDAI");
-		token.transfer(tokenManager, token.balanceOf(address(this)));
-	}
-
     function initialize (
         IAllocationStrategy allocationStrategy) external {
         RToken.initialize(allocationStrategy,
@@ -56,9 +20,4 @@ contract rDAI is RToken {
             "rDAI",
             18);
     }
-
-	constructor(address _dai, address _cdai) public {
-		dai = _dai;
-		cDai = _cdai;
-	}
 }

@@ -16,6 +16,7 @@ import {RTokenStorage} from "./RTokenStorage.sol";
 import {IERC20, IRToken} from "./IRToken.sol";
 import {IRTokenAdmin} from "./IRTokenAdmin.sol";
 import {IAllocationStrategy} from "./IAllocationStrategy.sol";
+import {TokenSweep} from "./TokenSweep.sol";
 
 /**
  * @notice RToken an ERC20 token that is 1:1 redeemable to its underlying ERC20 token.
@@ -27,7 +28,8 @@ contract RToken is
     Ownable,
     Proxiable,
     LibraryLock,
-    ReentrancyGuard {
+    ReentrancyGuard,
+    TokenSweep {
     using SafeMath for uint256;
 
 
