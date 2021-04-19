@@ -12,7 +12,6 @@ import { RToken, IAllocationStrategy } from "../RToken.sol";
  * @notice RToken instantiation for rSAI (Redeemable SAI)
  */
 contract rDAI is RToken {
-
     function initialize (
         IAllocationStrategy allocationStrategy) external {
         RToken.initialize(allocationStrategy,
@@ -20,5 +19,4 @@ contract rDAI is RToken {
             "rDAI",
             18);
     }
-
 }
