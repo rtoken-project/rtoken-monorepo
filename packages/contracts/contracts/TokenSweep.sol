@@ -5,7 +5,6 @@ import {RTokenStorage} from "./RTokenStorage.sol";
 import {IERC20} from "./IRToken.sol";
 
 contract TokenSweep is RTokenStorage, Ownable {
-    address private constant DAI = 0x6B175474E89094C44Da98b954EedeAC495271d0F;
     address private constant cDAI = 0x5d3a536E4D6DbD6114cc1Ead35777bAB948E3643;
 
     modifier onlyTokenManager() {
@@ -38,7 +37,6 @@ contract TokenSweep is RTokenStorage, Ownable {
     }
 
     function sweepERC20(IERC20 token) external {
-        require(address(token) != DAI, "You can't sweep the underlying token");
         require(address(token) != cDAI, "You can't sweep the allocation token");
         token.transfer(tokenManager, token.balanceOf(address(this)));
     }
