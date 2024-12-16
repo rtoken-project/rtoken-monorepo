@@ -18,8 +18,8 @@
     "prepare:local": "mustache config/local.json subgraph.template.yaml > subgraph.yaml"
   },
   "dependencies": {
-    "@graphprotocol/graph-cli": "0.16.1",
-    "@graphprotocol/graph-ts": "0.16.0",
+    "@graphprotocol/graph-cli": "0.91.1",
+    "@graphprotocol/graph-ts": "0.36.0",
     "@rtoken/contracts": "^1.0.1-rc6"
   },
   "devDependencies": {
